@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workspace_web/pages/dashboardPage.dart';
 import 'package:workspace_web/pages/loginPage.dart';
 import 'package:workspace_web/pages/taskPage.dart';
 
@@ -21,8 +22,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.teal,
       ),
+      routes: {
+        '/Dashboard': (context) => Dashboard(),
+        '/Task': (context) => TaskPage(),
+        // '/Mail': (context) => MailScreen(),
+        // '/Calendar': (context) => CalendarScreen(),
+        // '/Special Notice': (context) => SpecialNoticeScreen(),
+        // '/Chat': (context) => ChatScreen(),
+        // '/Users': (context) => UsersScreen(),
+        // '/Meet': (context) => MeetScreen(),
+        // '/Apps': (context) => AppsScreen(),
+      },
       home: LandingPage(prefs: prefs),
     );
   }
