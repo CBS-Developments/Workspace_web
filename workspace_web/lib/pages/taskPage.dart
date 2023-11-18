@@ -24,6 +24,8 @@ class _TaskPageState extends State<TaskPage> {
   String phone = "";
   String userRole = "";
 
+  TextEditingController searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -250,16 +252,36 @@ class _TaskPageState extends State<TaskPage> {
           ),
         ),
         drawer: MyDrawer(),
-        body: TabBarView(
+        body: Column(
           children: [
-            buildAllTasksList(),
-            buildTaskListByCategory('Taxation - TAS'),
-            buildTaskListByCategory('Talent Management - TMS'),
-            buildTaskListByCategory('Finance & Accounting - AFSS'),
-            buildTaskListByCategory('Audit & Assurance - ASS'),
-            buildTaskListByCategory('Company Secretarial - CSS'),
-            buildTaskListByCategory('Development - DEV'),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.search),
+                  ),
+                  hintText: 'Search by Task ID',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  buildAllTasksList(),
+                  buildTaskListByCategory('Taxation - TAS'),
+                  buildTaskListByCategory('Talent Management - TMS'),
+                  buildTaskListByCategory('Finance & Accounting - AFSS'),
+                  buildTaskListByCategory('Audit & Assurance - ASS'),
+                  buildTaskListByCategory('Company Secretarial - CSS'),
+                  buildTaskListByCategory('Development - DEV'),
 
+                ],
+              ),
+            ),
           ],
         ),
       ),
