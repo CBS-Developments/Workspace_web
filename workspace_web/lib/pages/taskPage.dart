@@ -25,6 +25,7 @@ class _TaskPageState extends State<TaskPage> {
   String userRole = "";
 
   TextEditingController searchController = TextEditingController();
+  List<MainTask> searchedTasks = [];
 
   @override
   void initState() {
@@ -65,17 +66,17 @@ class _TaskPageState extends State<TaskPage> {
           mainTaskList.add(MainTask.fromJson(details));
         }
         mainTaskList.sort(
-                (a, b) => b.taskCreatedTimestamp.compareTo(a.taskCreatedTimestamp));
+            (a, b) => b.taskCreatedTimestamp.compareTo(a.taskCreatedTimestamp));
       });
     } else {
       throw Exception('Failed to load jobs from API');
     }
   }
 
-
   Widget buildTaskListByCategory(String category) {
     List<MainTask> filteredTasks = mainTaskList
-        .where((task) => task.category_name == category || category == 'All Tasks')
+        .where(
+            (task) => task.category_name == category || category == 'All Tasks')
         .toList();
 
     return Row(
@@ -117,43 +118,70 @@ class _TaskPageState extends State<TaskPage> {
   }
 
   Widget buildAllTasksList() {
-    return Row(
-      children: [
-        Expanded(
-          flex: 1,
-          child: Container(
-            child: ListView.builder(
-              itemCount: mainTaskList.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(mainTaskList[index].taskTitle),
-                  onTap: () {
-                    String mainTaskId = mainTaskList[index].taskId;
-                    getSubTaskListByMainTaskId(mainTaskId);
-                  },
-                );
-              },
-            ),
-          ),
-        ),
+    List<MainTask> filteredTasks = [];
 
-        Expanded(
-          flex: 1,
-          child: Container(
-            padding: const EdgeInsets.all(8.0),
-            color: Colors.white,
-            child: ListView.builder(
-              itemCount: subTaskList.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(subTaskList[index].taskTitle),
-                );
-              },
-            ),
-          ),
-        ),
-      ],
-    );
+    if (searchController.text.isNotEmpty) {
+      filteredTasks = mainTaskList
+          .where((task) => task.taskId
+              .toLowerCase()
+              .contains(searchController.text.toLowerCase()))
+          .toList();
+    } else {
+      filteredTasks =
+          List.from(mainTaskList); // Show all tasks when no search query
+    }
+
+    return filteredTasks.isNotEmpty
+        ? Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: Container(
+                  child: ListView.builder(
+                    itemCount: filteredTasks.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        margin: EdgeInsets.all(5),
+                        color: Colors.grey.shade200,
+                        child: ListTile(
+                          title: Text(filteredTasks[index].taskTitle),
+                          subtitle: Column(
+                            children: [
+                              Text(filteredTasks[index].taskId),
+                              Text(filteredTasks[index].dueDate)
+                            ],
+                          ),
+
+                          trailing: IconButton(onPressed: () {  }, icon: Icon(Icons.open_in_new_rounded),),
+                          onTap: () {
+                            String mainTaskId = filteredTasks[index].taskId;
+                            getSubTaskListByMainTaskId(mainTaskId);
+                          },
+                          // Add onTap functionality if needed
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Container(
+                  padding: const EdgeInsets.all(8.0),
+                  color: Colors.white,
+                  child: ListView.builder(
+                    itemCount: subTaskList.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(subTaskList[index].taskTitle),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          )
+        : Container(); // Return an empty container if no search results or query
   }
 
   Future<void> getSubTaskListByMainTaskId(String mainTaskId) async {
@@ -177,7 +205,7 @@ class _TaskPageState extends State<TaskPage> {
       final responseJson = json.decode(res.body);
       setState(() {
         for (Map<String, dynamic> details
-        in responseJson.cast<Map<String, dynamic>>()) {
+            in responseJson.cast<Map<String, dynamic>>()) {
           subTaskList.add(Task.fromJson(details));
         }
 
@@ -191,7 +219,7 @@ class _TaskPageState extends State<TaskPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 6+ 1, // 7 categories + 'All Tasks'
+      length: 6 + 1, // 7 categories + 'All Tasks'
       child: Scaffold(
         appBar: AppBar(
           elevation: 1,
@@ -219,7 +247,9 @@ class _TaskPageState extends State<TaskPage> {
                 ),
               ],
             ),
-            const SizedBox(width: 10,),
+            const SizedBox(
+              width: 10,
+            ),
             IconButton(
               onPressed: () {
                 showDialog(
@@ -235,7 +265,6 @@ class _TaskPageState extends State<TaskPage> {
               ),
             ),
           ],
-
           bottom: TabBar(
             dividerColor: Colors.teal,
             labelColor: Colors.white,
@@ -247,7 +276,6 @@ class _TaskPageState extends State<TaskPage> {
               Tab(text: 'Audit & Assurance - ASS'),
               Tab(text: 'Company Secretarial - CSS'),
               Tab(text: 'Development - DEV'),
-
             ],
           ),
         ),
@@ -260,7 +288,9 @@ class _TaskPageState extends State<TaskPage> {
                 controller: searchController,
                 decoration: InputDecoration(
                   suffixIcon: IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {});
+                    },
                     icon: const Icon(Icons.search),
                   ),
                   hintText: 'Search by Task ID',
@@ -278,7 +308,6 @@ class _TaskPageState extends State<TaskPage> {
                   buildTaskListByCategory('Audit & Assurance - ASS'),
                   buildTaskListByCategory('Company Secretarial - CSS'),
                   buildTaskListByCategory('Development - DEV'),
-
                 ],
               ),
             ),
