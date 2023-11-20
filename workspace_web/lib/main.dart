@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workspace_web/colors.dart';
 import 'package:workspace_web/pages/dashboardPage.dart';
 import 'package:workspace_web/pages/loginPage.dart';
 import 'package:workspace_web/pages/taskPage.dart';
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.teal,
+        primaryColor: AppColor.appTeal,
       ),
       routes: {
         '/Dashboard': (context) => Dashboard(),

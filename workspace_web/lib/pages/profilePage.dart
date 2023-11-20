@@ -200,7 +200,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                           },
                           style: ElevatedButton.styleFrom(
-                            foregroundColor: AppColor.loginF,
+                            foregroundColor: AppColor.appGrey,
                             backgroundColor: Colors.blueGrey.shade50,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5), // Rounded corners
@@ -234,7 +234,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            foregroundColor: AppColor.loginF,
+                            foregroundColor: AppColor.appGrey,
                             backgroundColor: Colors.blueGrey.shade50,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5), // Rounded corners

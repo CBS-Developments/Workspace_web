@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workspace_web/colors.dart';
 import 'package:workspace_web/pages/profilePage.dart';
 
 import '../componants.dart';
@@ -25,6 +26,7 @@ class _TaskPageState extends State<TaskPage> {
   String userRole = "";
 
   TextEditingController searchController = TextEditingController();
+  TextEditingController searchByNameController = TextEditingController();
   List<MainTask> searchedTasks = [];
 
   @override
@@ -75,9 +77,21 @@ class _TaskPageState extends State<TaskPage> {
 
   Widget buildTaskListByCategory(String category) {
     List<MainTask> filteredTasks = mainTaskList
-        .where(
-            (task) => task.category_name == category || category == 'All Tasks')
+        .where((task) => task.category_name == category || category == 'All Tasks')
         .toList();
+
+    if (searchController.text.isNotEmpty) {
+      filteredTasks = filteredTasks
+          .where((task) =>
+          task.taskId.toLowerCase().contains(searchController.text.toLowerCase()))
+          .toList();
+    } else if (searchByNameController.text.isNotEmpty) {
+      filteredTasks = filteredTasks
+          .where((task) =>
+          task.taskTitle.toLowerCase().contains(searchByNameController.text.toLowerCase()))
+          .toList();
+    }
+
 
     return Row(
       children: [
@@ -122,13 +136,16 @@ class _TaskPageState extends State<TaskPage> {
 
     if (searchController.text.isNotEmpty) {
       filteredTasks = mainTaskList
-          .where((task) => task.taskId
-              .toLowerCase()
-              .contains(searchController.text.toLowerCase()))
+          .where((task) =>
+          task.taskId.toLowerCase().contains(searchController.text.toLowerCase()))
+          .toList();
+    } else if (searchByNameController.text.isNotEmpty) {
+      filteredTasks = mainTaskList
+          .where((task) =>
+          task.taskTitle.toLowerCase().contains(searchByNameController.text.toLowerCase()))
           .toList();
     } else {
-      filteredTasks =
-          List.from(mainTaskList); // Show all tasks when no search query
+      filteredTasks = List.from(mainTaskList); // Show all tasks when no search query
     }
 
     return filteredTasks.isNotEmpty
@@ -140,30 +157,43 @@ class _TaskPageState extends State<TaskPage> {
                   child: ListView.builder(
                     itemCount: filteredTasks.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        margin: EdgeInsets.all(5),
-                        color: Colors.grey.shade200,
-                        child: ListTile(
-                          title: Text(filteredTasks[index].taskTitle),
-                          subtitle: Column(
-                            children: [
-                              Text(filteredTasks[index].taskId),
-                              Text(filteredTasks[index].dueDate)
-                            ],
-                          ),
+                      return Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border(left: BorderSide(width: 3,color: Colors.blueAccent)),
+                              color: AppColor.appGrey
+                            ),
+                            margin: EdgeInsets.all(10),
 
-                          trailing: IconButton(onPressed: () {  }, icon: Icon(Icons.open_in_new_rounded),),
-                          onTap: () {
-                            String mainTaskId = filteredTasks[index].taskId;
-                            getSubTaskListByMainTaskId(mainTaskId);
-                          },
-                          // Add onTap functionality if needed
-                        ),
+                            child: ListTile(
+                              title: Text(filteredTasks[index].taskTitle),
+                              subtitle: Column(
+                                children: [
+                                  Text(filteredTasks[index].taskId),
+                                  Text(filteredTasks[index].dueDate)
+                                ],
+                              ),
+
+
+                              trailing: IconButton(onPressed: () {  }, icon: Icon(Icons.open_in_new_rounded),),
+                              onTap: () {
+                                String mainTaskId = filteredTasks[index].taskId;
+                                getSubTaskListByMainTaskId(mainTaskId);
+                              },
+                              // Add onTap functionality if needed
+                            ),
+                          ),
+                          Divider(
+                            color: AppColor.appBlue,
+                          )
+                        ],
                       );
                     },
                   ),
                 ),
               ),
+              VerticalDivider(),
               Expanded(
                 flex: 1,
                 child: Container(
@@ -223,27 +253,27 @@ class _TaskPageState extends State<TaskPage> {
       child: Scaffold(
         appBar: AppBar(
           elevation: 1,
-          backgroundColor: Colors.teal.shade200,
-          foregroundColor: Colors.black,
-          title: const Text(
+          backgroundColor: Colors.white,
+          foregroundColor: AppColor.appBlue,
+          title:  Text(
             'CBS Workspace',
             style: TextStyle(
-              color: Colors.black,
+              color: AppColor.appBlue,
               fontSize: 20,
             ),
           ),
           actions: [
             Column(
               children: [
-                const Text(
+                 Text(
                   '',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: AppColor.appBlue,
                   ),
                 ),
                 Text(
                   "$firstName $lastName",
-                  style: const TextStyle(color: Colors.black, fontSize: 18.0),
+                  style:  TextStyle(color: AppColor.appBlue, fontSize: 18.0),
                 ),
               ],
             ),
@@ -259,15 +289,23 @@ class _TaskPageState extends State<TaskPage> {
                   },
                 );
               },
-              icon: const Icon(
+              icon:  Icon(
                 Icons.account_circle_sharp,
-                color: Colors.black,
+                color: AppColor.appBlue,
               ),
             ),
           ],
           bottom: TabBar(
-            dividerColor: Colors.teal,
-            labelColor: Colors.white,
+            indicator: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20.0),   // Adjust these values as needed
+                  topRight: Radius.circular(20.0),  // Adjust these values as needed
+                ),
+
+              color: AppColor.appGrey
+            ),
+            labelColor: Colors.black,
+            dividerColor: AppColor.appDarkBlue,
             tabs: [
               Tab(text: 'All Tasks'),
               Tab(text: 'Taxation - TAS'),
@@ -282,21 +320,56 @@ class _TaskPageState extends State<TaskPage> {
         drawer: MyDrawer(),
         body: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: TextField(
-                controller: searchController,
-                decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      setState(() {});
+            Row(
+              children: [
+                Container(
+                  width: 350,
+                  padding:  EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                  child: TextField(
+                    controller: searchByNameController,
+                    onChanged: (String value) {
+                      setState(() {
+                        // Filter the mainTaskList based on the entered value
+                        searchedTasks = mainTaskList
+                            .where((task) => task.taskTitle.toLowerCase().contains(value.toLowerCase()))
+                            .toList();
+                      });
                     },
-                    icon: const Icon(Icons.search),
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.search),
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          searchByNameController.clear();
+                          setState(() {
+                            searchedTasks = List.from(mainTaskList); // Reset to show all tasks
+                          });
+                        },
+                        icon: const Icon(Icons.cancel_rounded),
+                      ),
+                      hintText: 'Search by Name',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                  hintText: 'Search by Task ID',
-                  border: OutlineInputBorder(),
+
                 ),
-              ),
+                Container(
+                  width: 300,
+                  padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 5),
+                  child: TextField(
+                    controller: searchController,
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {});
+                        },
+                        icon: const Icon(Icons.arrow_forward),
+                      ),
+                      hintText: 'Search by Task ID',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+              ],
             ),
             Expanded(
               child: TabBarView(
