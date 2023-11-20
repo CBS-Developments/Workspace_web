@@ -75,23 +75,36 @@ class _TaskPageState extends State<TaskPage> {
     }
   }
 
+  Color _getColorForTaskTypeName(String taskTypeName) {
+    Map<String, Color> colorMap = {
+      'Top Urgent': Colors.red,
+      'Medium': Colors.blue,
+      'Regular': Colors.green,
+      'Low': Colors.yellow,
+    };
+    return colorMap[taskTypeName] ??
+        Colors.grey; // Provide a default color if null
+  }
+
   Widget buildTaskListByCategory(String category) {
     List<MainTask> filteredTasks = mainTaskList
-        .where((task) => task.category_name == category || category == 'All Tasks')
+        .where(
+            (task) => task.category_name == category || category == 'All Tasks')
         .toList();
 
     if (searchController.text.isNotEmpty) {
       filteredTasks = filteredTasks
-          .where((task) =>
-          task.taskId.toLowerCase().contains(searchController.text.toLowerCase()))
+          .where((task) => task.taskId
+              .toLowerCase()
+              .contains(searchController.text.toLowerCase()))
           .toList();
     } else if (searchByNameController.text.isNotEmpty) {
       filteredTasks = filteredTasks
-          .where((task) =>
-          task.taskTitle.toLowerCase().contains(searchByNameController.text.toLowerCase()))
+          .where((task) => task.taskTitle
+              .toLowerCase()
+              .contains(searchByNameController.text.toLowerCase()))
           .toList();
     }
-
 
     return Row(
       children: [
@@ -101,12 +114,151 @@ class _TaskPageState extends State<TaskPage> {
             child: ListView.builder(
               itemCount: filteredTasks.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(filteredTasks[index].taskTitle),
-                  onTap: () {
-                    String mainTaskId = filteredTasks[index].taskId;
-                    getSubTaskListByMainTaskId(mainTaskId);
-                  },
+                return Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        String mainTaskId = filteredTasks[index].taskId;
+                        getSubTaskListByMainTaskId(mainTaskId);
+                        setState(() {
+                          // Untap previously tapped containers
+                          for (var task in filteredTasks) {
+                            if (task != filteredTasks[index]) {
+                              task.isContainerTapped = false;
+                            }
+                          }
+                          // Toggle the tapped state for the current container
+                          filteredTasks[index].isContainerTapped =
+                              !filteredTasks[index].isContainerTapped;
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                              right: BorderSide(
+                                  width: 5,
+                                  color: _getColorForTaskTypeName(
+                                      filteredTasks[index].taskTypeName))),
+                          color: filteredTasks[index].isContainerTapped
+                              ? AppColor
+                                  .appLightBlue // Change this to the desired color when tapped
+                              : Colors.grey.shade200,
+                        ),
+                        margin: EdgeInsets.all(10),
+                        child: ListTile(
+                          title: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              filteredTasks[index].taskTitle,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColor.appBlue),
+                            ),
+                          ),
+                          subtitle: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 2.0, horizontal: 5),
+                                child: Row(
+                                  children: [
+                                    Text('ID: ${filteredTasks[index].taskId}'),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    Icon(Icons.person_pin_circle_rounded),
+                                    Text('${filteredTasks[index].assignTo} '),
+                                    Icon(
+                                      Icons.double_arrow_rounded,
+                                    ),
+                                    Text(
+                                        ' ${filteredTasks[index].taskStatusName}...'),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 2.0, horizontal: 5),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Beneficiary: ${filteredTasks[index].company}',
+                                      style: TextStyle(color: Colors.black87),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 2.0, horizontal: 5),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                        'Create Date: ${filteredTasks[index].taskCreateDate}'),
+                                    Icon(
+                                      Icons.arrow_right,
+                                      color: Colors.black87,
+                                    ),
+                                    Text(
+                                      'Due Date: ${filteredTasks[index].dueDate}',
+                                      style: TextStyle(color: Colors.black87),
+                                    ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        if (filteredTasks[index].taskStatus ==
+                                            '0') {
+                                          // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                          // Handle 'Mark In Progress' action
+                                        } else if (filteredTasks[index]
+                                                .taskStatus ==
+                                            '1') {
+                                          // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                          // Handle 'Mark As Complete' action
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(0.0),
+                                        child: Text(
+                                          filteredTasks[index].taskStatus == '0'
+                                              ? 'Mark In Progress'
+                                              : 'Mark As Complete',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: filteredTasks[index]
+                                                        .taskStatus ==
+                                                    '0'
+                                                ? Colors.blueAccent
+                                                : Colors.green,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          trailing: IconButton(
+                            onPressed: () {
+                              print('open task');
+                            },
+                            icon: Icon(Icons.open_in_new_rounded),
+                            tooltip: 'Open Main Task',
+                            focusColor: AppColor.appBlue,
+                          ),
+
+                          // Add onTap functionality if needed
+                        ),
+                      ),
+                    ),
+                    Divider(
+                      color: AppColor.appBlue,
+                    )
+                  ],
                 );
               },
             ),
@@ -120,8 +272,120 @@ class _TaskPageState extends State<TaskPage> {
             child: ListView.builder(
               itemCount: subTaskList.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(subTaskList[index].taskTitle),
+                return Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topRight:
+                      Radius.circular(50.0), // Adjust these values as needed
+                      bottomRight:
+                      Radius.circular(50.0), // Adjust these values as needed
+                    ),
+
+                    color:  Colors.grey.shade200,
+                  ),
+                  margin: EdgeInsets.all(10),
+                  child: ListTile(
+                    title: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Text(
+                        subTaskList[index].taskTitle,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: AppColor.appBlue),
+                      ),
+                    ),
+                    subtitle: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 2.0, horizontal: 5),
+                          child: Row(
+                            children: [
+                              Text(
+                                  'ID: ${subTaskList[index].taskId}'),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              Icon(Icons.person_pin_circle_rounded),
+                              Text(
+                                  '${subTaskList[index].assignTo} '),
+                              Icon(
+                                Icons.double_arrow_rounded,color: _getColorForTaskTypeName(subTaskList[index].taskTypeName),
+                              ),
+                              Text(
+                                  ' ${subTaskList[index].taskStatusName}...'),
+                            ],
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 2.0, horizontal: 0),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.arrow_right,
+                                color: Colors.black87,
+                              ),
+                              Text(
+                                'Due Date: ${subTaskList[index].dueDate}',
+                                style: TextStyle(
+                                    color: Colors.black87),
+                              ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  if (subTaskList[index]
+                                      .taskStatus ==
+                                      '0') {
+                                    // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                    // Handle 'Mark In Progress' action
+                                  } else if (subTaskList[index]
+                                      .taskStatus ==
+                                      '1') {
+                                    // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                    // Handle 'Mark As Complete' action
+                                  }
+                                },
+                                child: Padding(
+                                  padding:
+                                  const EdgeInsets.all(0.0),
+                                  child: Text(
+                                    subTaskList[index]
+                                        .taskStatus ==
+                                        '0'
+                                        ? 'Mark In Progress'
+                                        : 'Mark As Complete',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: subTaskList[index]
+                                          .taskStatus ==
+                                          '0'
+                                          ? Colors.blueAccent
+                                          : Colors.green,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    trailing: IconButton(
+                      onPressed: () {
+                        print('open task');
+                      },
+                      icon: Icon(Icons.open_in_new_rounded),
+                      tooltip: 'Open Sub Task',
+                      focusColor: AppColor.appBlue,
+                    ),
+
+                    // Add onTap functionality if needed
+                  ),
                 );
               },
             ),
@@ -136,52 +400,178 @@ class _TaskPageState extends State<TaskPage> {
 
     if (searchController.text.isNotEmpty) {
       filteredTasks = mainTaskList
-          .where((task) =>
-          task.taskId.toLowerCase().contains(searchController.text.toLowerCase()))
+          .where((task) => task.taskId
+              .toLowerCase()
+              .contains(searchController.text.toLowerCase()))
           .toList();
     } else if (searchByNameController.text.isNotEmpty) {
       filteredTasks = mainTaskList
-          .where((task) =>
-          task.taskTitle.toLowerCase().contains(searchByNameController.text.toLowerCase()))
+          .where((task) => task.taskTitle
+              .toLowerCase()
+              .contains(searchByNameController.text.toLowerCase()))
           .toList();
     } else {
-      filteredTasks = List.from(mainTaskList); // Show all tasks when no search query
+      filteredTasks =
+          List.from(mainTaskList); // Show all tasks when no search query
     }
 
     return filteredTasks.isNotEmpty
         ? Row(
             children: [
               Expanded(
-                flex: 1,
+                flex: 3,
                 child: Container(
                   child: ListView.builder(
                     itemCount: filteredTasks.length,
                     itemBuilder: (context, index) {
                       return Column(
                         children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border(left: BorderSide(width: 3,color: Colors.blueAccent)),
-                              color: AppColor.appGrey
-                            ),
-                            margin: EdgeInsets.all(10),
-
-                            child: ListTile(
-                              title: Text(filteredTasks[index].taskTitle),
-                              subtitle: Column(
-                                children: [
-                                  Text(filteredTasks[index].taskId),
-                                  Text(filteredTasks[index].dueDate)
-                                ],
+                          GestureDetector(
+                            onTap: () {
+                              String mainTaskId = filteredTasks[index].taskId;
+                              getSubTaskListByMainTaskId(mainTaskId);
+                              setState(() {
+                                // Untap previously tapped containers
+                                for (var task in filteredTasks) {
+                                  if (task != filteredTasks[index]) {
+                                    task.isContainerTapped = false;
+                                  }
+                                }
+                                // Toggle the tapped state for the current container
+                                filteredTasks[index].isContainerTapped =
+                                    !filteredTasks[index].isContainerTapped;
+                              });
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                border: Border(
+                                    right: BorderSide(
+                                        width: 5,
+                                        color: _getColorForTaskTypeName(
+                                            filteredTasks[index]
+                                                .taskTypeName))),
+                                color: filteredTasks[index].isContainerTapped
+                                    ? AppColor
+                                        .appLightBlue // Change this to the desired color when tapped
+                                    : Colors.grey.shade200,
                               ),
+                              margin: EdgeInsets.all(10),
+                              child: ListTile(
+                                title: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Text(
+                                    filteredTasks[index].taskTitle,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColor.appBlue),
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 2.0, horizontal: 5),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                              'ID: ${filteredTasks[index].taskId}'),
+                                          SizedBox(
+                                            width: 20,
+                                          ),
+                                          Icon(Icons.person_pin_circle_rounded),
+                                          Text(
+                                              '${filteredTasks[index].assignTo} '),
+                                          Icon(
+                                            Icons.double_arrow_rounded,
+                                          ),
+                                          Text(
+                                              ' ${filteredTasks[index].taskStatusName}...'),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 2.0, horizontal: 5),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            'Beneficiary: ${filteredTasks[index].company}',
+                                            style: TextStyle(
+                                                color: Colors.black87),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 2.0, horizontal: 5),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                              'Create Date: ${filteredTasks[index].taskCreateDate}'),
+                                          Icon(
+                                            Icons.arrow_right,
+                                            color: Colors.black87,
+                                          ),
+                                          Text(
+                                            'Due Date: ${filteredTasks[index].dueDate}',
+                                            style: TextStyle(
+                                                color: Colors.black87),
+                                          ),
+                                          SizedBox(
+                                            width: 20,
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              if (filteredTasks[index]
+                                                      .taskStatus ==
+                                                  '0') {
+                                                // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                                // Handle 'Mark In Progress' action
+                                              } else if (filteredTasks[index]
+                                                      .taskStatus ==
+                                                  '1') {
+                                                // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                                // Handle 'Mark As Complete' action
+                                              }
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(0.0),
+                                              child: Text(
+                                                filteredTasks[index]
+                                                            .taskStatus ==
+                                                        '0'
+                                                    ? 'Mark In Progress'
+                                                    : 'Mark As Complete',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: filteredTasks[index]
+                                                              .taskStatus ==
+                                                          '0'
+                                                      ? Colors.blueAccent
+                                                      : Colors.green,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
 
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    print('open task');
+                                  },
+                                  icon: Icon(Icons.open_in_new_rounded),
+                                  tooltip: 'Open Main Task',
+                                  focusColor: AppColor.appBlue,
+                                ),
 
-                              trailing: IconButton(onPressed: () {  }, icon: Icon(Icons.open_in_new_rounded),),
-                              onTap: () {
-                                String mainTaskId = filteredTasks[index].taskId;
-                                getSubTaskListByMainTaskId(mainTaskId);
-                              },
-                              // Add onTap functionality if needed
+                                // Add onTap functionality if needed
+                              ),
                             ),
                           ),
                           Divider(
@@ -195,15 +585,127 @@ class _TaskPageState extends State<TaskPage> {
               ),
               VerticalDivider(),
               Expanded(
-                flex: 1,
+                flex: 2,
                 child: Container(
                   padding: const EdgeInsets.all(8.0),
                   color: Colors.white,
                   child: ListView.builder(
                     itemCount: subTaskList.length,
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(subTaskList[index].taskTitle),
+                      return Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topRight:
+                            Radius.circular(50.0), // Adjust these values as needed
+                            bottomRight:
+                            Radius.circular(50.0), // Adjust these values as needed
+                          ),
+
+                          color:  Colors.grey.shade200,
+                        ),
+                        margin: EdgeInsets.all(10),
+                        child: ListTile(
+                          title: Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: Text(
+                              subTaskList[index].taskTitle,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColor.appBlue),
+                            ),
+                          ),
+                          subtitle: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 2.0, horizontal: 5),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                        'ID: ${subTaskList[index].taskId}'),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    Icon(Icons.person_pin_circle_rounded),
+                                    Text(
+                                        '${subTaskList[index].assignTo} '),
+                                    Icon(
+                                      Icons.double_arrow_rounded,color: _getColorForTaskTypeName(subTaskList[index].taskTypeName),
+                                    ),
+                                    Text(
+                                        ' ${subTaskList[index].taskStatusName}...'),
+                                  ],
+                                ),
+                              ),
+
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 2.0, horizontal: 0),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.arrow_right,
+                                      color: Colors.black87,
+                                    ),
+                                    Text(
+                                      'Due Date: ${subTaskList[index].dueDate}',
+                                      style: TextStyle(
+                                          color: Colors.black87),
+                                    ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        if (subTaskList[index]
+                                            .taskStatus ==
+                                            '0') {
+                                          // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                          // Handle 'Mark In Progress' action
+                                        } else if (subTaskList[index]
+                                            .taskStatus ==
+                                            '1') {
+                                          // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                          // Handle 'Mark As Complete' action
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding:
+                                        const EdgeInsets.all(0.0),
+                                        child: Text(
+                                          subTaskList[index]
+                                              .taskStatus ==
+                                              '0'
+                                              ? 'Mark In Progress'
+                                              : 'Mark As Complete',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: subTaskList[index]
+                                                .taskStatus ==
+                                                '0'
+                                                ? Colors.blueAccent
+                                                : Colors.green,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          trailing: IconButton(
+                            onPressed: () {
+                              print('open task');
+                            },
+                            icon: Icon(Icons.open_in_new_rounded),
+                            tooltip: 'Open Sub Task',
+                            focusColor: AppColor.appBlue,
+                          ),
+
+                          // Add onTap functionality if needed
+                        ),
                       );
                     },
                   ),
@@ -211,7 +713,12 @@ class _TaskPageState extends State<TaskPage> {
               ),
             ],
           )
-        : Container(); // Return an empty container if no search results or query
+        : Container(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text("No matches found!!",style: TextStyle(color: Colors.redAccent,fontSize: 16),),
+      ),
+    ); // Return an empty container if no search results or query
   }
 
   Future<void> getSubTaskListByMainTaskId(String mainTaskId) async {
@@ -255,7 +762,7 @@ class _TaskPageState extends State<TaskPage> {
           elevation: 1,
           backgroundColor: Colors.white,
           foregroundColor: AppColor.appBlue,
-          title:  Text(
+          title: Text(
             'CBS Workspace',
             style: TextStyle(
               color: AppColor.appBlue,
@@ -265,7 +772,7 @@ class _TaskPageState extends State<TaskPage> {
           actions: [
             Column(
               children: [
-                 Text(
+                Text(
                   '',
                   style: TextStyle(
                     color: AppColor.appBlue,
@@ -273,7 +780,7 @@ class _TaskPageState extends State<TaskPage> {
                 ),
                 Text(
                   "$firstName $lastName",
-                  style:  TextStyle(color: AppColor.appBlue, fontSize: 18.0),
+                  style: TextStyle(color: AppColor.appBlue, fontSize: 18.0),
                 ),
               ],
             ),
@@ -289,7 +796,7 @@ class _TaskPageState extends State<TaskPage> {
                   },
                 );
               },
-              icon:  Icon(
+              icon: Icon(
                 Icons.account_circle_sharp,
                 color: AppColor.appBlue,
               ),
@@ -298,12 +805,12 @@ class _TaskPageState extends State<TaskPage> {
           bottom: TabBar(
             indicator: BoxDecoration(
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20.0),   // Adjust these values as needed
-                  topRight: Radius.circular(20.0),  // Adjust these values as needed
+                  topLeft:
+                      Radius.circular(20.0), // Adjust these values as needed
+                  topRight:
+                      Radius.circular(20.0), // Adjust these values as needed
                 ),
-
-              color: AppColor.appGrey
-            ),
+                color: AppColor.appGrey),
             labelColor: Colors.black,
             dividerColor: AppColor.appDarkBlue,
             tabs: [
@@ -324,14 +831,16 @@ class _TaskPageState extends State<TaskPage> {
               children: [
                 Container(
                   width: 350,
-                  padding:  EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
                   child: TextField(
                     controller: searchByNameController,
                     onChanged: (String value) {
                       setState(() {
                         // Filter the mainTaskList based on the entered value
                         searchedTasks = mainTaskList
-                            .where((task) => task.taskTitle.toLowerCase().contains(value.toLowerCase()))
+                            .where((task) => task.taskTitle
+                                .toLowerCase()
+                                .contains(value.toLowerCase()))
                             .toList();
                       });
                     },
@@ -341,7 +850,8 @@ class _TaskPageState extends State<TaskPage> {
                         onPressed: () {
                           searchByNameController.clear();
                           setState(() {
-                            searchedTasks = List.from(mainTaskList); // Reset to show all tasks
+                            searchedTasks = List.from(
+                                mainTaskList); // Reset to show all tasks
                           });
                         },
                         icon: const Icon(Icons.cancel_rounded),
@@ -350,11 +860,11 @@ class _TaskPageState extends State<TaskPage> {
                       border: OutlineInputBorder(),
                     ),
                   ),
-
                 ),
                 Container(
                   width: 300,
-                  padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
                   child: TextField(
                     controller: searchController,
                     decoration: InputDecoration(

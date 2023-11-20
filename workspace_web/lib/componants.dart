@@ -240,6 +240,7 @@ class MainTask {
   String documentNumber;
   String category_name;
   String category;
+  bool isContainerTapped;
 
   MainTask({
     required this.taskId,
@@ -277,6 +278,7 @@ class MainTask {
     required this.documentNumber,
     required this.category_name,
     required this.category,
+    this.isContainerTapped = false,
   });
 
   factory MainTask.fromJson(Map<String, dynamic> json) {
@@ -453,3 +455,30 @@ class Task {
         category: json['category']);
   }
 }
+
+//
+// TextButton(
+// onPressed: () {
+// if (filteredTasks[index].taskStatus == '0') {
+// // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+// // Handle 'Mark In Progress' action
+// } else if (filteredTasks[index].taskStatus == '1') {
+// // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+// // Handle 'Mark As Complete' action
+// }
+// },
+// child: Padding(
+// padding: const EdgeInsets.all(8.0),
+// child: Text(
+// filteredTasks[index].taskStatus == '0'
+// ? 'Mark In Progress'
+//     : 'Mark As Complete',
+// style: TextStyle(
+// fontSize: 14,
+// color: filteredTasks[index].taskStatus == '0'
+// ? Colors.blueAccent
+//     : Colors.redAccent,
+// ),
+// ),
+// ),
+// ),
