@@ -6,6 +6,7 @@ import 'package:workspace_web/pages/taskPage.dart';
 import 'package:workspace_web/sizes.dart';
 
 import '../componants.dart';
+import 'createAccountPage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -27,10 +28,10 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           Container(
             width: getPageWidth(context),
-            child: Column(
+            child: const Column(
               children: [
-                const SizedBox(height: 60),
-                const Text(
+                SizedBox(height: 60),
+                Text(
                   'Workspace',
                   style: TextStyle(
                     fontSize: 42,
@@ -38,30 +39,48 @@ class _LoginPageState extends State<LoginPage> {
                     color: Colors.deepPurple,
                   ),
                 ),
-                const SizedBox(height: 15),
-                const Divider(),
+                SizedBox(height: 15),
+                Divider(),
+                SizedBox(height: 40),
               ],
             ),
           ),
-          Container(width: 600,
+          Container(
+            width: 500,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                const Padding(
+                  padding: EdgeInsets.only(bottom:10),
+                  child: Text('Email Address: ',
+                  style: TextStyle(
+                    fontSize:18,
+                  ),),
+                ),
                 TextFormField(
                   controller: emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
+                  decoration: const InputDecoration(
+                    //labelText: 'Email',
                     border: OutlineInputBorder(),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 30),
+
+                const Padding(
+                  padding: EdgeInsets.only(bottom:10),
+                  child: Text('Password: ',
+                    style: TextStyle(
+                      fontSize:18,
+                    ),),
+                ),
+
                 TextFormField(
                   controller: passwordController,
                   obscureText: !_showPassword,
                   decoration: InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
+                    //labelText: 'Password',
+                    border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _showPassword ? Icons.visibility : Icons.visibility_off,
@@ -74,12 +93,76 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 15),
+
+                Padding(
+                  padding: const EdgeInsets.only(left:2),
+                  child: Row(
+                    //mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Forgot your password ? ",
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      TextButton(
+                          onPressed: () {   },
+                          child: Text(
+                            'Reset It',
+                            style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold, color: Colors.teal),
+                          ))
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    _login();
-                  },
-                  child: const Text('Login'),
+
+                Container(
+                  height: 40,
+                  width: 300,
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      login(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.teal,
+                      backgroundColor: Colors.teal,
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.circular(5), // Rounded corners
+                      ),
+                    ),
+                    child: const Text(
+                      'Sign In',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: 18
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "New to Workspace ?",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const CreateAccountPage()),
+                          );
+                        },
+                        child: Text(
+                          'Get Started',
+                          style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold, color: Colors.teal,))),
+                  ],
                 ),
               ],
             ),
