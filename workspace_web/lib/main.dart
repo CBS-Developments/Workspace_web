@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workspace_web/colors.dart';
 import 'package:workspace_web/pages/dashboardPage.dart';
 import 'package:workspace_web/pages/loginPage.dart';
+import 'package:workspace_web/pages/openMainTask.dart';
 import 'package:workspace_web/pages/taskPage.dart';
 
 
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/Dashboard': (context) => Dashboard(),
         '/Task': (context) => TaskPage(),
-        // '/Mail': (context) => MailScreen(),
+        '/openMainTask': (context) => OpenMainTaskPage(),
         // '/Calendar': (context) => CalendarScreen(),
         // '/Special Notice': (context) => SpecialNoticeScreen(),
         // '/Chat': (context) => ChatScreen(),

@@ -253,6 +253,13 @@ class _TaskPageState extends State<TaskPage> {
 
                             trailing: IconButton(
                               onPressed: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  '/openMainTask',
+                                  arguments: {
+                                    'taskDetails': filteredTasks[index], // Pass the task details
+                                  },
+                                );
                                 print('open task');
                               },
                               icon: Icon(Icons.open_in_new_rounded),
@@ -600,6 +607,13 @@ class _TaskPageState extends State<TaskPage> {
 
                                 trailing: IconButton(
                                   onPressed: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/openMainTask',
+                                      arguments: {
+                                        'taskDetails': filteredTasks[index], // Pass the task details
+                                      },
+                                    );
                                     print('open task');
                                   },
                                   icon: Icon(Icons.open_in_new_rounded),
