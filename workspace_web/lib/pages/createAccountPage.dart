@@ -142,7 +142,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     const Text(
                       'platform',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 16,
                         color: Colors.black,
                       ),
                     ),
