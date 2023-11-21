@@ -24,6 +24,8 @@ class _TaskPageState extends State<TaskPage> {
   String lastName = "";
   String phone = "";
   String userRole = "";
+  String mainTaskName =
+      'Please select a Main Task'; // Define this variable in your class scope
 
   TextEditingController searchController = TextEditingController();
   TextEditingController searchByNameController = TextEditingController();
@@ -106,293 +108,324 @@ class _TaskPageState extends State<TaskPage> {
           .toList();
     }
 
-    return Row(
-      children: [
-        Expanded(
-          flex: 1,
-          child: Container(
-            child: ListView.builder(
-              itemCount: filteredTasks.length,
-              itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        String mainTaskId = filteredTasks[index].taskId;
-                        getSubTaskListByMainTaskId(mainTaskId);
-                        setState(() {
-                          // Untap previously tapped containers
-                          for (var task in filteredTasks) {
-                            if (task != filteredTasks[index]) {
-                              task.isContainerTapped = false;
+    if (filteredTasks.isNotEmpty) {
+      return Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: Container(
+              child: ListView.builder(
+                itemCount: filteredTasks.length,
+                itemBuilder: (context, index) {
+                  return Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          String mainTaskId = filteredTasks[index].taskId;
+                          getSubTaskListByMainTaskId(mainTaskId);
+                          setState(() {
+                            // Untap previously tapped containers
+                            for (var task in filteredTasks) {
+                              if (task != filteredTasks[index]) {
+                                task.isContainerTapped = false;
+                              }
                             }
-                          }
-                          // Toggle the tapped state for the current container
-                          filteredTasks[index].isContainerTapped =
-                              !filteredTasks[index].isContainerTapped;
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border(
-                              right: BorderSide(
-                                  width: 5,
-                                  color: _getColorForTaskTypeName(
-                                      filteredTasks[index].taskTypeName))),
-                          color: filteredTasks[index].isContainerTapped
-                              ? AppColor
-                                  .appLightBlue // Change this to the desired color when tapped
-                              : Colors.grey.shade200,
-                        ),
-                        margin: EdgeInsets.all(10),
-                        child: ListTile(
-                          title: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Text(
-                              filteredTasks[index].taskTitle,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColor.appBlue),
-                            ),
+                            // Toggle the tapped state for the current container
+                            filteredTasks[index].isContainerTapped =
+                                !filteredTasks[index].isContainerTapped;
+                          });
+                          setState(() {
+                            mainTaskName =
+                                'Sub Tasks of : ${filteredTasks[index].taskTitle}'; // Set the tapped main task's name
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                                right: BorderSide(
+                                    width: 5,
+                                    color: _getColorForTaskTypeName(
+                                        filteredTasks[index].taskTypeName))),
+                            color: filteredTasks[index].isContainerTapped
+                                ? AppColor
+                                    .appLightBlue // Change this to the desired color when tapped
+                                : Colors.grey.shade200,
                           ),
-                          subtitle: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 2.0, horizontal: 5),
-                                child: Row(
-                                  children: [
-                                    Text('ID: ${filteredTasks[index].taskId}'),
-                                    SizedBox(
-                                      width: 20,
-                                    ),
-                                    Icon(Icons.person_pin_circle_rounded),
-                                    Text('${filteredTasks[index].assignTo} '),
-                                    Icon(
-                                      Icons.double_arrow_rounded,
-                                    ),
-                                    Text(
-                                        ' ${filteredTasks[index].taskStatusName}...'),
-                                  ],
-                                ),
+                          margin: EdgeInsets.all(10),
+                          child: ListTile(
+                            title: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Text(
+                                filteredTasks[index].taskTitle,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColor.appBlue),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 2.0, horizontal: 5),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      'Beneficiary: ${filteredTasks[index].company}',
-                                      style: TextStyle(color: Colors.black87),
-                                    ),
-                                  ],
+                            ),
+                            subtitle: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 2.0, horizontal: 5),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                          'ID: ${filteredTasks[index].taskId}'),
+                                      SizedBox(
+                                        width: 20,
+                                      ),
+                                      Icon(Icons.person_pin_circle_rounded),
+                                      Text('${filteredTasks[index].assignTo} '),
+                                      Icon(
+                                        Icons.double_arrow_rounded,
+                                      ),
+                                      Text(
+                                          ' ${filteredTasks[index].taskStatusName}...'),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 2.0, horizontal: 5),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                        'Create Date: ${filteredTasks[index].taskCreateDate}'),
-                                    Icon(
-                                      Icons.arrow_right,
-                                      color: Colors.black87,
-                                    ),
-                                    Text(
-                                      'Due Date: ${filteredTasks[index].dueDate}',
-                                      style: TextStyle(color: Colors.black87),
-                                    ),
-                                    SizedBox(
-                                      width: 20,
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        if (filteredTasks[index].taskStatus ==
-                                            '0') {
-                                          // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
-                                          // Handle 'Mark In Progress' action
-                                        } else if (filteredTasks[index]
-                                                .taskStatus ==
-                                            '1') {
-                                          // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
-                                          // Handle 'Mark As Complete' action
-                                        }
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(0.0),
-                                        child: Text(
-                                          filteredTasks[index].taskStatus == '0'
-                                              ? 'Mark In Progress'
-                                              : 'Mark As Complete',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: filteredTasks[index]
-                                                        .taskStatus ==
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 2.0, horizontal: 5),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'Beneficiary: ${filteredTasks[index].company}',
+                                        style: TextStyle(color: Colors.black87),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 2.0, horizontal: 5),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                          'Create Date: ${filteredTasks[index].taskCreateDate}'),
+                                      Icon(
+                                        Icons.arrow_right,
+                                        color: Colors.black87,
+                                      ),
+                                      Text(
+                                        'Due Date: ${filteredTasks[index].dueDate}',
+                                        style: TextStyle(color: Colors.black87),
+                                      ),
+                                      SizedBox(
+                                        width: 20,
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          if (filteredTasks[index].taskStatus ==
+                                              '0') {
+                                            // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                            // Handle 'Mark In Progress' action
+                                          } else if (filteredTasks[index]
+                                                  .taskStatus ==
+                                              '1') {
+                                            // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                            // Handle 'Mark As Complete' action
+                                          }
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(0.0),
+                                          child: Text(
+                                            filteredTasks[index].taskStatus ==
                                                     '0'
-                                                ? Colors.blueAccent
-                                                : Colors.green,
+                                                ? 'Mark In Progress'
+                                                : 'Mark As Complete',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: filteredTasks[index]
+                                                          .taskStatus ==
+                                                      '0'
+                                                  ? Colors.blueAccent
+                                                  : Colors.green,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          trailing: IconButton(
-                            onPressed: () {
-                              print('open task');
-                            },
-                            icon: Icon(Icons.open_in_new_rounded),
-                            tooltip: 'Open Main Task',
-                            focusColor: AppColor.appBlue,
-                          ),
-
-                          // Add onTap functionality if needed
-                        ),
-                      ),
-                    ),
-                    Divider(
-                      color: AppColor.appBlue,
-                    )
-                  ],
-                );
-              },
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 1,
-          child: Container(
-            padding: const EdgeInsets.all(8.0),
-            color: Colors.white,
-            child: ListView.builder(
-              itemCount: subTaskList.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topRight:
-                      Radius.circular(50.0), // Adjust these values as needed
-                      bottomRight:
-                      Radius.circular(50.0), // Adjust these values as needed
-                    ),
-
-                    color:  Colors.grey.shade200,
-                  ),
-                  margin: EdgeInsets.all(10),
-                  child: ListTile(
-                    title: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Text(
-                        subTaskList[index].taskTitle,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: AppColor.appBlue),
-                      ),
-                    ),
-                    subtitle: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 2.0, horizontal: 5),
-                          child: Row(
-                            children: [
-                              Text(
-                                  'ID: ${subTaskList[index].taskId}'),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              Icon(Icons.person_pin_circle_rounded),
-                              Text(
-                                  '${subTaskList[index].assignTo} '),
-                              Icon(
-                                Icons.double_arrow_rounded,color: _getColorForTaskTypeName(subTaskList[index].taskTypeName),
-                              ),
-                              Text(
-                                  ' ${subTaskList[index].taskStatusName}...'),
-                            ],
-                          ),
-                        ),
-
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 2.0, horizontal: 0),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.arrow_right,
-                                color: Colors.black87,
-                              ),
-                              Text(
-                                'Due Date: ${subTaskList[index].dueDate}',
-                                style: TextStyle(
-                                    color: Colors.black87),
-                              ),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  if (subTaskList[index]
-                                      .taskStatus ==
-                                      '0') {
-                                    // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
-                                    // Handle 'Mark In Progress' action
-                                  } else if (subTaskList[index]
-                                      .taskStatus ==
-                                      '1') {
-                                    // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
-                                    // Handle 'Mark As Complete' action
-                                  }
-                                },
-                                child: Padding(
-                                  padding:
-                                  const EdgeInsets.all(0.0),
-                                  child: Text(
-                                    subTaskList[index]
-                                        .taskStatus ==
-                                        '0'
-                                        ? 'Mark In Progress'
-                                        : 'Mark As Complete',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: subTaskList[index]
-                                          .taskStatus ==
-                                          '0'
-                                          ? Colors.blueAccent
-                                          : Colors.green,
-                                    ),
+                                    ],
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+
+                            trailing: IconButton(
+                              onPressed: () {
+                                print('open task');
+                              },
+                              icon: Icon(Icons.open_in_new_rounded),
+                              tooltip: 'Open Main Task',
+                              focusColor: AppColor.appBlue,
+                            ),
+
+                            // Add onTap functionality if needed
                           ),
                         ),
-                      ],
-                    ),
-
-                    trailing: IconButton(
-                      onPressed: () {
-                        print('open task');
-                      },
-                      icon: Icon(Icons.open_in_new_rounded),
-                      tooltip: 'Open Sub Task',
-                      focusColor: AppColor.appBlue,
-                    ),
-
-                    // Add onTap functionality if needed
-                  ),
-                );
-              },
+                      ),
+                      Divider(
+                        color: AppColor.appBlue,
+                      )
+                    ],
+                  );
+                },
+              ),
             ),
           ),
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        '$mainTaskName',
+                        style: TextStyle(
+                            color: AppColor.appDarkBlue,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(8.0),
+                    color: Colors.white,
+                    child: ListView.builder(
+                      itemCount: subTaskList.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(
+                                  50.0), // Adjust these values as needed
+                              bottomRight: Radius.circular(
+                                  50.0), // Adjust these values as needed
+                            ),
+                            color: Colors.grey.shade200,
+                          ),
+                          margin: EdgeInsets.all(10),
+                          child: ListTile(
+                            title: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Text(
+                                subTaskList[index].taskTitle,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColor.appBlue),
+                              ),
+                            ),
+                            subtitle: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 2.0, horizontal: 5),
+                                  child: Row(
+                                    children: [
+                                      Text('ID: ${subTaskList[index].taskId}'),
+                                      SizedBox(
+                                        width: 20,
+                                      ),
+                                      Icon(Icons.person_pin_circle_rounded),
+                                      Text('${subTaskList[index].assignTo} '),
+                                      Icon(
+                                        Icons.double_arrow_rounded,
+                                        color: _getColorForTaskTypeName(
+                                            subTaskList[index].taskTypeName),
+                                      ),
+                                      Text(
+                                          ' ${subTaskList[index].taskStatusName}...'),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 2.0, horizontal: 0),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.arrow_right,
+                                        color: Colors.black87,
+                                      ),
+                                      Text(
+                                        'Due Date: ${subTaskList[index].dueDate}',
+                                        style: TextStyle(color: Colors.black87),
+                                      ),
+                                      SizedBox(
+                                        width: 20,
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          if (subTaskList[index].taskStatus ==
+                                              '0') {
+                                            // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                            // Handle 'Mark In Progress' action
+                                          } else if (subTaskList[index]
+                                                  .taskStatus ==
+                                              '1') {
+                                            // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                            // Handle 'Mark As Complete' action
+                                          }
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(0.0),
+                                          child: Text(
+                                            subTaskList[index].taskStatus == '0'
+                                                ? 'Mark In Progress'
+                                                : 'Mark As Complete',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: subTaskList[index]
+                                                          .taskStatus ==
+                                                      '0'
+                                                  ? Colors.blueAccent
+                                                  : Colors.green,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            trailing: IconButton(
+                              onPressed: () {
+                                print('open task');
+                              },
+                              icon: Icon(Icons.open_in_new_rounded),
+                              tooltip: 'Open Sub Task',
+                              focusColor: AppColor.appBlue,
+                            ),
+
+                            // Add onTap functionality if needed
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    } else {
+      return Container(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            "No matches found!!",
+            style: TextStyle(color: Colors.redAccent, fontSize: 16),
+          ),
         ),
-      ],
-    );
+      );
+    }
   }
 
   Widget buildAllTasksList() {
@@ -440,6 +473,10 @@ class _TaskPageState extends State<TaskPage> {
                                 // Toggle the tapped state for the current container
                                 filteredTasks[index].isContainerTapped =
                                     !filteredTasks[index].isContainerTapped;
+                              });
+                              setState(() {
+                                mainTaskName =
+                                    'Sub Tasks of : ${filteredTasks[index].taskTitle}'; // Set the tapped main task's name
                               });
                             },
                             child: Container(
@@ -586,139 +623,162 @@ class _TaskPageState extends State<TaskPage> {
               VerticalDivider(),
               Expanded(
                 flex: 2,
-                child: Container(
-                  padding: const EdgeInsets.all(8.0),
-                  color: Colors.white,
-                  child: ListView.builder(
-                    itemCount: subTaskList.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topRight:
-                            Radius.circular(50.0), // Adjust these values as needed
-                            bottomRight:
-                            Radius.circular(50.0), // Adjust these values as needed
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Text(
+                            '$mainTaskName',
+                            style: TextStyle(
+                                color: AppColor.appDarkBlue,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
                           ),
-
-                          color:  Colors.grey.shade200,
-                        ),
-                        margin: EdgeInsets.all(10),
-                        child: ListTile(
-                          title: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Text(
-                              subTaskList[index].taskTitle,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColor.appBlue),
-                            ),
-                          ),
-                          subtitle: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 2.0, horizontal: 5),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                        'ID: ${subTaskList[index].taskId}'),
-                                    SizedBox(
-                                      width: 20,
-                                    ),
-                                    Icon(Icons.person_pin_circle_rounded),
-                                    Text(
-                                        '${subTaskList[index].assignTo} '),
-                                    Icon(
-                                      Icons.double_arrow_rounded,color: _getColorForTaskTypeName(subTaskList[index].taskTypeName),
-                                    ),
-                                    Text(
-                                        ' ${subTaskList[index].taskStatusName}...'),
-                                  ],
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        color: Colors.white,
+                        child: ListView.builder(
+                          itemCount: subTaskList.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(
+                                      50.0), // Adjust these values as needed
+                                  bottomRight: Radius.circular(
+                                      50.0), // Adjust these values as needed
                                 ),
+                                color: Colors.grey.shade200,
                               ),
-
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 2.0, horizontal: 0),
-                                child: Row(
+                              margin: EdgeInsets.all(10),
+                              child: ListTile(
+                                title: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Text(
+                                    subTaskList[index].taskTitle,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColor.appBlue),
+                                  ),
+                                ),
+                                subtitle: Column(
                                   children: [
-                                    Icon(
-                                      Icons.arrow_right,
-                                      color: Colors.black87,
-                                    ),
-                                    Text(
-                                      'Due Date: ${subTaskList[index].dueDate}',
-                                      style: TextStyle(
-                                          color: Colors.black87),
-                                    ),
-                                    SizedBox(
-                                      width: 20,
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        if (subTaskList[index]
-                                            .taskStatus ==
-                                            '0') {
-                                          // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
-                                          // Handle 'Mark In Progress' action
-                                        } else if (subTaskList[index]
-                                            .taskStatus ==
-                                            '1') {
-                                          // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
-                                          // Handle 'Mark As Complete' action
-                                        }
-                                      },
-                                      child: Padding(
-                                        padding:
-                                        const EdgeInsets.all(0.0),
-                                        child: Text(
-                                          subTaskList[index]
-                                              .taskStatus ==
-                                              '0'
-                                              ? 'Mark In Progress'
-                                              : 'Mark As Complete',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: subTaskList[index]
-                                                .taskStatus ==
-                                                '0'
-                                                ? Colors.blueAccent
-                                                : Colors.green,
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 2.0, horizontal: 5),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                              'ID: ${subTaskList[index].taskId}'),
+                                          SizedBox(
+                                            width: 20,
                                           ),
-                                        ),
+                                          Icon(Icons.person_pin_circle_rounded),
+                                          Text(
+                                              '${subTaskList[index].assignTo} '),
+                                          Icon(
+                                            Icons.double_arrow_rounded,
+                                            color: _getColorForTaskTypeName(
+                                                subTaskList[index]
+                                                    .taskTypeName),
+                                          ),
+                                          Text(
+                                              ' ${subTaskList[index].taskStatusName}...'),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 2.0, horizontal: 0),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.arrow_right,
+                                            color: Colors.black87,
+                                          ),
+                                          Text(
+                                            'Due Date: ${subTaskList[index].dueDate}',
+                                            style: TextStyle(
+                                                color: Colors.black87),
+                                          ),
+                                          SizedBox(
+                                            width: 20,
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              if (subTaskList[index]
+                                                      .taskStatus ==
+                                                  '0') {
+                                                // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                                // Handle 'Mark In Progress' action
+                                              } else if (subTaskList[index]
+                                                      .taskStatus ==
+                                                  '1') {
+                                                // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                                // Handle 'Mark As Complete' action
+                                              }
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(0.0),
+                                              child: Text(
+                                                subTaskList[index].taskStatus ==
+                                                        '0'
+                                                    ? 'Mark In Progress'
+                                                    : 'Mark As Complete',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: subTaskList[index]
+                                                              .taskStatus ==
+                                                          '0'
+                                                      ? Colors.blueAccent
+                                                      : Colors.green,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
                                 ),
+
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    print('open task');
+                                  },
+                                  icon: Icon(Icons.open_in_new_rounded),
+                                  tooltip: 'Open Sub Task',
+                                  focusColor: AppColor.appBlue,
+                                ),
+
+                                // Add onTap functionality if needed
                               ),
-                            ],
-                          ),
-
-                          trailing: IconButton(
-                            onPressed: () {
-                              print('open task');
-                            },
-                            icon: Icon(Icons.open_in_new_rounded),
-                            tooltip: 'Open Sub Task',
-                            focusColor: AppColor.appBlue,
-                          ),
-
-                          // Add onTap functionality if needed
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           )
         : Container(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text("No matches found!!",style: TextStyle(color: Colors.redAccent,fontSize: 16),),
-      ),
-    ); // Return an empty container if no search results or query
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "No matches found!!",
+                style: TextStyle(color: Colors.redAccent, fontSize: 16),
+              ),
+            ),
+          ); // Return an empty container if no search results or query
   }
 
   Future<void> getSubTaskListByMainTaskId(String mainTaskId) async {
@@ -829,56 +889,124 @@ class _TaskPageState extends State<TaskPage> {
           children: [
             Row(
               children: [
-                Container(
-                  width: 350,
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                  child: TextField(
-                    controller: searchByNameController,
-                    onChanged: (String value) {
-                      setState(() {
-                        // Filter the mainTaskList based on the entered value
-                        searchedTasks = mainTaskList
-                            .where((task) => task.taskTitle
-                                .toLowerCase()
-                                .contains(value.toLowerCase()))
-                            .toList();
-                      });
-                    },
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.search),
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          searchByNameController.clear();
-                          setState(() {
-                            searchedTasks = List.from(
-                                mainTaskList); // Reset to show all tasks
-                          });
-                        },
-                        icon: const Icon(Icons.cancel_rounded),
+                Expanded(
+                  flex: 6,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: searchByNameController,
+                      onChanged: (String value) {
+                        setState(() {
+                          // Filter the mainTaskList based on the entered value
+                          searchedTasks = mainTaskList
+                              .where((task) => task.taskTitle
+                                  .toLowerCase()
+                                  .contains(value.toLowerCase()))
+                              .toList();
+                        });
+                      },
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.search),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            searchByNameController.clear();
+                            setState(() {
+                              searchedTasks = List.from(
+                                  mainTaskList); // Reset to show all tasks
+                            });
+                          },
+                          icon: const Icon(Icons.cancel_rounded),
+                        ),
+                        hintText: 'Search by Name',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide:
+                              BorderSide(color: AppColor.appDarkBlue, width: 3),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              color: AppColor
+                                  .appDarkBlue), // Change focus border color
+                        ),
+                        // Change the color of icons in normal and focused state
                       ),
-                      hintText: 'Search by Name',
-                      border: OutlineInputBorder(),
                     ),
                   ),
                 ),
-                Container(
-                  width: 300,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                  child: TextField(
-                    controller: searchController,
-                    decoration: InputDecoration(
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {});
-                        },
-                        icon: const Icon(Icons.arrow_forward),
+                Expanded(
+                  flex: 5,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: searchController,
+                      decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {});
+                          },
+                          icon: const Icon(Icons.arrow_forward),
+                        ),
+                        hintText: 'Search by Task ID',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide:
+                              BorderSide(color: AppColor.appDarkBlue, width: 5),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                              color: AppColor
+                                  .appDarkBlue), // Change focus border color
+                        ),
                       ),
-                      hintText: 'Search by Task ID',
-                      border: OutlineInputBorder(),
                     ),
                   ),
                 ),
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: Text('Create Main Task'),
+                      style: ElevatedButton.styleFrom(
+                        primary: AppColor
+                            .appDarkBlue, // Change this to the desired color
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(flex: 10,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      width: 170,
+                      height: 40,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+
+                          Text('Completed Tasks',style: TextStyle(
+                            color: Colors.white,fontSize: 16
+                          ),),
+
+                          Icon(Icons.arrow_right_rounded,color: Colors.white,),
+                        ],
+                      ),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(
+                                50.0), // Adjust these values as needed
+                            bottomLeft: Radius.circular(
+                                50.0), // Adjust these values as needed
+                          ),
+                        color: Colors.green.shade600
+                      ),
+                    )
+                  ],
+                ))
               ],
             ),
             Expanded(
