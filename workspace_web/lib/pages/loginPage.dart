@@ -121,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: ElevatedButton(
                     onPressed: () {
-                      login(context);
+                      _login();
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.teal,
