@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/Dashboard': (context) => Dashboard(),
         '/Task': (context) => TaskPage(),
-        '/openMainTask': (context) => OpenMainTaskPage(),
+        // '/openMainTask': (context) => OpenMainTaskPage(taskDetails: null,),
         // '/Calendar': (context) => CalendarScreen(),
         // '/Special Notice': (context) => SpecialNoticeScreen(),
         // '/Chat': (context) => ChatScreen(),

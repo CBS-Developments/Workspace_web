@@ -8,6 +8,7 @@ import 'package:workspace_web/colors.dart';
 import 'package:workspace_web/pages/profilePage.dart';
 
 import '../componants.dart';
+import 'openMainTask.dart';
 
 class TaskPage extends StatefulWidget {
   const TaskPage({Key? key}) : super(key: key);
@@ -239,7 +240,7 @@ class _TaskPageState extends State<TaskPage> {
                                               color: filteredTasks[index]
                                                           .taskStatus ==
                                                       '0'
-                                                  ? Colors.blueAccent
+                                                  ? Colors.deepPurple.shade600
                                                   : Colors.green,
                                             ),
                                           ),
@@ -253,13 +254,13 @@ class _TaskPageState extends State<TaskPage> {
 
                             trailing: IconButton(
                               onPressed: () {
-                                Navigator.pushNamed(
+                                Navigator.push(
                                   context,
-                                  '/openMainTask',
-                                  arguments: {
-                                    'taskDetails': filteredTasks[index], // Pass the task details
-                                  },
+                                  MaterialPageRoute(
+                                    builder: (context) => OpenMainTaskPage(taskDetails: filteredTasks[index]), // Pass the task details
+                                  ),
                                 );
+
                                 print('open task');
                               },
                               icon: Icon(Icons.open_in_new_rounded),
@@ -335,7 +336,7 @@ class _TaskPageState extends State<TaskPage> {
                                     children: [
                                       Text('ID: ${subTaskList[index].taskId}'),
                                       SizedBox(
-                                        width: 20,
+                                        width: 10,
                                       ),
                                       Icon(Icons.person_pin_circle_rounded),
                                       Text('${subTaskList[index].assignTo} '),
@@ -593,7 +594,7 @@ class _TaskPageState extends State<TaskPage> {
                                                   color: filteredTasks[index]
                                                               .taskStatus ==
                                                           '0'
-                                                      ? Colors.blueAccent
+                                                      ? Colors.deepPurple.shade600
                                                       : Colors.green,
                                                 ),
                                               ),
@@ -607,12 +608,11 @@ class _TaskPageState extends State<TaskPage> {
 
                                 trailing: IconButton(
                                   onPressed: () {
-                                    Navigator.pushNamed(
+                                    Navigator.push(
                                       context,
-                                      '/openMainTask',
-                                      arguments: {
-                                        'taskDetails': filteredTasks[index], // Pass the task details
-                                      },
+                                      MaterialPageRoute(
+                                        builder: (context) => OpenMainTaskPage(taskDetails: filteredTasks[index]), // Pass the task details
+                                      ),
                                     );
                                     print('open task');
                                   },
@@ -691,7 +691,7 @@ class _TaskPageState extends State<TaskPage> {
                                           Text(
                                               'ID: ${subTaskList[index].taskId}'),
                                           SizedBox(
-                                            width: 20,
+                                            width: 10,
                                           ),
                                           Icon(Icons.person_pin_circle_rounded),
                                           Text(
