@@ -112,12 +112,24 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
         elevation: 1,
         backgroundColor: Colors.white,
         foregroundColor: AppColor.appBlue,
-        title: Text(
-          'Open Main Task',
-          style: TextStyle(
-            color: AppColor.appBlue,
-            fontSize: 20,
-          ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Main Task >',
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 11,
+              ),
+            ),
+            Text(
+              '${widget.taskDetails.taskTitle}',
+              style: TextStyle(
+                color: AppColor.appDarkBlue,
+                fontSize: 20,
+              ),
+            ),
+          ],
         ),
         leading: IconButton(
           onPressed: () {
@@ -134,7 +146,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
           Expanded(
             flex: 1,
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Column(
                 children: [
                   Container(
@@ -142,32 +154,32 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 0.0, horizontal: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                '${widget.taskDetails.taskTitle}',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Text(
+                                '${widget.taskDetails.task_description}',
+                                style:
+                                    TextStyle(fontSize: 16, color: Colors.black87),
                               ),
-                              Row(
+
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Row(
                                 children: [
                                   Container(
                                       decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius:
-                                              BorderRadius.circular(15),
+                                          BorderRadius.circular(15),
                                           border: Border.all(
                                               width: 1,
                                               color: AppColor.appDarkBlue)),
                                       margin:
-                                          EdgeInsets.symmetric(horizontal: 5),
+                                      EdgeInsets.symmetric(horizontal: 5),
                                       child: IconButton(
                                           tooltip: 'Edit Main Task',
                                           onPressed: () {},
@@ -193,18 +205,10 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                   )
                                 ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Text(
-                            '${widget.taskDetails.task_description}',
-                            style:
-                                TextStyle(fontSize: 16, color: Colors.black87),
-                          ),
-                        ),
-                        SizedBox(height: 10),
+                        SizedBox(height: 5),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Text('Task ID: ${widget.taskDetails.taskId}'),
@@ -743,6 +747,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                     children: [
                       Expanded(
                         child: TextField(
+                          keyboardType: TextInputType.none,
                           controller: commentTextController,
                           maxLines: 2, // Set the maximum lines to 2
                           decoration: InputDecoration(

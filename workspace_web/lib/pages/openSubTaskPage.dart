@@ -18,6 +18,8 @@ class OpenSubTask extends StatefulWidget {
 class _OpenSubTaskState extends State<OpenSubTask> {
   List<Task> subTaskList = [];
   List<Task> filteredSubTaskList = [];
+  TextEditingController commentTextController = TextEditingController();
+  List<comment> commentsList = [];
 
   Color _getColorForTaskTypeName(String taskTypeName) {
     Map<String, Color> colorMap = {
@@ -34,8 +36,44 @@ class _OpenSubTaskState extends State<OpenSubTask> {
   void initState() {
     super.initState();
     getSubTaskListByMainTaskId(widget.mainTaskDetails.taskId);
-    // getCommentList(widget.taskDetails.taskId);
+    getCommentList(widget.subTaskDetails.taskId);
   }
+
+
+  Future<void> getCommentList(String taskId) async {
+    commentsList
+        .clear(); // Assuming that `commentsList` is a List<Comment> in your class
+
+    var data = {
+      "task_id": taskId,
+    };
+
+    const url = "http://dev.workspace.cbs.lk/commentListById.php";
+    http.Response response = await http.post(
+      Uri.parse(url),
+      body: data,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      encoding: Encoding.getByName("utf-8"),
+    );
+
+    if (response.statusCode == 200) {
+      final responseJson = json.decode(response.body);
+      setState(() {
+        for (Map<String, dynamic> details
+        in responseJson.cast<Map<String, dynamic>>()) {
+          commentsList.add(comment
+              .fromJson(details)); // Assuming Comment.fromJson method exists
+        }
+      });
+    } else {
+      throw Exception(
+          'Failed to load data from the API. Status Code: ${response.statusCode}');
+    }
+  }
+
 
   Future<void> getSubTaskListByMainTaskId(String mainTaskId) async {
     subTaskList.clear();
@@ -82,12 +120,24 @@ class _OpenSubTaskState extends State<OpenSubTask> {
         elevation: 1,
         backgroundColor: Colors.white,
         foregroundColor: AppColor.appBlue,
-        title: Text(
-          'Open Sub Task',
-          style: TextStyle(
-            color: AppColor.appBlue,
-            fontSize: 20,
-          ),
+        title:  Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Main Task > Sub task',
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 11,
+              ),
+            ),
+            Text(
+              '${widget.mainTaskDetails.taskTitle} > ${widget.subTaskDetails.taskTitle}',
+              style: TextStyle(
+                color: AppColor.appDarkBlue,
+                fontSize: 20,
+              ),
+            ),
+          ],
         ),
         // leading: IconButton(
         //   tooltip: 'Back to Main Task',
@@ -119,27 +169,6 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                 children: [
 
   /// main task details
-                  Container(
-                    width: double.infinity,
-                    height: 50,
-                    color: Colors.grey.shade300,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0,),
-                          child: Text('Main Task: ${widget.mainTaskDetails.taskTitle}',style: TextStyle(fontSize: 18),),
-                        ),
-                        SizedBox(height: 2,),
-
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0,),
-                          child: Text('Main Task ID: ${widget.mainTaskDetails.taskId}',style: TextStyle(fontSize: 16,color: Colors.black87),),
-                        ),
-                      ],
-                    ),
-                  ),
 
   /// sub task detail start
                   Container(
@@ -157,9 +186,9 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                '${widget.subTaskDetails.taskTitle}',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
+                                '${widget.subTaskDetails.taskDescription}',
+                                style:
+                                TextStyle(fontSize: 16, color: Colors.black87),
                               ),
                               Row(
                                 children: [
@@ -201,18 +230,10 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                          child: Text(
-                            '${widget.subTaskDetails.taskDescription}',
-                            style:
-                            TextStyle(fontSize: 16, color: Colors.black87),
-                          ),
-                        ),
-                        SizedBox(height: 10),
+
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text('Task ID: ${widget.subTaskDetails.taskId}'),
+                          child: Text('Sub Task ID: ${widget.subTaskDetails.taskId}'),
                         ),
 
                         Container(
@@ -575,10 +596,153 @@ class _OpenSubTaskState extends State<OpenSubTask> {
               ),),
 
           Divider(),
-
+///comment list and add comment
           Expanded(
             flex: 1,
-            child: Column(),),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 8),
+                  color: Colors.white,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: 150,
+                        height: 40,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Comments',
+                              style: TextStyle(
+                                  color: Colors.black87, fontSize: 18),
+                            ),
+                            Icon(
+                              Icons.arrow_right_rounded,
+                              color: Colors.black87,
+                              size: 27,
+                            ),
+                          ],
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(
+                                50.0), // Adjust these values as needed
+                            bottomRight: Radius.circular(
+                                50.0), // Adjust these values as needed
+                          ),
+                          color: AppColor.appLightBlue,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Add your updates as comments!!',
+                          style: TextStyle(
+                              color: Colors.grey.shade600, fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                //comment list loading
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(8.0),
+                    color: Colors.white,
+                    child: ListView.builder(
+                      itemCount: commentsList.length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(
+                                      0.0), // Adjust these values as needed
+                                  bottomRight: Radius.circular(
+                                      0.0), // Adjust these values as needed
+                                ),
+                                color: Colors.grey.shade200,
+                              ),
+                              margin: EdgeInsets.all(10),
+                              child: ListTile(
+                                title: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Text(
+                                    commentsList[index].commnt,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColor.appBlue),
+                                  ),
+                                ),
+                                subtitle: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Text(
+                                      '${commentsList[index].commentCreatedTimestamp}   By: ${commentsList[index].commentCreateBy}'),
+                                ),
+
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    print('Delete Comment');
+                                  },
+                                  icon: Icon(
+                                    Icons.delete_outline_rounded,
+                                    color: Colors.redAccent,
+                                  ),
+                                  tooltip: 'Delete Comment',
+                                  focusColor: Colors.redAccent,
+                                ),
+
+                                // Add onTap functionality if needed
+                              ),
+                            ),
+                            Divider(
+                              color: AppColor.appLightBlue,
+                            )
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+
+                Container(
+                  padding: EdgeInsets.all(15),
+                  height: 100,
+                  color: Colors.grey.shade200,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          keyboardType: TextInputType.none,
+                          controller: commentTextController,
+                          maxLines: 2, // Set the maximum lines to 2
+                          decoration: InputDecoration(
+                            hintText: 'Enter your comment...',
+                          ),
+                        ),
+                        flex: 11,
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: IconButton(
+                          tooltip: 'Add comment',
+                          onPressed: () {},
+                          icon: Icon(Icons.add_comment_rounded,color: AppColor.appDarkBlue,size: 30,),
+
+
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
         ],
       ),
     );
