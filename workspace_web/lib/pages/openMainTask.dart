@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../colors.dart';
 import '../componants.dart';
+import 'openSubTaskPage.dart';
 
 class OpenMainTaskPage extends StatefulWidget {
   final MainTask taskDetails;
@@ -14,11 +15,11 @@ class OpenMainTaskPage extends StatefulWidget {
 }
 
 class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
+  TextEditingController commentTextController = TextEditingController();
   List<Task> subTaskList = [];
-
+  List<comment> commentsList = [];
 
   Color _getColorForTaskTypeName(String taskTypeName) {
-
     Map<String, Color> colorMap = {
       'Top Urgent': Colors.red,
       'Medium': Colors.blue,
@@ -33,7 +34,41 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
   void initState() {
     super.initState();
     getSubTaskListByMainTaskId(widget.taskDetails.taskId);
+    getCommentList(widget.taskDetails.taskId);
+  }
 
+  Future<void> getCommentList(String taskId) async {
+    commentsList
+        .clear(); // Assuming that `commentsList` is a List<Comment> in your class
+
+    var data = {
+      "task_id": taskId,
+    };
+
+    const url = "http://dev.workspace.cbs.lk/commentListById.php";
+    http.Response response = await http.post(
+      Uri.parse(url),
+      body: data,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      encoding: Encoding.getByName("utf-8"),
+    );
+
+    if (response.statusCode == 200) {
+      final responseJson = json.decode(response.body);
+      setState(() {
+        for (Map<String, dynamic> details
+            in responseJson.cast<Map<String, dynamic>>()) {
+          commentsList.add(comment
+              .fromJson(details)); // Assuming Comment.fromJson method exists
+        }
+      });
+    } else {
+      throw Exception(
+          'Failed to load data from the API. Status Code: ${response.statusCode}');
+    }
   }
 
   Future<void> getSubTaskListByMainTaskId(String mainTaskId) async {
@@ -57,7 +92,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
       final responseJson = json.decode(res.body);
       setState(() {
         for (Map<String, dynamic> details
-        in responseJson.cast<Map<String, dynamic>>()) {
+            in responseJson.cast<Map<String, dynamic>>()) {
           subTaskList.add(Task.fromJson(details));
         }
 
@@ -71,7 +106,6 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
   @override
   Widget build(BuildContext context) {
     // Retrieve task details from arguments passed during navigation
-
 
     return Scaffold(
       appBar: AppBar(
@@ -108,10 +142,12 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 10,),
+                        SizedBox(
+                          height: 10,
+                        ),
                         Padding(
-                          padding:
-                              const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 0.0, horizontal: 10),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -123,14 +159,17 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                               Row(
                                 children: [
                                   Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(15),
-                                      border: Border.all(width: 1,color: AppColor.appDarkBlue)
-                                    ),
-                                      margin: EdgeInsets.symmetric(horizontal: 5),
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          border: Border.all(
+                                              width: 1,
+                                              color: AppColor.appDarkBlue)),
+                                      margin:
+                                          EdgeInsets.symmetric(horizontal: 5),
                                       child: IconButton(
-                                        tooltip: 'Edit Main Task',
+                                          tooltip: 'Edit Main Task',
                                           onPressed: () {},
                                           icon: Icon(
                                             Icons.edit_note_rounded,
@@ -140,8 +179,9 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                     decoration: BoxDecoration(
                                         color: Colors.white,
                                         borderRadius: BorderRadius.circular(15),
-                                        border: Border.all(width: 1,color: AppColor.appDarkBlue)
-                                    ),
+                                        border: Border.all(
+                                            width: 1,
+                                            color: AppColor.appDarkBlue)),
                                     margin: EdgeInsets.symmetric(horizontal: 5),
                                     child: IconButton(
                                         tooltip: 'Delete Main Task',
@@ -160,7 +200,8 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           child: Text(
                             '${widget.taskDetails.task_description}',
-                            style: TextStyle(fontSize: 16, color: Colors.black87),
+                            style:
+                                TextStyle(fontSize: 16, color: Colors.black87),
                           ),
                         ),
                         SizedBox(height: 10),
@@ -168,7 +209,6 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Text('Task ID: ${widget.taskDetails.taskId}'),
                         ),
-
 
                         Container(
                           // width: 480,
@@ -395,10 +435,9 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                               OutlinedButton(
                                 onPressed: () {
                                   if (widget.taskDetails.taskStatus == '0') {
-
                                     // Handle 'Mark In Progress' action
-                                  } else if (widget.taskDetails.taskStatus == '1') {
-
+                                  } else if (widget.taskDetails.taskStatus ==
+                                      '1') {
                                     // Handle 'Mark As Complete' action
                                   }
                                 },
@@ -410,28 +449,31 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                         : 'Mark As Complete',
                                     style: TextStyle(
                                       fontSize: 14,
-                                      color: widget.taskDetails.taskStatus == '0'
-                                          ? Colors.deepPurple.shade600
-                                          : Colors.green,
+                                      color:
+                                          widget.taskDetails.taskStatus == '0'
+                                              ? Colors.deepPurple.shade600
+                                              : Colors.green,
                                     ),
                                   ),
                                 ),
                               ),
                               OutlinedButton(
-                                onPressed: () {
-                                },
+                                onPressed: () {},
                                 style: OutlinedButton.styleFrom(
-                                  side: BorderSide(color: AppColor.appDarkBlue), // Change the border color
-                                  backgroundColor: Colors.white, // Change the background color
+                                  side: BorderSide(
+                                      color: AppColor
+                                          .appDarkBlue), // Change the border color
+                                  backgroundColor: Colors
+                                      .white, // Change the background color
                                 ),
-                                child:  Padding(
+                                child: Padding(
                                   padding: EdgeInsets.all(8.0),
                                   child: Text(
                                     'Add Sub Task',
                                     style: TextStyle(
-                                        fontSize: 14, color: AppColor.appDarkBlue),
+                                        fontSize: 14,
+                                        color: AppColor.appDarkBlue),
                                   ),
-
                                 ),
                               ),
                             ],
@@ -443,7 +485,6 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                       ],
                     ),
                   ),
-
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.all(8.0),
@@ -485,13 +526,11 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                           width: 10,
                                         ),
                                         Icon(Icons.person_pin_circle_rounded),
-                                        Text(
-                                            '${subTaskList[index].assignTo} '),
+                                        Text('${subTaskList[index].assignTo} '),
                                         Icon(
                                           Icons.double_arrow_rounded,
                                           color: _getColorForTaskTypeName(
-                                              subTaskList[index]
-                                                  .taskTypeName),
+                                              subTaskList[index].taskTypeName),
                                         ),
                                         Text(
                                             ' ${subTaskList[index].taskStatusName}...'),
@@ -509,39 +548,37 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                         ),
                                         Text(
                                           'Due Date: ${subTaskList[index].dueDate}',
-                                          style: TextStyle(
-                                              color: Colors.black87),
+                                          style:
+                                              TextStyle(color: Colors.black87),
                                         ),
                                         SizedBox(
                                           width: 20,
                                         ),
                                         TextButton(
                                           onPressed: () {
-                                            if (subTaskList[index]
-                                                .taskStatus ==
+                                            if (subTaskList[index].taskStatus ==
                                                 '0') {
                                               // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
                                               // Handle 'Mark In Progress' action
                                             } else if (subTaskList[index]
-                                                .taskStatus ==
+                                                    .taskStatus ==
                                                 '1') {
                                               // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
                                               // Handle 'Mark As Complete' action
                                             }
                                           },
                                           child: Padding(
-                                            padding:
-                                            const EdgeInsets.all(0.0),
+                                            padding: const EdgeInsets.all(0.0),
                                             child: Text(
                                               subTaskList[index].taskStatus ==
-                                                  '0'
+                                                      '0'
                                                   ? 'Mark In Progress'
                                                   : 'Mark As Complete',
                                               style: TextStyle(
                                                 fontSize: 14,
                                                 color: subTaskList[index]
-                                                    .taskStatus ==
-                                                    '0'
+                                                            .taskStatus ==
+                                                        '0'
                                                     ? Colors.blueAccent
                                                     : Colors.green,
                                               ),
@@ -556,7 +593,17 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
 
                               trailing: IconButton(
                                 onPressed: () {
-                                  print('open task');
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => OpenSubTask(
+                                              mainTaskDetails:
+                                                  widget.taskDetails,
+                                              subTaskDetails:
+                                                  subTaskList[index],
+                                            )),
+                                  );
+                                  print('open sub task');
                                 },
                                 icon: Icon(Icons.open_in_new_rounded),
                                 tooltip: 'Open Sub Task',
@@ -580,14 +627,143 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Task Title: ${widget.taskDetails.taskTitle}',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 8),
+                  color: Colors.white,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: 150,
+                        height: 40,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Comments',
+                              style: TextStyle(
+                                  color: Colors.black87, fontSize: 18),
+                            ),
+                            Icon(
+                              Icons.arrow_right_rounded,
+                              color: Colors.black87,
+                              size: 27,
+                            ),
+                          ],
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(
+                                50.0), // Adjust these values as needed
+                            bottomRight: Radius.circular(
+                                50.0), // Adjust these values as needed
+                          ),
+                          color: AppColor.appLightBlue,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Add your updates as comments!!',
+                          style: TextStyle(
+                              color: Colors.grey.shade600, fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                SizedBox(height: 10),
-                Text('Task ID: ${widget.taskDetails.taskId}'),
-                // Display other task details similarly
-                // For example: Due date, assignee, status, etc.
+
+                //comment list loading
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(8.0),
+                    color: Colors.white,
+                    child: ListView.builder(
+                      itemCount: commentsList.length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(
+                                      0.0), // Adjust these values as needed
+                                  bottomRight: Radius.circular(
+                                      0.0), // Adjust these values as needed
+                                ),
+                                color: Colors.grey.shade200,
+                              ),
+                              margin: EdgeInsets.all(10),
+                              child: ListTile(
+                                title: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Text(
+                                    commentsList[index].commnt,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColor.appBlue),
+                                  ),
+                                ),
+                                subtitle: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Text(
+                                      '${commentsList[index].commentCreatedTimestamp}   By: ${commentsList[index].commentCreateBy}'),
+                                ),
+
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    print('Delete Comment');
+                                  },
+                                  icon: Icon(
+                                    Icons.delete_outline_rounded,
+                                    color: Colors.redAccent,
+                                  ),
+                                  tooltip: 'Delete Comment',
+                                  focusColor: Colors.redAccent,
+                                ),
+
+                                // Add onTap functionality if needed
+                              ),
+                            ),
+                            Divider(
+                              color: AppColor.appLightBlue,
+                            )
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+
+                Container(
+                  padding: EdgeInsets.all(15),
+                  height: 100,
+                  color: Colors.grey.shade200,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: commentTextController,
+                          maxLines: 2, // Set the maximum lines to 2
+                          decoration: InputDecoration(
+                            hintText: 'Enter your comment...',
+                          ),
+                        ),
+                        flex: 11,
+                      ),
+                      Expanded(
+                          flex: 1,
+                          child: IconButton(
+                            tooltip: 'Add comment',
+                              onPressed: () {},
+                              icon: Icon(Icons.add_comment_rounded,color: AppColor.appDarkBlue,size: 30,),
+
+
+                          ),
+                      )
+                    ],
+                  ),
+                )
               ],
             ),
           ),

@@ -456,6 +456,67 @@ class Task {
   }
 }
 
+class comment {
+  String commentId;
+  String taskId;
+  String commnt;
+  String commentCreateById;
+  String commentCreateBy;
+  String commentCreateDate;
+  String commentCreatedTimestamp;
+  String commentStatus;
+  String commentEditBy;
+  String commentEditById;
+  String commentEditByDate;
+  String commentEditByTimestamp;
+  String commentDeleteBy;
+  String commentDeleteById;
+  String commentDeleteByDate;
+  String commentDeleteByTimestamp;
+  String commentAttachment;
+
+  comment({
+    required this.commentId,
+    required this.taskId,
+    required this.commnt,
+    required this.commentCreateById,
+    required this.commentCreateBy,
+    required this.commentCreateDate,
+    required this.commentCreatedTimestamp,
+    required this.commentStatus,
+    required this.commentEditBy,
+    required this.commentEditById,
+    required this.commentEditByDate,
+    required this.commentEditByTimestamp,
+    required this.commentDeleteBy,
+    required this.commentDeleteById,
+    required this.commentDeleteByDate,
+    required this.commentDeleteByTimestamp,
+    required this.commentAttachment,
+  });
+
+  factory comment.fromJson(Map<String, dynamic> json) {
+    return comment(
+        commentId: json['comment_id'],
+        taskId: json['task_id'],
+        commnt: json['comment'],
+        commentCreateById: json['comment_create_by_id'],
+        commentCreateBy: json['comment_create_by'],
+        commentCreateDate: json['comment_create_date'],
+        commentCreatedTimestamp: json['comment_created_timestamp'],
+        commentStatus: json['comment_status'],
+        commentEditBy: json['comment_edit_by'],
+        commentEditById: json['comment_edit_by_id'],
+        commentEditByDate: json['comment_edit_by_date'],
+        commentEditByTimestamp: json['comment_edit_by_timestamp'],
+        commentDeleteBy: json['comment_delete_by'],
+        commentDeleteById: json['comment_delete_by_id'],
+        commentDeleteByDate: json['comment_delete_by_date'],
+        commentDeleteByTimestamp: json['comment_delete_by_timestamp'],
+        commentAttachment: json['comment_attachment']);
+  }
+}
+
 //
 // TextButton(
 // onPressed: () {
