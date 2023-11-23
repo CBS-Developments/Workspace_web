@@ -113,7 +113,7 @@ class _TaskPageState extends State<TaskPage> {
       return Row(
         children: [
           Expanded(
-            flex: 1,
+            flex: 8,
             child: Container(
               child: ListView.builder(
                 itemCount: filteredTasks.length,
@@ -282,7 +282,7 @@ class _TaskPageState extends State<TaskPage> {
             ),
           ),
           Expanded(
-            flex: 1,
+            flex: 7,
             child: Column(
               children: [
                 Padding(
@@ -460,7 +460,7 @@ class _TaskPageState extends State<TaskPage> {
         ? Row(
             children: [
               Expanded(
-                flex: 3,
+                flex: 8,
                 child: Container(
                   child: ListView.builder(
                     itemCount: filteredTasks.length,
@@ -636,7 +636,7 @@ class _TaskPageState extends State<TaskPage> {
               ),
               VerticalDivider(),
               Expanded(
-                flex: 2,
+                flex: 7,
                 child: Column(
                   children: [
                     Padding(
@@ -904,7 +904,7 @@ class _TaskPageState extends State<TaskPage> {
             Row(
               children: [
                 Expanded(
-                  flex: 6,
+                  flex: 5,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextField(
@@ -978,7 +978,7 @@ class _TaskPageState extends State<TaskPage> {
                   ),
                 ),
                 Expanded(
-                  flex: 3,
+                  flex: 4,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
