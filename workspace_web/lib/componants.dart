@@ -12,6 +12,117 @@ Future<void> snackBar(BuildContext context, String message, Color color) async {
 }
 
 
+// class MyDrawer extends StatefulWidget {
+//   const MyDrawer({Key? key}) : super(key: key);
+//
+//   @override
+//   State<MyDrawer> createState() => _MyDrawerState();
+// }
+//
+// class _MyDrawerState extends State<MyDrawer> {
+//   late Map<String, bool> _itemFocus;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _itemFocus = {
+//       'Dashboard': false,
+//       'Task': false,
+//       'Mail': false,
+//       'Calendar': false,
+//       'Special Notice': false,
+//       'Chat': false,
+//       'Users': false,
+//       'Meet': false,
+//       'Apps': false,
+//     };
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Drawer(
+//       child: ListView(
+//         children: [
+//           for (var item in _itemFocus.keys)
+//             _buildDrawerItem(
+//               item,
+//               _getIcon(item),
+//                   () {
+//                 _updateFocus(item);
+//                 Navigator.pushReplacementNamed(context, '/$item');
+//               },
+//               _itemFocus[item]!,
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   void _updateFocus(String selectedItem) {
+//     setState(() {
+//       _itemFocus.updateAll((key, value) => key == selectedItem);
+//     });
+//   }
+//
+//   IconData _getIcon(String itemName) {
+//     switch (itemName) {
+//       case 'Dashboard':
+//         return Icons.dashboard;
+//       case 'Task':
+//         return Icons.task;
+//       case 'Mail':
+//         return Icons.mail_rounded;
+//       case 'Calendar':
+//         return Icons.calendar_month_rounded;
+//       case 'Special Notice':
+//         return Icons.notifications;
+//       case 'Chat':
+//         return Icons.chat;
+//       case 'Users':
+//         return Icons.person;
+//       case 'Meet':
+//         return Icons.video_chat_rounded;
+//       case 'Apps':
+//         return Icons.app_shortcut_rounded;
+//       default:
+//         return Icons.error;
+//     }
+//   }
+//
+//   Widget _buildDrawerItem(
+//       String title,
+//       IconData icon,
+//       Function() onTapFunction,
+//       bool isFocused,
+//       ) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 5.0,horizontal: 10),
+//       child: Material(
+//         color: Colors.teal.shade100,
+//         borderRadius: BorderRadius.circular(15.0),
+//         child: GestureDetector(
+//           onTap: onTapFunction,
+//           child: Container(
+//             decoration: BoxDecoration(
+//               borderRadius: BorderRadius.circular(15.0),
+//               color: isFocused ? Colors.teal.shade300 : Colors.transparent,
+//             ),
+//             child: ListTile(
+//               leading: Icon(icon,color: isFocused ? Colors.black : Colors.black87,),
+//               title: Text(
+//                 title,
+//                 style: TextStyle(
+//                   color: isFocused ? Colors.black : Colors.black,
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
 class MyDrawer extends StatefulWidget {
   const MyDrawer({Key? key}) : super(key: key);
 
@@ -43,6 +154,34 @@ class _MyDrawerState extends State<MyDrawer> {
     return Drawer(
       child: ListView(
         children: [
+          DrawerHeader(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Add your company logo here
+                Center(
+                  child: Image.asset(
+                    'assets/logo.png', // Replace with the path to your logo
+                    width: 100,
+                    height: 100,
+                  ),
+                ),
+                const Center(
+                  child: Text(
+                    'CBS Workspace',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           for (var item in _itemFocus.keys)
             _buildDrawerItem(
               item,
@@ -57,6 +196,7 @@ class _MyDrawerState extends State<MyDrawer> {
       ),
     );
   }
+
 
   void _updateFocus(String selectedItem) {
     setState(() {
@@ -98,14 +238,14 @@ class _MyDrawerState extends State<MyDrawer> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0,horizontal: 10),
       child: Material(
-        color: Colors.teal.shade100,
-        borderRadius: BorderRadius.circular(15.0),
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(8.0),
         child: GestureDetector(
           onTap: onTapFunction,
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15.0),
-              color: isFocused ? Colors.teal.shade300 : Colors.transparent,
+              borderRadius: BorderRadius.circular(8.0),
+              color: isFocused ? Colors.grey[400] : Colors.transparent,
             ),
             child: ListTile(
               leading: Icon(icon,color: isFocused ? Colors.black : Colors.black87,),
