@@ -1,7 +1,8 @@
 import 'dart:convert';
-
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../colors.dart';
 import '../componants.dart';
 import 'openSubTaskPage.dart';
@@ -19,6 +20,14 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
   List<Task> subTaskList = [];
   List<comment> commentsList = [];
 
+
+  String userName = "";
+  String firstName = "";
+  String lastName = "";
+  String phone = "";
+  String userRole = "";
+
+
   Color _getColorForTaskTypeName(String taskTypeName) {
     Map<String, Color> colorMap = {
       'Top Urgent': Colors.red,
@@ -30,11 +39,37 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
         Colors.grey; // Provide a default color if null
   }
 
+
+  String getCurrentDateTime() {
+    final now = DateTime.now();
+    final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+    return formattedDate;
+  }
+
+  String getCurrentDate() {
+    final now = DateTime.now();
+    final formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    return formattedDate;
+  }
+
   @override
   void initState() {
     super.initState();
     getSubTaskListByMainTaskId(widget.taskDetails.taskId);
     getCommentList(widget.taskDetails.taskId);
+    loadData();
+  }
+
+  void loadData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString('user_name') ?? "";
+      firstName = prefs.getString('first_name') ?? "";
+      lastName = prefs.getString('last_name') ?? "";
+      phone = prefs.getString('phone') ?? "";
+      userRole = prefs.getString('user_role') ?? "";
+    });
+    print('Data laded in main task > userName: $userName > userRole: $userRole');
   }
 
   Future<void> getCommentList(String taskId) async {
@@ -102,6 +137,69 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
       throw Exception('Failed to load subtasks from API');
     }
   }
+
+  Future<bool> addComment(
+      BuildContext context, {
+        required userName,
+        required taskID,
+        required taskName,
+        required firstName,
+        required lastName,
+      }) async {
+    // Validate input fields
+    if (commentTextController.text.trim().isEmpty) {
+      // Show an error message if the combined fields are empty
+      snackBar(context, "Please fill in all required fields", Colors.red);
+      return false;
+    }
+
+    var url = "http://dev.workspace.cbs.lk/createComment.php";
+
+    var data = {
+      "comment_id": getCurrentDateTime(),
+      "task_id": taskID,
+      "comment": commentTextController.text,
+      "comment_create_by_id": userName,
+      "comment_create_by": "$firstName $lastName",
+      "comment_create_date": getCurrentDate(),
+      "comment_created_timestamp": getCurrentDateTime(),
+      "comment_status": "1",
+      "comment_edit_by": "",
+      "comment_edit_by_id": '',
+      "comment_edit_by_date": "",
+      "comment_edit_by_timestamp": "",
+      "comment_delete_by": "",
+      "comment_delete_by_id": "",
+      "comment_delete_by_date": "",
+      "comment_delete_by_timestamp": "",
+      "comment_attachment": '',
+    };
+
+    http.Response res = await http.post(
+      Uri.parse(url),
+      body: data,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      encoding: Encoding.getByName("utf-8"),
+    );
+
+    if (res.statusCode.toString() == "200") {
+      if (jsonDecode(res.body) == "true") {
+        if (!mounted) return true;
+        commentTextController.clear();
+        // snackBar(context, "Comment Added Successfully", Colors.green);
+        getCommentList(taskID);
+      }
+    } else {
+      if (!mounted) return false;
+      snackBar(context, "Error", Colors.redAccent);
+    }
+    return true;
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -760,7 +858,9 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                           flex: 1,
                           child: IconButton(
                             tooltip: 'Add comment',
-                              onPressed: () {},
+                              onPressed: () {
+                              addComment(context, userName: userName, taskID: widget.taskDetails.taskId, taskName: widget.taskDetails.taskTitle, firstName: firstName, lastName: lastName);
+                              },
                               icon: Icon(Icons.add_comment_rounded,color: AppColor.appDarkBlue,size: 30,),
 
 
