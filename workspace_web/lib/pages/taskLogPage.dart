@@ -1,0 +1,101 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import '../colors.dart';
+import '../componants.dart';
+
+class TaskLogPage extends StatefulWidget {
+  const TaskLogPage({super.key});
+
+  @override
+  State<TaskLogPage> createState() => _TaskLogPageState();
+}
+
+class _TaskLogPageState extends State<TaskLogPage> {
+  List<TaskLog> logList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getLogList();
+  }
+
+  Future<void> getLogList() async {
+    logList.clear();
+    var data = {};
+
+    const url = "http://dev.workspace.cbs.lk/taskLogList.php";
+    http.Response res = await http.post(
+      Uri.parse(url),
+      body: data,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    );
+
+    if (res.statusCode == 200) {
+      final responseJson = json.decode(res.body) as List<dynamic>;
+      setState(() {
+        for (Map<String, dynamic> details in responseJson) {
+          logList.add(TaskLog.fromJson(details));
+        }
+
+      });
+    } else {
+      throw Exception('Failed to load jobs from API');
+    }
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 1,
+        backgroundColor: Colors.white,
+        foregroundColor: AppColor.appBlue,
+        title: Text(
+          'Task Log',
+          style: TextStyle(
+            color: AppColor.appBlue,
+            fontSize: 20,
+          ),
+        ),
+      ),
+      drawer: MyDrawer(),
+      body: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Column(
+              children: [
+                Container(height: 60,color: Colors.grey,),
+
+                Expanded(
+                  child: ListView.builder(
+                      itemCount:logList.length,
+                      itemBuilder: (context, index){
+                        return Container(
+                          child: ListTile(
+                            title: Text('${logList[index].logCreateBy} ${logList[index].logSummary} ${logList[index].logType} : ${logList[index].taskName}',),
+                            subtitle: Text(logList[index].logId,),
+                          ),
+                        );
+                      }),
+                )
+              ],
+            ),),
+
+          Divider(),
+
+          Expanded(
+            flex: 1,
+            child: Column(),),
+
+        ],
+      ),
+    );
+  }
+}

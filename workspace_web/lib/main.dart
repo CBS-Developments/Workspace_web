@@ -4,6 +4,7 @@ import 'package:workspace_web/colors.dart';
 import 'package:workspace_web/pages/dashboardPage.dart';
 import 'package:workspace_web/pages/loginPage.dart';
 import 'package:workspace_web/pages/openMainTask.dart';
+import 'package:workspace_web/pages/taskLogPage.dart';
 import 'package:workspace_web/pages/taskPage.dart';
 
 
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/Dashboard': (context) => Dashboard(),
         '/Task': (context) => TaskPage(),
-        // '/openMainTask': (context) => OpenMainTaskPage(taskDetails: null,),
+        '/Task Log': (context) => TaskLogPage(),
         // '/Calendar': (context) => CalendarScreen(),
         // '/Special Notice': (context) => SpecialNoticeScreen(),
         // '/Chat': (context) => ChatScreen(),
