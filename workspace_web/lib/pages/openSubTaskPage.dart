@@ -55,6 +55,12 @@ class _OpenSubTaskState extends State<OpenSubTask> {
     return formattedDate;
   }
 
+  String getCurrentMonth() {
+    final now = DateTime.now();
+    final formattedDate = DateFormat('MM-dd').format(now);
+    return formattedDate;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -63,7 +69,8 @@ class _OpenSubTaskState extends State<OpenSubTask> {
     loadData();
 
     // Adding widget.taskDetails to taskDetailsList
-    taskDetailsListBox.add(TaskDetailsBox(widget.subTaskDetails.taskDescription, widget.subTaskDetails.taskId));
+    taskDetailsListBox.add(TaskDetailsBox(
+        widget.subTaskDetails.taskDescription, widget.subTaskDetails.taskId));
   }
 
   void loadData() async {
@@ -78,6 +85,58 @@ class _OpenSubTaskState extends State<OpenSubTask> {
     print('Data laded in sub task > userName: $userName > userRole: $userRole');
   }
 
+  Future<void> addLog(
+    BuildContext context, {
+    required taskId,
+    required taskName,
+    required createBy,
+    required createByID,
+    required logType,
+    required logSummary,
+    required logDetails,
+  }) async {
+    // If all validations pass, proceed with the registration
+    var url = "http://dev.workspace.cbs.lk/addLogUpdate.php";
+
+    var data = {
+      "log_id": getCurrentDateTime(),
+      "task_id": taskId,
+      "task_name": taskName,
+      "log_summary": logSummary,
+      "log_type": logType,
+      "log_details": logDetails,
+      "log_create_by": createBy,
+      "log_create_by_id": createByID,
+      "log_create_by_date": getCurrentDate(),
+      "log_create_by_month": getCurrentMonth(),
+      "log_create_by_year": '',
+      "log_created_by_timestamp": getCurrentDateTime(),
+    };
+
+    http.Response res = await http.post(
+      Uri.parse(url),
+      body: data,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      encoding: Encoding.getByName("utf-8"),
+    );
+
+    if (res.statusCode.toString() == "200") {
+      if (jsonDecode(res.body) == "true") {
+        if (!mounted) return;
+        print('Log added!!');
+      } else {
+        if (!mounted) return;
+        snackBar(context, "Error", Colors.red);
+      }
+    } else {
+      if (!mounted) return;
+      snackBar(context, "Error", Colors.redAccent);
+    }
+  }
+
   Future<bool> addComment(
     BuildContext context, {
     required userName,
@@ -85,6 +144,9 @@ class _OpenSubTaskState extends State<OpenSubTask> {
     required taskName,
     required firstName,
     required lastName,
+    required logType,
+    required logSummary,
+        required logDetails,
   }) async {
     // Validate input fields
     if (commentTextController.text.trim().isEmpty) {
@@ -131,6 +193,14 @@ class _OpenSubTaskState extends State<OpenSubTask> {
         commentTextController.clear();
         // snackBar(context, "Comment Added Successfully", Colors.green);
         getCommentList(taskID);
+        addLog(context,
+            taskId: taskID,
+            taskName: taskName,
+            createBy: firstName,
+            createByID: userName,
+            logType: logType,
+            logSummary: logSummary,
+            logDetails: logDetails);
       }
     } else {
       if (!mounted) return false;
@@ -348,7 +418,10 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                            left: 4, bottom: 8, top: 8, right: 4),
+                                            left: 4,
+                                            bottom: 8,
+                                            top: 8,
+                                            right: 4),
                                         child: Text(
                                           'Start',
                                           style: TextStyle(
@@ -363,7 +436,10 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                            left: 4, bottom: 8, top: 8, right: 4),
+                                            left: 4,
+                                            bottom: 8,
+                                            top: 8,
+                                            right: 4),
                                         child: Text(
                                           'Due',
                                           style: TextStyle(
@@ -442,7 +518,10 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                            left: 4, bottom: 8, top: 8, right: 4),
+                                            left: 4,
+                                            bottom: 8,
+                                            top: 8,
+                                            right: 4),
                                         child: Text(
                                           widget.subTaskDetails.taskCreateDate,
                                           style: const TextStyle(
@@ -458,7 +537,10 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                            left: 4, bottom: 8, top: 8, right: 4),
+                                            left: 4,
+                                            bottom: 8,
+                                            top: 8,
+                                            right: 4),
                                         child: Text(
                                           widget.subTaskDetails.dueDate,
                                           style: const TextStyle(
@@ -552,9 +634,10 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                       : 'Mark As Complete',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: widget.subTaskDetails.taskStatus == '0'
-                                        ? Colors.deepPurple.shade600
-                                        : Colors.green,
+                                    color:
+                                        widget.subTaskDetails.taskStatus == '0'
+                                            ? Colors.deepPurple.shade600
+                                            : Colors.green,
                                   ),
                                 ),
                               ),
@@ -573,7 +656,8 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                 child: Text(
                                   'Add Sub Task',
                                   style: TextStyle(
-                                      fontSize: 14, color: AppColor.appDarkBlue),
+                                      fontSize: 14,
+                                      color: AppColor.appDarkBlue),
                                 ),
                               ),
                             ),
@@ -611,8 +695,8 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                     ),
                                   ),
                                   subtitle: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(horizontal: 5),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5),
                                     child: Row(
                                       children: [
                                         Text(
@@ -626,7 +710,8 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                         ),
                                         Text(
                                           'Due Date: ${filteredSubTaskList[index].dueDate}',
-                                          style: TextStyle(color: Colors.black87),
+                                          style:
+                                              TextStyle(color: Colors.black87),
                                         ),
                                       ],
                                     ),
@@ -641,7 +726,8 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                                   mainTaskDetails:
                                                       widget.mainTaskDetails,
                                                   subTaskDetails:
-                                                      filteredSubTaskList[index],
+                                                      filteredSubTaskList[
+                                                          index],
                                                 )),
                                       );
                                       print('open sub task');
@@ -805,12 +891,16 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                         child: IconButton(
                           tooltip: 'Add comment',
                           onPressed: () {
-                            addComment(context,
-                                userName: userName,
-                                taskID: widget.subTaskDetails.taskId,
-                                taskName: widget.subTaskDetails.taskTitle,
-                                firstName: firstName,
-                                lastName: lastName);
+                            addComment(
+                              context,
+                              userName: userName,
+                              taskID: widget.subTaskDetails.taskId,
+                              taskName: widget.subTaskDetails.taskTitle,
+                              firstName: firstName,
+                              lastName: lastName,
+                              logType: 'to Sub Task',
+                              logSummary: 'Commented', logDetails: commentTextController.text,
+                            );
                           },
                           icon: Icon(
                             Icons.add_comment_rounded,

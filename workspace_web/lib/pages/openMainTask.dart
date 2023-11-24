@@ -7,7 +7,6 @@ import '../colors.dart';
 import '../componants.dart';
 import 'openSubTaskPage.dart';
 
-
 class OpenMainTaskPage extends StatefulWidget {
   final MainTask taskDetails;
 
@@ -22,14 +21,11 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
   List<comment> commentsList = [];
   List<TaskDetailsBox> taskDetailsList = [];
 
-
-
   String userName = "";
   String firstName = "";
   String lastName = "";
   String phone = "";
   String userRole = "";
-
 
   Color _getColorForTaskTypeName(String taskTypeName) {
     Map<String, Color> colorMap = {
@@ -41,7 +37,6 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
     return colorMap[taskTypeName] ??
         Colors.grey; // Provide a default color if null
   }
-
 
   String getCurrentDateTime() {
     final now = DateTime.now();
@@ -55,6 +50,12 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
     return formattedDate;
   }
 
+  String getCurrentMonth() {
+    final now = DateTime.now();
+    final formattedDate = DateFormat('MM-dd').format(now);
+    return formattedDate;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -63,8 +64,8 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
     loadData();
 
     // Adding widget.taskDetails to taskDetailsList
-    taskDetailsList.add(TaskDetailsBox(widget.taskDetails.task_description, widget.taskDetails.taskId));
-
+    taskDetailsList.add(TaskDetailsBox(
+        widget.taskDetails.task_description, widget.taskDetails.taskId));
   }
 
   void loadData() async {
@@ -76,7 +77,8 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
       phone = prefs.getString('phone') ?? "";
       userRole = prefs.getString('user_role') ?? "";
     });
-    print('Data laded in main task > userName: $userName > userRole: $userRole');
+    print(
+        'Data laded in main task > userName: $userName > userRole: $userRole');
   }
 
   Future<void> getCommentList(String taskId) async {
@@ -145,14 +147,69 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
     }
   }
 
+  Future<void> addLog(
+    BuildContext context, {
+    required taskId,
+    required taskName,
+    required createBy,
+    required createByID,
+    required logType,
+    required logSummary,
+    required logDetails,
+  }) async {
+    // If all validations pass, proceed with the registration
+    var url = "http://dev.workspace.cbs.lk/addLogUpdate.php";
+
+    var data = {
+      "log_id": getCurrentDateTime(),
+      "task_id": taskId,
+      "task_name": taskName,
+      "log_summary": logSummary,
+      "log_type": logType,
+      "log_details": logDetails,
+      "log_create_by": createBy,
+      "log_create_by_id": createByID,
+      "log_create_by_date": getCurrentDate(),
+      "log_create_by_month": getCurrentMonth(),
+      "log_create_by_year": '',
+      "log_created_by_timestamp": getCurrentDateTime(),
+    };
+
+    http.Response res = await http.post(
+      Uri.parse(url),
+      body: data,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      encoding: Encoding.getByName("utf-8"),
+    );
+
+    if (res.statusCode.toString() == "200") {
+      if (jsonDecode(res.body) == "true") {
+        if (!mounted) return;
+        print('Log added!!');
+      } else {
+        if (!mounted) return;
+        snackBar(context, "Error", Colors.red);
+      }
+    } else {
+      if (!mounted) return;
+      snackBar(context, "Error", Colors.redAccent);
+    }
+  }
+
   Future<bool> addComment(
-      BuildContext context, {
-        required userName,
-        required taskID,
-        required taskName,
-        required firstName,
-        required lastName,
-      }) async {
+    BuildContext context, {
+    required userName,
+    required taskID,
+    required taskName,
+    required firstName,
+    required lastName,
+    required logType,
+    required logSummary,
+    required logDetails,
+  }) async {
     // Validate input fields
     if (commentTextController.text.trim().isEmpty) {
       // Show an error message if the combined fields are empty
@@ -198,6 +255,14 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
         commentTextController.clear();
         // snackBar(context, "Comment Added Successfully", Colors.green);
         getCommentList(taskID);
+        addLog(context,
+            taskId: taskID,
+            taskName: taskName,
+            createBy: firstName,
+            createByID: userName,
+            logType: logType,
+            logSummary: logSummary,
+            logDetails: logDetails);
       }
     } else {
       if (!mounted) return false;
@@ -205,8 +270,6 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
     }
     return true;
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -249,13 +312,9 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
           Container(
               decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius:
-                  BorderRadius.circular(15),
-                  border: Border.all(
-                      width: 1,
-                      color: AppColor.appDarkBlue)),
-              margin:
-              EdgeInsets.symmetric(horizontal: 5,vertical: 6),
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(width: 1, color: AppColor.appDarkBlue)),
+              margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
               child: IconButton(
                   tooltip: 'Edit Main Task',
                   onPressed: () {},
@@ -267,10 +326,8 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
             decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(15),
-                border: Border.all(
-                    width: 1,
-                    color: AppColor.appDarkBlue)),
-            margin: EdgeInsets.symmetric(horizontal: 5,vertical: 6),
+                border: Border.all(width: 1, color: AppColor.appDarkBlue)),
+            margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
             child: IconButton(
                 tooltip: 'Delete Main Task',
                 onPressed: () {},
@@ -279,7 +336,9 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                   color: Colors.redAccent,
                 )),
           ),
-          SizedBox(width: 10,)
+          SizedBox(
+            width: 10,
+          )
         ],
       ),
       body: Row(
@@ -288,40 +347,41 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
             flex: 1,
             child: Column(
               children: [
-
-  ///task Id and Task description list
+                ///task Id and Task description list
                 Expanded(
-                  flex: 1,
-                  child: ListView.builder(
-                    itemCount: taskDetailsList.length,
-                    itemBuilder: (context, index) {
-                      if (index < taskDetailsList.length) {
-                        return Container(
-                          padding: EdgeInsets.only(bottom: 15),
-                          color: Colors.white,
-                          child: ListTile(
-                            title: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: SelectableText('Task ID: ${taskDetailsList[index].taskId}'),
+                    flex: 1,
+                    child: ListView.builder(
+                      itemCount: taskDetailsList.length,
+                      itemBuilder: (context, index) {
+                        if (index < taskDetailsList.length) {
+                          return Container(
+                            padding: EdgeInsets.only(bottom: 15),
+                            color: Colors.white,
+                            child: ListTile(
+                              title: Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: SelectableText(
+                                    'Task ID: ${taskDetailsList[index].taskId}'),
+                              ),
+                              subtitle: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 6.0),
+                                child: SelectableText(
+                                    taskDetailsList[index].taskDescription),
+                              ),
+                              titleTextStyle: TextStyle(fontSize: 15),
+                              subtitleTextStyle:
+                                  TextStyle(fontSize: 16, color: Colors.black),
+                              // Your list item code here...
                             ),
-                            subtitle: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                              child: SelectableText(taskDetailsList[index].taskDescription),
-                            ),
-                            titleTextStyle: TextStyle(fontSize: 15),
-                            subtitleTextStyle: TextStyle(fontSize: 16,color: Colors.black),
-                            // Your list item code here...
-                          ),
-                        );
-                      } else {
-                        return SizedBox(); // Or another fallback widget if needed
-                      }
-                    },
-                  )
+                          );
+                        } else {
+                          return SizedBox(); // Or another fallback widget if needed
+                        }
+                      },
+                    )),
 
-                ),
-
-///other details of task
+                ///other details of task
 
                 Expanded(
                   flex: 7,
@@ -567,8 +627,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                       : 'Mark As Complete',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color:
-                                    widget.taskDetails.taskStatus == '0'
+                                    color: widget.taskDetails.taskStatus == '0'
                                         ? Colors.deepPurple.shade600
                                         : Colors.green,
                                   ),
@@ -581,8 +640,8 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                 side: BorderSide(
                                     color: AppColor
                                         .appDarkBlue), // Change the border color
-                                backgroundColor: Colors
-                                    .white, // Change the background color
+                                backgroundColor:
+                                    Colors.white, // Change the background color
                               ),
                               child: Padding(
                                 padding: EdgeInsets.all(8.0),
@@ -639,12 +698,15 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                             SizedBox(
                                               width: 10,
                                             ),
-                                            Icon(Icons.person_pin_circle_rounded),
-                                            Text('${subTaskList[index].assignTo} '),
+                                            Icon(Icons
+                                                .person_pin_circle_rounded),
+                                            Text(
+                                                '${subTaskList[index].assignTo} '),
                                             Icon(
                                               Icons.double_arrow_rounded,
                                               color: _getColorForTaskTypeName(
-                                                  subTaskList[index].taskTypeName),
+                                                  subTaskList[index]
+                                                      .taskTypeName),
                                             ),
                                             Text(
                                                 ' ${subTaskList[index].taskStatusName}...'),
@@ -662,37 +724,40 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                             ),
                                             SelectableText(
                                               'Due Date: ${subTaskList[index].dueDate}',
-                                              style:
-                                              TextStyle(color: Colors.black87),
+                                              style: TextStyle(
+                                                  color: Colors.black87),
                                             ),
                                             SizedBox(
                                               width: 20,
                                             ),
                                             TextButton(
                                               onPressed: () {
-                                                if (subTaskList[index].taskStatus ==
+                                                if (subTaskList[index]
+                                                        .taskStatus ==
                                                     '0') {
                                                   // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
                                                   // Handle 'Mark In Progress' action
                                                 } else if (subTaskList[index]
-                                                    .taskStatus ==
+                                                        .taskStatus ==
                                                     '1') {
                                                   // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
                                                   // Handle 'Mark As Complete' action
                                                 }
                                               },
                                               child: Padding(
-                                                padding: const EdgeInsets.all(0.0),
+                                                padding:
+                                                    const EdgeInsets.all(0.0),
                                                 child: Text(
-                                                  subTaskList[index].taskStatus ==
-                                                      '0'
+                                                  subTaskList[index]
+                                                              .taskStatus ==
+                                                          '0'
                                                       ? 'Mark In Progress'
                                                       : 'Mark As Complete',
                                                   style: TextStyle(
                                                     fontSize: 14,
                                                     color: subTaskList[index]
-                                                        .taskStatus ==
-                                                        '0'
+                                                                .taskStatus ==
+                                                            '0'
                                                         ? Colors.blueAccent
                                                         : Colors.green,
                                                   ),
@@ -711,11 +776,11 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => OpenSubTask(
-                                              mainTaskDetails:
-                                              widget.taskDetails,
-                                              subTaskDetails:
-                                              subTaskList[index],
-                                            )),
+                                                  mainTaskDetails:
+                                                      widget.taskDetails,
+                                                  subTaskDetails:
+                                                      subTaskList[index],
+                                                )),
                                       );
                                       print('open sub task');
                                     },
@@ -734,8 +799,6 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                     ],
                   ),
                 ),
-
-
               ],
             ),
           ),
@@ -871,16 +934,26 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                         flex: 11,
                       ),
                       Expanded(
-                          flex: 1,
-                          child: IconButton(
-                            tooltip: 'Add comment',
-                              onPressed: () {
-                              addComment(context, userName: userName, taskID: widget.taskDetails.taskId, taskName: widget.taskDetails.taskTitle, firstName: firstName, lastName: lastName);
-                              },
-                              icon: Icon(Icons.add_comment_rounded,color: AppColor.appDarkBlue,size: 30,),
-
-
+                        flex: 1,
+                        child: IconButton(
+                          tooltip: 'Add comment',
+                          onPressed: () {
+                            addComment(context,
+                                userName: userName,
+                                taskID: widget.taskDetails.taskId,
+                                taskName: widget.taskDetails.taskTitle,
+                                firstName: firstName,
+                                lastName: lastName,
+                                logType: 'to Main Task',
+                                logSummary: 'Commented',
+                                logDetails: commentTextController.text);
+                          },
+                          icon: Icon(
+                            Icons.add_comment_rounded,
+                            color: AppColor.appDarkBlue,
+                            size: 30,
                           ),
+                        ),
                       )
                     ],
                   ),
