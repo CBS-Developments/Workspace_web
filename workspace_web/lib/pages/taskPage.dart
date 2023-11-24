@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workspace_web/colors.dart';
 import 'package:workspace_web/pages/profilePage.dart';
@@ -32,6 +33,24 @@ class _TaskPageState extends State<TaskPage> {
   TextEditingController searchByNameController = TextEditingController();
   List<MainTask> searchedTasks = [];
 
+  String getCurrentDateTime() {
+    final now = DateTime.now();
+    final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+    return formattedDate;
+  }
+
+  String getCurrentDate() {
+    final now = DateTime.now();
+    final formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    return formattedDate;
+  }
+
+  String getCurrentMonth() {
+    final now = DateTime.now();
+    final formattedDate = DateFormat('MM-dd').format(now);
+    return formattedDate;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -48,6 +67,127 @@ class _TaskPageState extends State<TaskPage> {
       phone = prefs.getString('phone') ?? "";
       userRole = prefs.getString('user_role') ?? "";
     });
+  }
+
+  Future<void> addLog(
+    BuildContext context, {
+    required taskId,
+    required taskName,
+    required createBy,
+    required createByID,
+    required logType,
+    required logSummary,
+    required logDetails,
+  }) async {
+    // If all validations pass, proceed with the registration
+    var url = "http://dev.workspace.cbs.lk/addLogUpdate.php";
+
+    var data = {
+      "log_id": getCurrentDateTime(),
+      "task_id": taskId,
+      "task_name": taskName,
+      "log_summary": logSummary,
+      "log_type": logType,
+      "log_details": logDetails,
+      "log_create_by": createBy,
+      "log_create_by_id": createByID,
+      "log_create_by_date": getCurrentDate(),
+      "log_create_by_month": getCurrentMonth(),
+      "log_create_by_year": '',
+      "log_created_by_timestamp": getCurrentDateTime(),
+    };
+
+    http.Response res = await http.post(
+      Uri.parse(url),
+      body: data,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      encoding: Encoding.getByName("utf-8"),
+    );
+
+    if (res.statusCode.toString() == "200") {
+      if (jsonDecode(res.body) == "true") {
+        if (!mounted) return;
+        print('Log added!!');
+      } else {
+        if (!mounted) return;
+        snackBar(context, "Error", Colors.red);
+      }
+    } else {
+      if (!mounted) return;
+      snackBar(context, "Error", Colors.redAccent);
+    }
+  }
+
+  Future<bool> markInProgressMainTask(
+    BuildContext context, {
+    required taskName,
+    required userName,
+    required firstName,
+    required taskID,
+    required logType,
+    required logSummary,
+    required logDetails,
+  }) async {
+    // Prepare the data to be sent to the PHP script.
+    var data = {
+      "task_id": taskID,
+      "task_status": '1',
+      "task_status_name": 'In Progress',
+      "action_taken_by_id": userName,
+      "action_taken_by": firstName,
+      "action_taken_date": getCurrentDateTime(),
+      "action_taken_timestamp": getCurrentDate(),
+    };
+
+    // URL of your PHP script.
+    const url = "http://dev.workspace.cbs.lk/deleteMainTask.php";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final responseBody = jsonDecode(res.body);
+
+        // Debugging: Print the response data.
+        print("Response from PHP script: $responseBody");
+
+        if (responseBody == "true") {
+          print('Successful');
+          getMainTaskList();
+          addLog(context,
+              taskId: taskID,
+              taskName: taskName,
+              createBy: firstName,
+              createByID: userName,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
+          snackBar(
+              context, "Main Marked as In Progress successful!", Colors.green);
+
+          return true; // PHP code was successful.
+        } else {
+          print('PHP code returned "false".');
+          return false; // PHP code returned "false."
+        }
+      } else {
+        print('HTTP request failed with status code: ${res.statusCode}');
+        return false; // HTTP request failed.
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false; // An error occurred.
+    }
   }
 
   Future<void> getMainTaskList() async {
@@ -194,11 +334,14 @@ class _TaskPageState extends State<TaskPage> {
                                         children: [
                                           Text(
                                             'Beneficiary: ',
-                                            style: TextStyle(color: Colors.black87),
+                                            style: TextStyle(
+                                                color: Colors.black87),
                                           ),
                                           SelectableText(
                                             '${filteredTasks[index].company}',
-                                            style: TextStyle(color: Colors.black87,fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                color: Colors.black87,
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
@@ -265,7 +408,9 @@ class _TaskPageState extends State<TaskPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => OpenMainTaskPage(taskDetails: filteredTasks[index]), // Pass the task details
+                                    builder: (context) => OpenMainTaskPage(
+                                        taskDetails: filteredTasks[
+                                            index]), // Pass the task details
                                   ),
                                 );
 
@@ -342,7 +487,8 @@ class _TaskPageState extends State<TaskPage> {
                                       vertical: 2.0, horizontal: 5),
                                   child: Row(
                                     children: [
-                                      SelectableText('ID: ${subTaskList[index].taskId}'),
+                                      SelectableText(
+                                          'ID: ${subTaskList[index].taskId}'),
                                       SizedBox(
                                         width: 10,
                                       ),
@@ -553,7 +699,9 @@ class _TaskPageState extends State<TaskPage> {
                                               SelectableText(
                                                 '${filteredTasks[index].company}',
                                                 style: TextStyle(
-                                                    color: Colors.black87,fontWeight: FontWeight.bold),
+                                                    color: Colors.black87,
+                                                    fontWeight:
+                                                        FontWeight.bold),
                                               ),
                                             ],
                                           ),
@@ -584,6 +732,20 @@ class _TaskPageState extends State<TaskPage> {
                                               if (filteredTasks[index]
                                                       .taskStatus ==
                                                   '0') {
+                                                markInProgressMainTask(
+                                                  context,
+                                                  taskName: filteredTasks[index]
+                                                      .taskTitle,
+                                                  userName: userName,
+                                                  firstName: firstName,
+                                                  taskID: filteredTasks[index]
+                                                      .taskId,
+                                                  logType: 'Main Task',
+                                                  logSummary:
+                                                      'Marked In-Progress',
+                                                  logDetails:
+                                                      'Main Task Due Date: ${filteredTasks[index].dueDate}',
+                                                );
                                                 // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
                                                 // Handle 'Mark In Progress' action
                                               } else if (filteredTasks[index]
@@ -607,7 +769,8 @@ class _TaskPageState extends State<TaskPage> {
                                                   color: filteredTasks[index]
                                                               .taskStatus ==
                                                           '0'
-                                                      ? Colors.deepPurple.shade600
+                                                      ? Colors
+                                                          .deepPurple.shade600
                                                       : Colors.green,
                                                 ),
                                               ),
@@ -624,7 +787,9 @@ class _TaskPageState extends State<TaskPage> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => OpenMainTaskPage(taskDetails: filteredTasks[index]), // Pass the task details
+                                        builder: (context) => OpenMainTaskPage(
+                                            taskDetails: filteredTasks[
+                                                index]), // Pass the task details
                                       ),
                                     );
                                     print('open task');
@@ -1004,36 +1169,39 @@ class _TaskPageState extends State<TaskPage> {
                     ),
                   ),
                 ),
-                Expanded(flex: 10,
+                Expanded(
+                    flex: 10,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      width: 170,
-                      height: 40,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-
-                          Text('Completed Tasks',style: TextStyle(
-                            color: Colors.white,fontSize: 16
-                          ),),
-
-                          Icon(Icons.arrow_right_rounded,color: Colors.white,),
-                        ],
-                      ),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(
-                                50.0), // Adjust these values as needed
-                            bottomLeft: Radius.circular(
-                                50.0), // Adjust these values as needed
+                      children: [
+                        Container(
+                          width: 170,
+                          height: 40,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                'Completed Tasks',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                              Icon(
+                                Icons.arrow_right_rounded,
+                                color: Colors.white,
+                              ),
+                            ],
                           ),
-                        color: Colors.green.shade600
-                      ),
-                    )
-                  ],
-                ))
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(
+                                    50.0), // Adjust these values as needed
+                                bottomLeft: Radius.circular(
+                                    50.0), // Adjust these values as needed
+                              ),
+                              color: Colors.green.shade600),
+                        )
+                      ],
+                    ))
               ],
             ),
             Expanded(
