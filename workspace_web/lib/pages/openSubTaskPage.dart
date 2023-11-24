@@ -21,6 +21,7 @@ class OpenSubTask extends StatefulWidget {
 
 class _OpenSubTaskState extends State<OpenSubTask> {
   List<Task> subTaskList = [];
+  List<TaskDetailsBox> taskDetailsListBox = [];
   List<Task> filteredSubTaskList = [];
   TextEditingController commentTextController = TextEditingController();
   List<comment> commentsList = [];
@@ -60,6 +61,9 @@ class _OpenSubTaskState extends State<OpenSubTask> {
     getSubTaskListByMainTaskId(widget.mainTaskDetails.taskId);
     getCommentList(widget.subTaskDetails.taskId);
     loadData();
+
+    // Adding widget.taskDetails to taskDetailsList
+    taskDetailsListBox.add(TaskDetailsBox(widget.subTaskDetails.taskDescription, widget.subTaskDetails.taskId));
   }
 
   void loadData() async {
@@ -223,7 +227,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                 fontSize: 11,
               ),
             ),
-            Text(
+            SelectableText(
               '${widget.mainTaskDetails.taskTitle} > ${widget.subTaskDetails.taskTitle}',
               style: TextStyle(
                 color: AppColor.appDarkBlue,
@@ -232,15 +236,6 @@ class _OpenSubTaskState extends State<OpenSubTask> {
             ),
           ],
         ),
-        // leading: IconButton(
-        //   tooltip: 'Back to Main Task',
-        //   onPressed: () {
-        //     MaterialPageRoute(
-        //         builder: (context) => OpenMainTaskPage(taskDetails: widget.mainTaskDetails,),
-        //     );
-        //   },
-        //   icon: Icon(Icons.arrow_back_rounded),
-        // ),
         leading: IconButton(
           tooltip: 'Back to Main Task',
           onPressed: () {
@@ -254,6 +249,38 @@ class _OpenSubTaskState extends State<OpenSubTask> {
           },
           icon: Icon(Icons.arrow_back_rounded),
         ),
+        actions: [
+          Container(
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(width: 1, color: AppColor.appDarkBlue)),
+              margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
+              child: IconButton(
+                  tooltip: 'Edit Sub Task',
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.edit_note_rounded,
+                    color: Colors.black87,
+                  ))),
+          Container(
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(width: 1, color: AppColor.appDarkBlue)),
+            margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
+            child: IconButton(
+                tooltip: 'Delete Sub Task',
+                onPressed: () {},
+                icon: Icon(
+                  Icons.delete_sweep_outlined,
+                  color: Colors.redAccent,
+                )),
+          ),
+          SizedBox(
+            width: 10,
+          )
+        ],
       ),
       body: Row(
         children: [
@@ -261,73 +288,44 @@ class _OpenSubTaskState extends State<OpenSubTask> {
             flex: 1,
             child: Column(
               children: [
-                /// main task details
+                ///task Id and Task description list
+                Expanded(
+                    flex: 1,
+                    child: ListView.builder(
+                      itemCount: taskDetailsListBox.length,
+                      itemBuilder: (context, index) {
+                        if (index < taskDetailsListBox.length) {
+                          return Container(
+                            padding: EdgeInsets.only(bottom: 15),
+                            color: Colors.white,
+                            child: ListTile(
+                              title: Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: SelectableText(
+                                    'Sub Task ID: ${taskDetailsListBox[index].taskId}'),
+                              ),
+                              subtitle: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 6.0),
+                                child: SelectableText(
+                                    taskDetailsListBox[index].taskDescription),
+                              ),
+                              titleTextStyle: TextStyle(fontSize: 15),
+                              subtitleTextStyle:
+                                  TextStyle(fontSize: 16, color: Colors.black),
+                              // Your list item code here...
+                            ),
+                          );
+                        } else {
+                          return SizedBox(); // Or another fallback widget if needed
+                        }
+                      },
+                    )),
 
-                /// sub task detail start
-                Container(
-                  color: Colors.white,
+                Expanded(
+                  flex: 7,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 0.0, horizontal: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              '${widget.subTaskDetails.taskDescription}',
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.black87),
-                            ),
-                            Row(
-                              children: [
-                                Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(15),
-                                        border: Border.all(
-                                            width: 1,
-                                            color: AppColor.appDarkBlue)),
-                                    margin: EdgeInsets.symmetric(horizontal: 5),
-                                    child: IconButton(
-                                        tooltip: 'Edit Main Task',
-                                        onPressed: () {},
-                                        icon: Icon(
-                                          Icons.edit_note_rounded,
-                                          color: Colors.black87,
-                                        ))),
-                                Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(15),
-                                      border: Border.all(
-                                          width: 1,
-                                          color: AppColor.appDarkBlue)),
-                                  margin: EdgeInsets.symmetric(horizontal: 5),
-                                  child: IconButton(
-                                      tooltip: 'Delete Main Task',
-                                      onPressed: () {},
-                                      icon: Icon(
-                                        Icons.delete_sweep_outlined,
-                                        color: Colors.redAccent,
-                                      )),
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Text(
-                            'Sub Task ID: ${widget.subTaskDetails.taskId}'),
-                      ),
-
                       Container(
                         // width: 480,
                         margin: EdgeInsets.all(5),
@@ -350,10 +348,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                            left: 4,
-                                            bottom: 8,
-                                            top: 8,
-                                            right: 4),
+                                            left: 4, bottom: 8, top: 8, right: 4),
                                         child: Text(
                                           'Start',
                                           style: TextStyle(
@@ -368,10 +363,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                            left: 4,
-                                            bottom: 8,
-                                            top: 8,
-                                            right: 4),
+                                            left: 4, bottom: 8, top: 8, right: 4),
                                         child: Text(
                                           'Due',
                                           style: TextStyle(
@@ -450,10 +442,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                            left: 4,
-                                            bottom: 8,
-                                            top: 8,
-                                            right: 4),
+                                            left: 4, bottom: 8, top: 8, right: 4),
                                         child: Text(
                                           widget.subTaskDetails.taskCreateDate,
                                           style: const TextStyle(
@@ -469,10 +458,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                            left: 4,
-                                            bottom: 8,
-                                            top: 8,
-                                            right: 4),
+                                            left: 4, bottom: 8, top: 8, right: 4),
                                         child: Text(
                                           widget.subTaskDetails.dueDate,
                                           style: const TextStyle(
@@ -544,7 +530,6 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                           ],
                         ),
                       ),
-
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
@@ -567,10 +552,9 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                       : 'Mark As Complete',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color:
-                                        widget.subTaskDetails.taskStatus == '0'
-                                            ? Colors.deepPurple.shade600
-                                            : Colors.green,
+                                    color: widget.subTaskDetails.taskStatus == '0'
+                                        ? Colors.deepPurple.shade600
+                                        : Colors.green,
                                   ),
                                 ),
                               ),
@@ -589,8 +573,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                 child: Text(
                                   'Add Sub Task',
                                   style: TextStyle(
-                                      fontSize: 14,
-                                      color: AppColor.appDarkBlue),
+                                      fontSize: 14, color: AppColor.appDarkBlue),
                                 ),
                               ),
                             ),
@@ -598,88 +581,88 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                         ),
                       ),
 
-                      // Display other Other sub task details similarly
+                      /// other sub tasks
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          color: Colors.white,
+                          child: ListView.builder(
+                            itemCount: filteredSubTaskList.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(
+                                        0.0), // Adjust these values as needed
+                                    bottomRight: Radius.circular(
+                                        0.0), // Adjust these values as needed
+                                  ),
+                                  color: Colors.grey.shade200,
+                                ),
+                                margin: EdgeInsets.all(10),
+                                child: ListTile(
+                                  title: Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Text(
+                                      filteredSubTaskList[index].taskTitle,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColor.appBlue),
+                                    ),
+                                  ),
+                                  subtitle: Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(horizontal: 5),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                            'ID: ${filteredSubTaskList[index].taskId}'),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Icon(
+                                          Icons.arrow_right,
+                                          color: Colors.black87,
+                                        ),
+                                        Text(
+                                          'Due Date: ${filteredSubTaskList[index].dueDate}',
+                                          style: TextStyle(color: Colors.black87),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  trailing: IconButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => OpenSubTask(
+                                                  mainTaskDetails:
+                                                      widget.mainTaskDetails,
+                                                  subTaskDetails:
+                                                      filteredSubTaskList[index],
+                                                )),
+                                      );
+                                      print('open sub task');
+                                    },
+                                    icon: Icon(Icons.open_in_new_rounded),
+                                    tooltip: 'Open Sub Task',
+                                    focusColor: AppColor.appBlue,
+                                  ),
+
+                                  // Add onTap functionality if needed
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      )
                     ],
                   ),
                 ),
 
-                /// other sub tasks
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(8.0),
-                    color: Colors.white,
-                    child: ListView.builder(
-                      itemCount: filteredSubTaskList.length,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(
-                                  0.0), // Adjust these values as needed
-                              bottomRight: Radius.circular(
-                                  0.0), // Adjust these values as needed
-                            ),
-                            color: Colors.grey.shade200,
-                          ),
-                          margin: EdgeInsets.all(10),
-                          child: ListTile(
-                            title: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Text(
-                                filteredSubTaskList[index].taskTitle,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColor.appBlue),
-                              ),
-                            ),
-                            subtitle: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 5),
-                              child: Row(
-                                children: [
-                                  Text(
-                                      'ID: ${filteredSubTaskList[index].taskId}'),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Icon(
-                                    Icons.arrow_right,
-                                    color: Colors.black87,
-                                  ),
-                                  Text(
-                                    'Due Date: ${filteredSubTaskList[index].dueDate}',
-                                    style: TextStyle(color: Colors.black87),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            trailing: IconButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => OpenSubTask(
-                                            mainTaskDetails:
-                                                widget.mainTaskDetails,
-                                            subTaskDetails:
-                                                filteredSubTaskList[index],
-                                          )),
-                                );
-                                print('open sub task');
-                              },
-                              icon: Icon(Icons.open_in_new_rounded),
-                              tooltip: 'Open Sub Task',
-                              focusColor: AppColor.appBlue,
-                            ),
-
-                            // Add onTap functionality if needed
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
+                // Display other Other sub task details similarly
               ],
             ),
           ),
@@ -762,7 +745,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                               child: ListTile(
                                 title: Padding(
                                   padding: const EdgeInsets.all(5.0),
-                                  child: Text(
+                                  child: SelectableText(
                                     commentsList[index].commnt,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,

@@ -657,6 +657,12 @@ class comment {
   }
 }
 
+class TaskDetailsBox {
+  String taskDescription;
+  String taskId;
+
+  TaskDetailsBox(this.taskDescription, this.taskId);
+}
 //
 // TextButton(
 // onPressed: () {

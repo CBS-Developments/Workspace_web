@@ -8,13 +8,6 @@ import '../componants.dart';
 import 'openSubTaskPage.dart';
 
 
-class TaskDetailsBox {
-  String taskDescription;
-  String taskId;
-
-  TaskDetailsBox(this.taskDescription, this.taskId);
-}
-
 class OpenMainTaskPage extends StatefulWidget {
   final MainTask taskDetails;
 
