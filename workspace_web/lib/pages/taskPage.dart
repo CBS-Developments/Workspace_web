@@ -156,7 +156,7 @@ class _TaskPageState extends State<TaskPage> {
                           child: ListTile(
                             title: Padding(
                               padding: const EdgeInsets.all(5.0),
-                              child: Text(
+                              child: SelectableText(
                                 filteredTasks[index].taskTitle,
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
@@ -170,7 +170,7 @@ class _TaskPageState extends State<TaskPage> {
                                       vertical: 2.0, horizontal: 5),
                                   child: Row(
                                     children: [
-                                      Text(
+                                      SelectableText(
                                           'ID: ${filteredTasks[index].taskId}'),
                                       SizedBox(
                                         width: 20,
@@ -190,9 +190,17 @@ class _TaskPageState extends State<TaskPage> {
                                       vertical: 2.0, horizontal: 5),
                                   child: Row(
                                     children: [
-                                      Text(
-                                        'Beneficiary: ${filteredTasks[index].company}',
-                                        style: TextStyle(color: Colors.black87),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Beneficiary: ',
+                                            style: TextStyle(color: Colors.black87),
+                                          ),
+                                          SelectableText(
+                                            '${filteredTasks[index].company}',
+                                            style: TextStyle(color: Colors.black87,fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
@@ -208,7 +216,7 @@ class _TaskPageState extends State<TaskPage> {
                                         Icons.arrow_right,
                                         color: Colors.black87,
                                       ),
-                                      Text(
+                                      SelectableText(
                                         'Due Date: ${filteredTasks[index].dueDate}',
                                         style: TextStyle(color: Colors.black87),
                                       ),
@@ -320,7 +328,7 @@ class _TaskPageState extends State<TaskPage> {
                           child: ListTile(
                             title: Padding(
                               padding: const EdgeInsets.all(5.0),
-                              child: Text(
+                              child: SelectableText(
                                 subTaskList[index].taskTitle,
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
@@ -334,7 +342,7 @@ class _TaskPageState extends State<TaskPage> {
                                       vertical: 2.0, horizontal: 5),
                                   child: Row(
                                     children: [
-                                      Text('ID: ${subTaskList[index].taskId}'),
+                                      SelectableText('ID: ${subTaskList[index].taskId}'),
                                       SizedBox(
                                         width: 10,
                                       ),
@@ -359,7 +367,7 @@ class _TaskPageState extends State<TaskPage> {
                                         Icons.arrow_right,
                                         color: Colors.black87,
                                       ),
-                                      Text(
+                                      SelectableText(
                                         'Due Date: ${subTaskList[index].dueDate}',
                                         style: TextStyle(color: Colors.black87),
                                       ),
@@ -504,7 +512,7 @@ class _TaskPageState extends State<TaskPage> {
                               child: ListTile(
                                 title: Padding(
                                   padding: const EdgeInsets.all(5.0),
-                                  child: Text(
+                                  child: SelectableText(
                                     filteredTasks[index].taskTitle,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
@@ -518,7 +526,7 @@ class _TaskPageState extends State<TaskPage> {
                                           vertical: 2.0, horizontal: 5),
                                       child: Row(
                                         children: [
-                                          Text(
+                                          SelectableText(
                                               'ID: ${filteredTasks[index].taskId}'),
                                           SizedBox(
                                             width: 20,
@@ -539,10 +547,15 @@ class _TaskPageState extends State<TaskPage> {
                                           vertical: 2.0, horizontal: 5),
                                       child: Row(
                                         children: [
-                                          Text(
-                                            'Beneficiary: ${filteredTasks[index].company}',
-                                            style: TextStyle(
-                                                color: Colors.black87),
+                                          Row(
+                                            children: [
+                                              Text('Beneficiary: '),
+                                              SelectableText(
+                                                '${filteredTasks[index].company}',
+                                                style: TextStyle(
+                                                    color: Colors.black87,fontWeight: FontWeight.bold),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
@@ -558,7 +571,7 @@ class _TaskPageState extends State<TaskPage> {
                                             Icons.arrow_right,
                                             color: Colors.black87,
                                           ),
-                                          Text(
+                                          SelectableText(
                                             'Due Date: ${filteredTasks[index].dueDate}',
                                             style: TextStyle(
                                                 color: Colors.black87),
@@ -674,7 +687,7 @@ class _TaskPageState extends State<TaskPage> {
                               child: ListTile(
                                 title: Padding(
                                   padding: const EdgeInsets.all(5.0),
-                                  child: Text(
+                                  child: SelectableText(
                                     subTaskList[index].taskTitle,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
@@ -688,7 +701,7 @@ class _TaskPageState extends State<TaskPage> {
                                           vertical: 2.0, horizontal: 5),
                                       child: Row(
                                         children: [
-                                          Text(
+                                          SelectableText(
                                               'ID: ${subTaskList[index].taskId}'),
                                           SizedBox(
                                             width: 10,
@@ -716,7 +729,7 @@ class _TaskPageState extends State<TaskPage> {
                                             Icons.arrow_right,
                                             color: Colors.black87,
                                           ),
-                                          Text(
+                                          SelectableText(
                                             'Due Date: ${subTaskList[index].dueDate}',
                                             style: TextStyle(
                                                 color: Colors.black87),

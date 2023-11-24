@@ -7,6 +7,14 @@ import '../colors.dart';
 import '../componants.dart';
 import 'openSubTaskPage.dart';
 
+
+class TaskDetailsBox {
+  String taskDescription;
+  String taskId;
+
+  TaskDetailsBox(this.taskDescription, this.taskId);
+}
+
 class OpenMainTaskPage extends StatefulWidget {
   final MainTask taskDetails;
 
@@ -19,6 +27,8 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
   TextEditingController commentTextController = TextEditingController();
   List<Task> subTaskList = [];
   List<comment> commentsList = [];
+  List<TaskDetailsBox> taskDetailsList = [];
+
 
 
   String userName = "";
@@ -58,6 +68,10 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
     getSubTaskListByMainTaskId(widget.taskDetails.taskId);
     getCommentList(widget.taskDetails.taskId);
     loadData();
+
+    // Adding widget.taskDetails to taskDetailsList
+    taskDetailsList.add(TaskDetailsBox(widget.taskDetails.task_description, widget.taskDetails.taskId));
+
   }
 
   void loadData() async {
@@ -220,7 +234,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                 fontSize: 11,
               ),
             ),
-            Text(
+            SelectableText(
               '${widget.taskDetails.taskTitle}',
               style: TextStyle(
                 color: AppColor.appDarkBlue,
@@ -238,489 +252,498 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
           },
           icon: Icon(Icons.arrow_back_rounded),
         ),
+        actions: [
+          Container(
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius:
+                  BorderRadius.circular(15),
+                  border: Border.all(
+                      width: 1,
+                      color: AppColor.appDarkBlue)),
+              margin:
+              EdgeInsets.symmetric(horizontal: 5,vertical: 6),
+              child: IconButton(
+                  tooltip: 'Edit Main Task',
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.edit_note_rounded,
+                    color: Colors.black87,
+                  ))),
+          Container(
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(
+                    width: 1,
+                    color: AppColor.appDarkBlue)),
+            margin: EdgeInsets.symmetric(horizontal: 5,vertical: 6),
+            child: IconButton(
+                tooltip: 'Delete Main Task',
+                onPressed: () {},
+                icon: Icon(
+                  Icons.delete_sweep_outlined,
+                  color: Colors.redAccent,
+                )),
+          ),
+          SizedBox(width: 10,)
+        ],
       ),
       body: Row(
         children: [
           Expanded(
             flex: 1,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Column(
-                children: [
-                  Container(
-                    color: Colors.white,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Text(
-                                '${widget.taskDetails.task_description}',
-                                style:
-                                    TextStyle(fontSize: 16, color: Colors.black87),
-                              ),
+            child: Column(
+              children: [
 
-                            ),
-                            Padding(
+  ///task Id and Task description list
+                Expanded(
+                  flex: 1,
+                  child: ListView.builder(
+                    itemCount: taskDetailsList.length,
+                    itemBuilder: (context, index) {
+                      if (index < taskDetailsList.length) {
+                        return Container(
+                          padding: EdgeInsets.only(bottom: 15),
+                          color: Colors.white,
+                          child: ListTile(
+                            title: Padding(
                               padding: const EdgeInsets.all(5.0),
-                              child: Row(
+                              child: SelectableText('Task ID: ${taskDetailsList[index].taskId}'),
+                            ),
+                            subtitle: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                              child: SelectableText(taskDetailsList[index].taskDescription),
+                            ),
+                            titleTextStyle: TextStyle(fontSize: 15),
+                            subtitleTextStyle: TextStyle(fontSize: 16,color: Colors.black),
+                            // Your list item code here...
+                          ),
+                        );
+                      } else {
+                        return SizedBox(); // Or another fallback widget if needed
+                      }
+                    },
+                  )
+
+                ),
+
+///other details of task
+
+                Expanded(
+                  flex: 7,
+                  child: Column(
+                    children: [
+                      Container(
+                        // width: 480,
+                        margin: EdgeInsets.all(5),
+                        height: 160,
+                        color: Colors.white,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 120,
+                              height: 160,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                          BorderRadius.circular(15),
-                                          border: Border.all(
-                                              width: 1,
-                                              color: AppColor.appDarkBlue)),
-                                      margin:
-                                      EdgeInsets.symmetric(horizontal: 5),
-                                      child: IconButton(
-                                          tooltip: 'Edit Main Task',
-                                          onPressed: () {},
-                                          icon: Icon(
-                                            Icons.edit_note_rounded,
-                                            color: Colors.black87,
-                                          ))),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(15),
-                                        border: Border.all(
-                                            width: 1,
-                                            color: AppColor.appDarkBlue)),
-                                    margin: EdgeInsets.symmetric(horizontal: 5),
-                                    child: IconButton(
-                                        tooltip: 'Delete Main Task',
-                                        onPressed: () {},
-                                        icon: Icon(
-                                          Icons.delete_sweep_outlined,
-                                          color: Colors.redAccent,
-                                        )),
-                                  )
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.calendar_month_rounded,
+                                        size: 15,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 4,
+                                            bottom: 8,
+                                            top: 8,
+                                            right: 4),
+                                        child: Text(
+                                          'Start',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: AppColor.drawerLight),
+                                        ),
+                                      ),
+                                      Icon(
+                                        Icons.arrow_forward,
+                                        color: AppColor.drawerLight,
+                                        size: 15,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 4,
+                                            bottom: 8,
+                                            top: 8,
+                                            right: 4),
+                                        child: Text(
+                                          'Due',
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: AppColor.drawerLight),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 18, bottom: 8),
+                                    child: Text(
+                                      'Company',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: AppColor.drawerLight),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 18, bottom: 8),
+                                    child: Text(
+                                      'Assign To',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: AppColor.drawerLight),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 18, bottom: 8),
+                                    child: Text(
+                                      'Category',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: AppColor.drawerLight),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 18, bottom: 8),
+                                    child: Text(
+                                      'Status',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: AppColor.drawerLight),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 18, bottom: 8),
+                                    child: Text(
+                                      'Created By',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: AppColor.drawerLight),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const VerticalDivider(
+                              thickness: 2,
+                            ),
+                            SizedBox(
+                              height: 160,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.calendar_month_rounded,
+                                        size: 15,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 4,
+                                            bottom: 8,
+                                            top: 8,
+                                            right: 4),
+                                        child: Text(
+                                          widget.taskDetails.taskCreateDate,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                      const Icon(
+                                        Icons.arrow_forward,
+                                        color: Colors.black,
+                                        size: 15,
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 4,
+                                            bottom: 8,
+                                            top: 8,
+                                            right: 4),
+                                        child: Text(
+                                          widget.taskDetails.dueDate,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 18, bottom: 8),
+                                    child: Text(
+                                      widget.taskDetails.company,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 18, bottom: 8),
+                                    child: Text(
+                                      widget.taskDetails.assignTo,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 18, bottom: 8),
+                                    child: Text(
+                                      widget.taskDetails.category_name,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 18, bottom: 8),
+                                    child: Text(
+                                      widget.taskDetails.taskStatusName,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 18, bottom: 8),
+                                    child: Text(
+                                      widget.taskDetails.taskCreateBy,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 5),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text('Task ID: ${widget.taskDetails.taskId}'),
-                        ),
+                      ),
 
-                        Container(
-                          // width: 480,
-                          margin: EdgeInsets.all(5),
-                          height: 160,
-                          color: Colors.white,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 120,
-                                height: 160,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.calendar_month_rounded,
-                                          size: 15,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 4,
-                                              bottom: 8,
-                                              top: 8,
-                                              right: 4),
-                                          child: Text(
-                                            'Start',
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                color: AppColor.drawerLight),
-                                          ),
-                                        ),
-                                        Icon(
-                                          Icons.arrow_forward,
-                                          color: AppColor.drawerLight,
-                                          size: 15,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 4,
-                                              bottom: 8,
-                                              top: 8,
-                                              right: 4),
-                                          child: Text(
-                                            'Due',
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                color: AppColor.drawerLight),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 18, bottom: 8),
-                                      child: Text(
-                                        'Company',
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: AppColor.drawerLight),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 18, bottom: 8),
-                                      child: Text(
-                                        'Assign To',
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: AppColor.drawerLight),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 18, bottom: 8),
-                                      child: Text(
-                                        'Category',
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: AppColor.drawerLight),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 18, bottom: 8),
-                                      child: Text(
-                                        'Status',
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: AppColor.drawerLight),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 18, bottom: 8),
-                                      child: Text(
-                                        'Created By',
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: AppColor.drawerLight),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const VerticalDivider(
-                                thickness: 2,
-                              ),
-                              SizedBox(
-                                height: 160,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.calendar_month_rounded,
-                                          size: 15,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 4,
-                                              bottom: 8,
-                                              top: 8,
-                                              right: 4),
-                                          child: Text(
-                                            widget.taskDetails.taskCreateDate,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                        const Icon(
-                                          Icons.arrow_forward,
-                                          color: Colors.black,
-                                          size: 15,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 4,
-                                              bottom: 8,
-                                              top: 8,
-                                              right: 4),
-                                          child: Text(
-                                            widget.taskDetails.dueDate,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 18, bottom: 8),
-                                      child: Text(
-                                        widget.taskDetails.company,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 18, bottom: 8),
-                                      child: Text(
-                                        widget.taskDetails.assignTo,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 18, bottom: 8),
-                                      child: Text(
-                                        widget.taskDetails.category_name,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 18, bottom: 8),
-                                      child: Text(
-                                        widget.taskDetails.taskStatusName,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 18, bottom: 8),
-                                      child: Text(
-                                        widget.taskDetails.taskCreateBy,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              OutlinedButton(
-                                onPressed: () {
-                                  if (widget.taskDetails.taskStatus == '0') {
-                                    // Handle 'Mark In Progress' action
-                                  } else if (widget.taskDetails.taskStatus ==
-                                      '1') {
-                                    // Handle 'Mark As Complete' action
-                                  }
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    widget.taskDetails.taskStatus == '0'
-                                        ? 'Mark In Progress'
-                                        : 'Mark As Complete',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color:
-                                          widget.taskDetails.taskStatus == '0'
-                                              ? Colors.deepPurple.shade600
-                                              : Colors.green,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              OutlinedButton(
-                                onPressed: () {},
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(
-                                      color: AppColor
-                                          .appDarkBlue), // Change the border color
-                                  backgroundColor: Colors
-                                      .white, // Change the background color
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'Add Sub Task',
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: AppColor.appDarkBlue),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        // Display other task details similarly
-                        // For example: Due date, assignee, status, etc.
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      color: Colors.white,
-                      child: ListView.builder(
-                        itemCount: subTaskList.length,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(
-                                    0.0), // Adjust these values as needed
-                                bottomRight: Radius.circular(
-                                    0.0), // Adjust these values as needed
-                              ),
-                              color: Colors.grey.shade200,
-                            ),
-                            margin: EdgeInsets.all(10),
-                            child: ListTile(
-                              title: Padding(
-                                padding: const EdgeInsets.all(5.0),
+                      ///buttons row
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            OutlinedButton(
+                              onPressed: () {
+                                if (widget.taskDetails.taskStatus == '0') {
+                                  // Handle 'Mark In Progress' action
+                                } else if (widget.taskDetails.taskStatus ==
+                                    '1') {
+                                  // Handle 'Mark As Complete' action
+                                }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
                                 child: Text(
-                                  subTaskList[index].taskTitle,
+                                  widget.taskDetails.taskStatus == '0'
+                                      ? 'Mark In Progress'
+                                      : 'Mark As Complete',
                                   style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColor.appBlue),
+                                    fontSize: 14,
+                                    color:
+                                    widget.taskDetails.taskStatus == '0'
+                                        ? Colors.deepPurple.shade600
+                                        : Colors.green,
+                                  ),
                                 ),
                               ),
-                              subtitle: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 2.0, horizontal: 5),
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                            'ID: ${subTaskList[index].taskId}'),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Icon(Icons.person_pin_circle_rounded),
-                                        Text('${subTaskList[index].assignTo} '),
-                                        Icon(
-                                          Icons.double_arrow_rounded,
-                                          color: _getColorForTaskTypeName(
-                                              subTaskList[index].taskTypeName),
-                                        ),
-                                        Text(
-                                            ' ${subTaskList[index].taskStatusName}...'),
-                                      ],
+                            ),
+                            OutlinedButton(
+                              onPressed: () {},
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(
+                                    color: AppColor
+                                        .appDarkBlue), // Change the border color
+                                backgroundColor: Colors
+                                    .white, // Change the background color
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Text(
+                                  'Add Sub Task',
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      color: AppColor.appDarkBlue),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      ///sub task list
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          color: Colors.white,
+                          child: ListView.builder(
+                            itemCount: subTaskList.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(
+                                        0.0), // Adjust these values as needed
+                                    bottomRight: Radius.circular(
+                                        0.0), // Adjust these values as needed
+                                  ),
+                                  color: Colors.grey.shade200,
+                                ),
+                                margin: EdgeInsets.all(10),
+                                child: ListTile(
+                                  title: Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: SelectableText(
+                                      subTaskList[index].taskTitle,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColor.appBlue),
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 2.0, horizontal: 0),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.arrow_right,
-                                          color: Colors.black87,
+                                  subtitle: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 2.0, horizontal: 5),
+                                        child: Row(
+                                          children: [
+                                            SelectableText(
+                                                'ID: ${subTaskList[index].taskId}'),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Icon(Icons.person_pin_circle_rounded),
+                                            Text('${subTaskList[index].assignTo} '),
+                                            Icon(
+                                              Icons.double_arrow_rounded,
+                                              color: _getColorForTaskTypeName(
+                                                  subTaskList[index].taskTypeName),
+                                            ),
+                                            Text(
+                                                ' ${subTaskList[index].taskStatusName}...'),
+                                          ],
                                         ),
-                                        Text(
-                                          'Due Date: ${subTaskList[index].dueDate}',
-                                          style:
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 2.0, horizontal: 0),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.arrow_right,
+                                              color: Colors.black87,
+                                            ),
+                                            SelectableText(
+                                              'Due Date: ${subTaskList[index].dueDate}',
+                                              style:
                                               TextStyle(color: Colors.black87),
-                                        ),
-                                        SizedBox(
-                                          width: 20,
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            if (subTaskList[index].taskStatus ==
-                                                '0') {
-                                              // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
-                                              // Handle 'Mark In Progress' action
-                                            } else if (subTaskList[index]
+                                            ),
+                                            SizedBox(
+                                              width: 20,
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                if (subTaskList[index].taskStatus ==
+                                                    '0') {
+                                                  // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                                  // Handle 'Mark In Progress' action
+                                                } else if (subTaskList[index]
                                                     .taskStatus ==
-                                                '1') {
-                                              // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
-                                              // Handle 'Mark As Complete' action
-                                            }
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(0.0),
-                                            child: Text(
-                                              subTaskList[index].taskStatus ==
+                                                    '1') {
+                                                  // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                                  // Handle 'Mark As Complete' action
+                                                }
+                                              },
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(0.0),
+                                                child: Text(
+                                                  subTaskList[index].taskStatus ==
                                                       '0'
-                                                  ? 'Mark In Progress'
-                                                  : 'Mark As Complete',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                color: subTaskList[index]
-                                                            .taskStatus ==
+                                                      ? 'Mark In Progress'
+                                                      : 'Mark As Complete',
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: subTaskList[index]
+                                                        .taskStatus ==
                                                         '0'
-                                                    ? Colors.blueAccent
-                                                    : Colors.green,
+                                                        ? Colors.blueAccent
+                                                        : Colors.green,
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
 
-                              trailing: IconButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => OpenSubTask(
+                                  trailing: IconButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => OpenSubTask(
                                               mainTaskDetails:
-                                                  widget.taskDetails,
+                                              widget.taskDetails,
                                               subTaskDetails:
-                                                  subTaskList[index],
+                                              subTaskList[index],
                                             )),
-                                  );
-                                  print('open sub task');
-                                },
-                                icon: Icon(Icons.open_in_new_rounded),
-                                tooltip: 'Open Sub Task',
-                                focusColor: AppColor.appBlue,
-                              ),
+                                      );
+                                      print('open sub task');
+                                    },
+                                    icon: Icon(Icons.open_in_new_rounded),
+                                    tooltip: 'Open Sub Task',
+                                    focusColor: AppColor.appBlue,
+                                  ),
 
-                              // Add onTap functionality if needed
-                            ),
-                          );
-                        },
+                                  // Add onTap functionality if needed
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+
+
+              ],
             ),
           ),
           Divider(),
@@ -799,7 +822,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                               child: ListTile(
                                 title: Padding(
                                   padding: const EdgeInsets.all(5.0),
-                                  child: Text(
+                                  child: SelectableText(
                                     commentsList[index].commnt,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
