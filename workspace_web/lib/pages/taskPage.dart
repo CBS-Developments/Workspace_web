@@ -370,6 +370,17 @@ class _TaskPageState extends State<TaskPage> {
                                         onPressed: () {
                                           if (filteredTasks[index].taskStatus ==
                                               '0') {
+                                            markInProgressMainTask(context, taskName: filteredTasks[index]
+                                                .taskTitle,
+                                                userName: userName,
+                                                firstName: firstName,
+                                                taskID: filteredTasks[index]
+                                                    .taskId,
+                                                logType: 'Main Task',
+                                                logSummary:
+                                                'Marked In-Progress',
+                                                logDetails:
+                                                'Main Task Due Date: ${filteredTasks[index].dueDate}',);
                                             // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
                                             // Handle 'Mark In Progress' action
                                           } else if (filteredTasks[index]
