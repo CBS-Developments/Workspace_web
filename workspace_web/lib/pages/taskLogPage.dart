@@ -1,7 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'dart:convert';
 import '../colors.dart';
 import '../componants.dart';
 
@@ -12,8 +12,9 @@ class TaskLogPage extends StatefulWidget {
   State<TaskLogPage> createState() => _TaskLogPageState();
 }
 
-class _TaskLogPageState extends State<TaskLogPage> {
+class _TaskLogPageState extends State<TaskLogPage>  {
   List<TaskLog> logList = [];
+  DateTime selectedDate = DateTime.now();
 
   @override
   void initState() {
@@ -23,7 +24,9 @@ class _TaskLogPageState extends State<TaskLogPage> {
 
   Future<void> getLogList() async {
     logList.clear();
-    var data = {};
+    var data = {
+      'selectedDate': selectedDate.toLocal().toString(),
+    };
 
     const url = "http://dev.workspace.cbs.lk/taskLogList.php";
     http.Response res = await http.post(
@@ -41,13 +44,38 @@ class _TaskLogPageState extends State<TaskLogPage> {
         for (Map<String, dynamic> details in responseJson) {
           logList.add(TaskLog.fromJson(details));
         }
-
       });
     } else {
       throw Exception('Failed to load jobs from API');
     }
   }
 
+  List<TaskLog> filterTaskLog(List<TaskLog>? data, DateTime selectedDate) {
+    final formatter = DateFormat('yyyy-MM-dd');
+    final selectedDateStr = formatter.format(selectedDate);
+
+    // Filter based on selected date
+    return data?.where((log) => log.logCreateByDate == selectedDateStr).toList() ?? [];
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+
+      // Filter based on selected date when date changes
+      await getLogList();
+      logList = filterTaskLog(logList, selectedDate);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,31 +99,42 @@ class _TaskLogPageState extends State<TaskLogPage> {
             flex: 2,
             child: Column(
               children: [
-                Container(height: 60,color: Colors.grey,),
-
+                Container(
+                  height: 60,
+                  color: Colors.grey,
+                  child: TextButton(
+                    onPressed: () => _selectDate(context),
+                    child: Text(
+                      'Select Date: ${selectedDate.toLocal()}',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
                 Expanded(
                   child: ListView.builder(
-                      itemCount:logList.length,
-                      itemBuilder: (context, index){
-                        return Container(
-                          child: ListTile(
-                            title: Text('${logList[index].logCreateBy} ${logList[index].logSummary} ${logList[index].logType} : ${logList[index].taskName} as: ${logList[index].logDetails} ',),
-                            subtitle: Text(logList[index].logId,),
-                          ),
-                        );
-                      }),
-                )
+                    itemCount: logList.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        child: ListTile(
+                          title: Text(
+                              '${logList[index].logCreateBy} ${logList[index].logSummary} ${logList[index].logType} : ${logList[index].taskName} as: ${logList[index].logDetails} '),
+                          subtitle: Text(logList[index].logId),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ],
-            ),),
-
+            ),
+          ),
           Divider(),
-
           Expanded(
             flex: 1,
-            child: Column(),),
-
+            child: Column(),
+          ),
         ],
       ),
     );
   }
 }
+
