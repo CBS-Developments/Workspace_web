@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../colors.dart';
-
+import 'package:multiselect_formfield/multiselect_formfield.dart';
 
 class CreateMainTask extends StatefulWidget {
   const CreateMainTask({Key? key}) : super(key: key);
@@ -19,11 +19,20 @@ class _CreateMainTaskState extends State<CreateMainTask> {
   String sourceFrom = 'Source A'; // Set a default value that exists in the dropdown items
   String assignTo = 'Assign A'; // Default value from the items list
   String beneficiary = ''; // Default value from the items list
-  String categoryName = 'Category A'; // Default value from the items list
+  String categoryName = ''; // Default value from the items list
   String category = 'Category Value A'; // Default value from the items list
-  List<String> categoryNames = ['Category A', 'Category B', 'Category C'];
+  List<String> categoryNames = [
+    'Taxation - TAS',
+    'Talent Management - TMS',
+    'Finance & Accounting - AFSS',
+    'Audit & Assurance - ASS',
+    'Company Secretarial - CSS',
+    'Development - DEV'
+    // Add your category items here
+  ];
   int selectedIndex = -1; // Default index value // Default index value
 
+  List<String> selectedAssignTo = [];
 
   List<String> beneficiaries = [
     'Beneficiary A',
@@ -140,13 +149,14 @@ class _CreateMainTaskState extends State<CreateMainTask> {
             ),
             SizedBox(height: 20),
             DropdownButtonFormField<String>(
-              value: assignTo,
+              hint: Text('Select source from'),
+              value: sourceFrom,
               onChanged: (newValue) {
                 setState(() {
-                  assignTo = newValue!;
+                  sourceFrom = newValue!;
                 });
               },
-              items: <String>['Assign A', 'Assign B', 'Assign C']
+              items: <String>['Source A', 'Source B', 'Source C']
                   .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -154,9 +164,40 @@ class _CreateMainTaskState extends State<CreateMainTask> {
                 );
               }).toList(),
               decoration: InputDecoration(
-                labelText: 'Assign To',
-                hintText: 'Select assign to',
+                labelText: 'Source From',
+                hintText: 'Select source from',
               ),
+            ),
+            SizedBox(height: 20),
+            MultiSelectFormField(
+              autovalidate: AutovalidateMode.always,
+              title: Text('Assign To'),
+              dataSource: [
+                {
+                  "display": "Assign A",
+                  "value": "Assign A",
+                },
+                {
+                  "display": "Assign B",
+                  "value": "Assign B",
+                },
+                {
+                  "display": "Assign C",
+                  "value": "Assign C",
+                },
+                // Add other items as needed
+              ],
+              textField: 'display',
+              valueField: 'value',
+              okButtonLabel: 'OK',
+              cancelButtonLabel: 'CANCEL',
+              initialValue: selectedAssignTo,
+              onSaved: (value) {
+                if (value == null) return;
+                setState(() {
+                  selectedAssignTo = value;
+                });
+              },
             ),
             SizedBox(height: 20),
             Autocomplete<String>(
@@ -213,27 +254,67 @@ class _CreateMainTaskState extends State<CreateMainTask> {
               },
             ),
             SizedBox(height: 20),
-            DropdownButtonFormField<String>(
-              value: categoryNames[selectedIndex != -1 ? selectedIndex : 0], // Initial value based on selectedIndex
-              onChanged: (newValue) {
+            Autocomplete<String>(
+              optionsBuilder: (TextEditingValue textEditingValue) {
+                return categoryNames.where((String option) {
+                  return option.toLowerCase().contains(
+                    textEditingValue.text.toLowerCase(),
+                  );
+                });
+              },
+              onSelected: (String value) {
                 setState(() {
-                  categoryName = newValue!;
-                  selectedIndex = categoryNames.indexOf(newValue);
+                  categoryName = value;
+                  selectedIndex = categoryNames.indexOf(value);
                   category = selectedIndex.toString(); // Convert selectedIndex to string
                 });
               },
-              items: categoryNames
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
+              fieldViewBuilder: (
+                  BuildContext context,
+                  TextEditingController textEditingController,
+                  FocusNode focusNode,
+                  VoidCallback onFieldSubmitted,
+                  ) {
+                return TextField(
+                  controller: textEditingController,
+                  focusNode: focusNode,
+                  onChanged: (String text) {
+                    // Perform search or filtering here
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Category',
+                    hintText: 'Select Category',
+                  ),
                 );
-              }).toList(),
-              decoration: InputDecoration(
-                labelText: 'Category Name',
-                hintText: 'Select category name',
-              ),
+              },
+              optionsViewBuilder: (
+                  BuildContext context,
+                  AutocompleteOnSelected<String> onSelected,
+                  Iterable<String> options,
+                  ) {
+                return Align(
+                  alignment: Alignment.topLeft,
+                  child: Material(
+                    elevation: 4.0,
+                    child: Container(
+                      constraints: BoxConstraints(maxHeight: 200),
+                      width: MediaQuery.of(context).size.width,
+                      child: ListView(
+                        children: options
+                            .map((String option) => ListTile(
+                          title: Text(option),
+                          onTap: () {
+                            onSelected(option);
+                          },
+                        ))
+                            .toList(),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
+
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
