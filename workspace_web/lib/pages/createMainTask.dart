@@ -18,11 +18,21 @@ class _CreateMainTaskState extends State<CreateMainTask> {
   String dueDate = '';
   String sourceFrom = 'Source A'; // Set a default value that exists in the dropdown items
   String assignTo = 'Assign A'; // Default value from the items list
-  String beneficiary = 'Beneficiary A'; // Default value from the items list
+  String beneficiary = ''; // Default value from the items list
   String categoryName = 'Category A'; // Default value from the items list
   String category = 'Category Value A'; // Default value from the items list
   List<String> categoryNames = ['Category A', 'Category B', 'Category C'];
   int selectedIndex = -1; // Default index value // Default index value
+
+
+  List<String> beneficiaries = [
+    'Beneficiary A',
+    'Beneficiary B',
+    'Beneficiary C',
+    'Beneficiary D',
+    'Beneficiary E',
+    'Beneficiary F',
+  ];
 
   Future<void> createMainTask() async {
     // Validate input fields...
@@ -149,24 +159,58 @@ class _CreateMainTaskState extends State<CreateMainTask> {
               ),
             ),
             SizedBox(height: 20),
-            DropdownButtonFormField<String>(
-              value: beneficiary,
-              onChanged: (newValue) {
-                setState(() {
-                  beneficiary = newValue!;
+            Autocomplete<String>(
+              optionsBuilder: (TextEditingValue textEditingValue) {
+                return beneficiaries.where((String option) {
+                  return option.toLowerCase().contains(
+                    textEditingValue.text.toLowerCase(),
+                  );
                 });
               },
-              items: <String>['Beneficiary A', 'Beneficiary B', 'Beneficiary C']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
+              onSelected: (String value) {
+                setState(() {
+                  beneficiary = value;
+                });
+              },
+              fieldViewBuilder: (BuildContext context, TextEditingController textEditingController, FocusNode focusNode, VoidCallback onFieldSubmitted) {
+                return TextField(
+                  controller: textEditingController,
+                  focusNode: focusNode,
+                  onChanged: (String text) {
+                    // Perform search or filtering here
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Beneficiary',
+                    hintText: 'Search beneficiary',
+                  ),
                 );
-              }).toList(),
-              decoration: InputDecoration(
-                labelText: 'Beneficiary',
-                hintText: 'Select beneficiary',
-              ),
+              },
+              optionsViewBuilder: (
+                  BuildContext context,
+                  AutocompleteOnSelected<String> onSelected,
+                  Iterable<String> options,
+                  ) {
+                return Align(
+                  alignment: Alignment.topLeft,
+                  child: Material(
+                    elevation: 4.0,
+                    child: Container(
+                      constraints: BoxConstraints(maxHeight: 200),
+                      width: MediaQuery.of(context).size.width,
+                      child: ListView(
+                        children: options
+                            .map((String option) => ListTile(
+                          title: Text(option),
+                          onTap: () {
+                            onSelected(option);
+                          },
+                        ))
+                            .toList(),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
             SizedBox(height: 20),
             DropdownButtonFormField<String>(
