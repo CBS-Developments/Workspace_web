@@ -99,17 +99,21 @@ class _TaskLogPageState extends State<TaskLogPage>  {
             flex: 2,
             child: Column(
               children: [
-                Container(
-                  height: 60,
-                  color: Colors.grey,
-                  child: TextButton(
-                    onPressed: () => _selectDate(context),
-                    child: Text(
-                      'Select Date: ${selectedDate.toLocal()}',
-                      style: TextStyle(color: Colors.white),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    height: 60,
+                    color: AppColor.appDarkBlue,
+                    child: TextButton(
+                      onPressed: () => _selectDate(context),
+                      child: Text(
+                        'Select Date: ${DateFormat('yyyy-MM-dd').format(selectedDate)}',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ),
+
                 Expanded(
                   child: logList.isEmpty
                       ? const Center(
