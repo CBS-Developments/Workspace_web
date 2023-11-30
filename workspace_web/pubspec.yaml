@@ -38,6 +38,7 @@ dependencies:
   shared_preferences: any
   http: any
   intl: ^0.17.0
+  autocomplete_textfield: ^2.0.1
 
 dev_dependencies:
   flutter_test:
