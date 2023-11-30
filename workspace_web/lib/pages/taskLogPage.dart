@@ -111,7 +111,14 @@ class _TaskLogPageState extends State<TaskLogPage>  {
                   ),
                 ),
                 Expanded(
-                  child: ListView.builder(
+                  child: logList.isEmpty
+                      ? const Center(
+                    child: Text(
+                      'There is no Log List found!!',
+                      style: TextStyle(fontSize: 16, color: Colors.red),
+                    ),
+                  )
+                      : ListView.builder(
                     itemCount: logList.length,
                     itemBuilder: (context, index) {
                       return Container(
