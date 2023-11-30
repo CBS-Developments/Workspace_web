@@ -1171,7 +1171,9 @@ class _TaskPageState extends State<TaskPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/createMainTask');
+                      },
                       child: Text('Create Main Task'),
                       style: ElevatedButton.styleFrom(
                         primary: AppColor

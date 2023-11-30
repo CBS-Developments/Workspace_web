@@ -79,7 +79,7 @@ class _TaskLogPageState extends State<TaskLogPage> {
                       itemBuilder: (context, index){
                         return Container(
                           child: ListTile(
-                            title: Text('${logList[index].logCreateBy} ${logList[index].logSummary} ${logList[index].logType} : ${logList[index].taskName}',),
+                            title: Text('${logList[index].logCreateBy} ${logList[index].logSummary} ${logList[index].logType} : ${logList[index].taskName} as: ${logList[index].logDetails} ',),
                             subtitle: Text(logList[index].logId,),
                           ),
                         );
