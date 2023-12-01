@@ -111,326 +111,427 @@ class _CreateMainTaskState extends State<CreateMainTask> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: AppColor.appBlue,
-        title: Text('Create Main Task'),
+        title: Center(child: Text('Create Main Task')),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              controller: titleController,
-              decoration: InputDecoration(
-                labelText: 'Title',
-                hintText: 'Enter task title',
+      body: Row(
+        children: [
+          Expanded(
+              flex: 1,
+              child: Column()),
+          Expanded(
+            flex: 4,
+            child: Container(
+              margin: EdgeInsets.all(10),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey, // Shadow color
+                    blurRadius: 5, // Spread radius
+                    offset: Offset(0, 3), // Offset in x and y directions
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    margin: EdgeInsets.all(8),
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(00),
+                      color: AppColor.appGrey
+                    ),
+                    child: TextField(
+                      controller: titleController,
+                      decoration: InputDecoration(
+                        labelText: 'Title: ',
+                        labelStyle: TextStyle(color: AppColor.appDarkBlue,fontSize: 20),
+                        hintText: 'Enter main task title',
+                        hintStyle: TextStyle(fontSize: 14),
+                        // Change border and focused border colors
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.lightBlueAccent), // Normal border color
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: AppColor.appDarkBlue), // Focus color
+                      ),
+                    ),
+                  ),
+                  ),
+
+                  Container(
+                    margin: EdgeInsets.all(8),
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(00),
+                        color: AppColor.appGrey
+                    ),
+                    child: TextField(
+                      controller: descriptionController,
+                      maxLines: null,
+                      decoration: InputDecoration(
+                        labelText: 'Description',
+                        labelStyle: TextStyle(color: AppColor.appDarkBlue,fontSize: 20),
+                        hintText: 'Enter task description',
+                        hintStyle: TextStyle(fontSize: 14),
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.lightBlueAccent), // Normal border color
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: AppColor.appDarkBlue), // Focus color
+                        ),
+                      ),
+                    ),
+                  ),
+
+
+
+
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 7,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                          child: Row(
+                          children: [
+                            Text("Beneficiary:  ",style: TextStyle(color: AppColor.appDarkBlue,fontSize: 18),),
+                            Expanded(
+                              child: Autocomplete<String>(
+                                optionsBuilder: (TextEditingValue textEditingValue) {
+                                  return beneficiaries.where((String option) {
+                                    return option.toLowerCase().contains(
+                                      textEditingValue.text.toLowerCase(),
+                                    );
+                                  });
+                                },
+                                onSelected: (String value) {
+                                  setState(() {
+                                    beneficiary = value;
+                                  });
+                                },
+                                fieldViewBuilder: (BuildContext context, TextEditingController textEditingController, FocusNode focusNode, VoidCallback onFieldSubmitted) {
+                                  return TextField(
+                                    controller: textEditingController,
+                                    focusNode: focusNode,
+                                    onChanged: (String text) {
+                                      // Perform search or filtering here
+                                    },
+                                    decoration: InputDecoration(
+                                      hintText: 'Select beneficiary',
+                                      hintStyle: TextStyle(fontSize: 16),
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.lightBlueAccent), // Normal border color
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(color: AppColor.appDarkBlue), // Focus color
+                                      ),
+                                    ),
+                                  );
+                                },
+                                optionsViewBuilder: (
+                                    BuildContext context,
+                                    AutocompleteOnSelected<String> onSelected,
+                                    Iterable<String> options,
+                                    ) {
+                                  return Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Material(
+                                      elevation: 4.0,
+                                      child: Container(
+                                        constraints: BoxConstraints(maxHeight: 200),
+                                        width: MediaQuery.of(context).size.width*0.55,
+                                        child: ListView(
+                                          children: options
+                                              .map((String option) => ListTile(
+                                            title: Text(option),
+                                            onTap: () {
+                                              onSelected(option);
+                                            },
+                                          ))
+                                              .toList(),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                      ),
+                        ),
+                      ),
+
+                      Expanded(
+                        flex: 5,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                          child: Row(
+                            children: [
+                              Text("Priority:  ",style: TextStyle(color: AppColor.appDarkBlue,fontSize: 18),),
+                              Expanded(
+                                child: Autocomplete<String>(
+                                  optionsBuilder: (TextEditingValue textEditingValue) {
+                                    return ['Low', 'Medium', 'High'].where((String option) {
+                                      return option.toLowerCase().contains(
+                                        textEditingValue.text.toLowerCase(),
+                                      );
+                                    });
+                                  },
+                                  onSelected: (String value) {
+                                    setState(() {
+                                      priority = value;
+                                    });
+                                  },
+                                  fieldViewBuilder: (
+                                      BuildContext context,
+                                      TextEditingController textEditingController,
+                                      FocusNode focusNode,
+                                      VoidCallback onFieldSubmitted,
+                                      ) {
+                                    return TextField(
+                                      controller: textEditingController,
+                                      focusNode: focusNode,
+                                      onChanged: (String text) {
+                                        // Perform search or filtering here
+                                      },
+                                      decoration: InputDecoration(
+                                        hintText: 'Select priority',
+                                        hintStyle: TextStyle(fontSize: 16),
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(color: Colors.lightBlueAccent), // Normal border color
+                                        ),
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(color: AppColor.appDarkBlue), // Focus color
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  optionsViewBuilder: (
+                                      BuildContext context,
+                                      AutocompleteOnSelected<String> onSelected,
+                                      Iterable<String> options,
+                                      ) {
+                                    return Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Material(
+                                        elevation: 4.0,
+                                        child: Container(
+                                          constraints: BoxConstraints(maxHeight: 200),
+                                          width: MediaQuery.of(context).size.width*0.15,
+                                          child: ListView(
+                                            children: options
+                                                .map((String option) => ListTile(
+                                              title: Text(option),
+                                              onTap: () {
+                                                onSelected(option);
+                                              },
+                                            ))
+                                                .toList(),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                    ],
+                  ),
+
+
+
+                  TextButton(
+                    onPressed: () {
+                      _selectDate(context);
+                    },
+                    child: Text(
+                      dueDate.isEmpty ? 'Select Due Date' : 'Due Date: $dueDate',
+                    ),
+                  ),
+
+                  Autocomplete<String>(
+                    optionsBuilder: (TextEditingValue textEditingValue) {
+                      return ['Source A', 'Source B', 'Source C'].where((String option) {
+                        return option.toLowerCase().contains(
+                          textEditingValue.text.toLowerCase(),
+                        );
+                      });
+                    },
+                    onSelected: (String value) {
+                      setState(() {
+                        sourceFrom = value;
+                      });
+                    },
+                    fieldViewBuilder: (
+                        BuildContext context,
+                        TextEditingController textEditingController,
+                        FocusNode focusNode,
+                        VoidCallback onFieldSubmitted,
+                        ) {
+                      return TextField(
+                        controller: textEditingController,
+                        focusNode: focusNode,
+                        onChanged: (String text) {
+                          // Perform search or filtering here
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Source From',
+                          hintText: 'Search source from',
+                        ),
+                      );
+                    },
+                    optionsViewBuilder: (
+                        BuildContext context,
+                        AutocompleteOnSelected<String> onSelected,
+                        Iterable<String> options,
+                        ) {
+                      return Align(
+                        alignment: Alignment.topLeft,
+                        child: Material(
+                          elevation: 4.0,
+                          child: Container(
+                            constraints: BoxConstraints(maxHeight: 200),
+                            width: MediaQuery.of(context).size.width,
+                            child: ListView(
+                              children: options
+                                  .map((String option) => ListTile(
+                                title: Text(option),
+                                onTap: () {
+                                  onSelected(option);
+                                },
+                              ))
+                                  .toList(),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+
+                  MultiSelectFormField(
+                    autovalidate: AutovalidateMode.always,
+                    title: Text('Assign To'),
+                    dataSource: [
+                      {
+                        "display": "Assign A",
+                        "value": "Assign A",
+                      },
+                      {
+                        "display": "Assign B",
+                        "value": "Assign B",
+                      },
+                      {
+                        "display": "Assign C",
+                        "value": "Assign C",
+                      },
+                      // Add other items as needed
+                    ],
+                    textField: 'display',
+                    valueField: 'value',
+                    okButtonLabel: 'OK',
+                    cancelButtonLabel: 'CANCEL',
+                    initialValue: selectedAssignTo,
+                    onSaved: (value) {
+                      if (value == null) return;
+                      setState(() {
+                        selectedAssignTo = value.cast<String>(); // Ensure the value is a list of strings
+                      });
+                    },
+                  ),
+
+
+
+                  Autocomplete<String>(
+                    optionsBuilder: (TextEditingValue textEditingValue) {
+                      return categoryNames.where((String option) {
+                        return option.toLowerCase().contains(
+                          textEditingValue.text.toLowerCase(),
+                        );
+                      });
+                    },
+                    onSelected: (String value) {
+                      setState(() {
+                        categoryName = value;
+                        selectedIndex = categoryNames.indexOf(value);
+                        category = selectedIndex.toString(); // Convert selectedIndex to string
+                      });
+                    },
+                    fieldViewBuilder: (
+                        BuildContext context,
+                        TextEditingController textEditingController,
+                        FocusNode focusNode,
+                        VoidCallback onFieldSubmitted,
+                        ) {
+                      return TextField(
+                        controller: textEditingController,
+                        focusNode: focusNode,
+                        onChanged: (String text) {
+                          // Perform search or filtering here
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Category',
+                          hintText: 'Select Category',
+                        ),
+                      );
+                    },
+                    optionsViewBuilder: (
+                        BuildContext context,
+                        AutocompleteOnSelected<String> onSelected,
+                        Iterable<String> options,
+                        ) {
+                      return Align(
+                        alignment: Alignment.topLeft,
+                        child: Material(
+                          elevation: 4.0,
+                          child: Container(
+                            constraints: BoxConstraints(maxHeight: 200),
+                            width: MediaQuery.of(context).size.width,
+                            child: ListView(
+                              children: options
+                                  .map((String option) => ListTile(
+                                title: Text(option),
+                                onTap: () {
+                                  onSelected(option);
+                                },
+                              ))
+                                  .toList(),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      createMainTask();
+                      print('Title:${titleController.text}');
+                      print('Description:${descriptionController.text}');
+                      print('Selected Priority:${priority}');
+                      print('Selected Due Date:${dueDate}');
+                      print('Selected Source From:${sourceFrom}');
+                      print('Selected Assign To:${selectedAssignTo}');
+                      print('Selected Beneficiary:${beneficiary}');
+                      print('Selected Category Name:${categoryName}');
+                      print('Selected Category:${category}');
+                    },
+                    child: Text('Create Task'),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: 20),
-            TextField(
-              controller: descriptionController,
-              maxLines: null,
-              decoration: InputDecoration(
-                labelText: 'Description',
-                hintText: 'Enter task description',
-              ),
-            ),
-            SizedBox(height: 20),
-            Autocomplete<String>(
-              optionsBuilder: (TextEditingValue textEditingValue) {
-                return ['Low', 'Medium', 'High'].where((String option) {
-                  return option.toLowerCase().contains(
-                    textEditingValue.text.toLowerCase(),
-                  );
-                });
-              },
-              onSelected: (String value) {
-                setState(() {
-                  priority = value;
-                });
-              },
-              fieldViewBuilder: (
-                  BuildContext context,
-                  TextEditingController textEditingController,
-                  FocusNode focusNode,
-                  VoidCallback onFieldSubmitted,
-                  ) {
-                return TextField(
-                  controller: textEditingController,
-                  focusNode: focusNode,
-                  onChanged: (String text) {
-                    // Perform search or filtering here
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Priority',
-                    hintText: 'Search priority',
-                  ),
-                );
-              },
-              optionsViewBuilder: (
-                  BuildContext context,
-                  AutocompleteOnSelected<String> onSelected,
-                  Iterable<String> options,
-                  ) {
-                return Align(
-                  alignment: Alignment.topLeft,
-                  child: Material(
-                    elevation: 4.0,
-                    child: Container(
-                      constraints: BoxConstraints(maxHeight: 200),
-                      width: MediaQuery.of(context).size.width,
-                      child: ListView(
-                        children: options
-                            .map((String option) => ListTile(
-                          title: Text(option),
-                          onTap: () {
-                            onSelected(option);
-                          },
-                        ))
-                            .toList(),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
+          ),
 
-            SizedBox(height: 20),
-
-            TextButton(
-              onPressed: () {
-                _selectDate(context);
-              },
-              child: Text(
-                dueDate.isEmpty ? 'Select Due Date' : 'Due Date: $dueDate',
-              ),
-            ),
-
-            SizedBox(height: 20),
-            Autocomplete<String>(
-              optionsBuilder: (TextEditingValue textEditingValue) {
-                return ['Source A', 'Source B', 'Source C'].where((String option) {
-                  return option.toLowerCase().contains(
-                    textEditingValue.text.toLowerCase(),
-                  );
-                });
-              },
-              onSelected: (String value) {
-                setState(() {
-                  sourceFrom = value;
-                });
-              },
-              fieldViewBuilder: (
-                  BuildContext context,
-                  TextEditingController textEditingController,
-                  FocusNode focusNode,
-                  VoidCallback onFieldSubmitted,
-                  ) {
-                return TextField(
-                  controller: textEditingController,
-                  focusNode: focusNode,
-                  onChanged: (String text) {
-                    // Perform search or filtering here
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Source From',
-                    hintText: 'Search source from',
-                  ),
-                );
-              },
-              optionsViewBuilder: (
-                  BuildContext context,
-                  AutocompleteOnSelected<String> onSelected,
-                  Iterable<String> options,
-                  ) {
-                return Align(
-                  alignment: Alignment.topLeft,
-                  child: Material(
-                    elevation: 4.0,
-                    child: Container(
-                      constraints: BoxConstraints(maxHeight: 200),
-                      width: MediaQuery.of(context).size.width,
-                      child: ListView(
-                        children: options
-                            .map((String option) => ListTile(
-                          title: Text(option),
-                          onTap: () {
-                            onSelected(option);
-                          },
-                        ))
-                            .toList(),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-
-            SizedBox(height: 20),
-            MultiSelectFormField(
-              autovalidate: AutovalidateMode.always,
-              title: Text('Assign To'),
-              dataSource: [
-                {
-                  "display": "Assign A",
-                  "value": "Assign A",
-                },
-                {
-                  "display": "Assign B",
-                  "value": "Assign B",
-                },
-                {
-                  "display": "Assign C",
-                  "value": "Assign C",
-                },
-                // Add other items as needed
-              ],
-              textField: 'display',
-              valueField: 'value',
-              okButtonLabel: 'OK',
-              cancelButtonLabel: 'CANCEL',
-              initialValue: selectedAssignTo,
-              onSaved: (value) {
-                if (value == null) return;
-                setState(() {
-                  selectedAssignTo = value.cast<String>(); // Ensure the value is a list of strings
-                });
-              },
-            ),
-
-            SizedBox(height: 20),
-            Autocomplete<String>(
-              optionsBuilder: (TextEditingValue textEditingValue) {
-                return beneficiaries.where((String option) {
-                  return option.toLowerCase().contains(
-                    textEditingValue.text.toLowerCase(),
-                  );
-                });
-              },
-              onSelected: (String value) {
-                setState(() {
-                  beneficiary = value;
-                });
-              },
-              fieldViewBuilder: (BuildContext context, TextEditingController textEditingController, FocusNode focusNode, VoidCallback onFieldSubmitted) {
-                return TextField(
-                  controller: textEditingController,
-                  focusNode: focusNode,
-                  onChanged: (String text) {
-                    // Perform search or filtering here
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Beneficiary',
-                    hintText: 'Search beneficiary',
-                  ),
-                );
-              },
-              optionsViewBuilder: (
-                  BuildContext context,
-                  AutocompleteOnSelected<String> onSelected,
-                  Iterable<String> options,
-                  ) {
-                return Align(
-                  alignment: Alignment.topLeft,
-                  child: Material(
-                    elevation: 4.0,
-                    child: Container(
-                      constraints: BoxConstraints(maxHeight: 200),
-                      width: MediaQuery.of(context).size.width,
-                      child: ListView(
-                        children: options
-                            .map((String option) => ListTile(
-                          title: Text(option),
-                          onTap: () {
-                            onSelected(option);
-                          },
-                        ))
-                            .toList(),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-            SizedBox(height: 20),
-            Autocomplete<String>(
-              optionsBuilder: (TextEditingValue textEditingValue) {
-                return categoryNames.where((String option) {
-                  return option.toLowerCase().contains(
-                    textEditingValue.text.toLowerCase(),
-                  );
-                });
-              },
-              onSelected: (String value) {
-                setState(() {
-                  categoryName = value;
-                  selectedIndex = categoryNames.indexOf(value);
-                  category = selectedIndex.toString(); // Convert selectedIndex to string
-                });
-              },
-              fieldViewBuilder: (
-                  BuildContext context,
-                  TextEditingController textEditingController,
-                  FocusNode focusNode,
-                  VoidCallback onFieldSubmitted,
-                  ) {
-                return TextField(
-                  controller: textEditingController,
-                  focusNode: focusNode,
-                  onChanged: (String text) {
-                    // Perform search or filtering here
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'Category',
-                    hintText: 'Select Category',
-                  ),
-                );
-              },
-              optionsViewBuilder: (
-                  BuildContext context,
-                  AutocompleteOnSelected<String> onSelected,
-                  Iterable<String> options,
-                  ) {
-                return Align(
-                  alignment: Alignment.topLeft,
-                  child: Material(
-                    elevation: 4.0,
-                    child: Container(
-                      constraints: BoxConstraints(maxHeight: 200),
-                      width: MediaQuery.of(context).size.width,
-                      child: ListView(
-                        children: options
-                            .map((String option) => ListTile(
-                          title: Text(option),
-                          onTap: () {
-                            onSelected(option);
-                          },
-                        ))
-                            .toList(),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                createMainTask();
-                print('Title:${titleController.text}');
-                print('Description:${descriptionController.text}');
-                print('Selected Priority:${priority}');
-                print('Selected Due Date:${dueDate}');
-                print('Selected Source From:${sourceFrom}');
-                print('Selected Assign To:${selectedAssignTo}');
-                print('Selected Beneficiary:${beneficiary}');
-                print('Selected Category Name:${categoryName}');
-                print('Selected Category:${category}');
-              },
-              child: Text('Create Task'),
-            ),
-          ],
-        ),
+          Expanded(
+            flex: 1,
+              child: Column())
+        ],
       ),
     );
   }
