@@ -6,13 +6,13 @@ import '../colors.dart';
 import '../componants.dart';
 
 class TaskLogPage extends StatefulWidget {
-  const TaskLogPage({super.key});
+  const TaskLogPage({Key? key}) : super(key: key);
 
   @override
   State<TaskLogPage> createState() => _TaskLogPageState();
 }
 
-class _TaskLogPageState extends State<TaskLogPage>  {
+class _TaskLogPageState extends State<TaskLogPage> {
   List<TaskLog> logList = [];
   DateTime selectedDate = DateTime.now();
 
@@ -55,7 +55,10 @@ class _TaskLogPageState extends State<TaskLogPage>  {
     final selectedDateStr = formatter.format(selectedDate);
 
     // Filter based on selected date
-    return data?.where((log) => log.logCreateByDate == selectedDateStr).toList() ?? [];
+    return data
+        ?.where((log) => log.logCreateByDate == selectedDateStr)
+        .toList() ??
+        [];
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -71,8 +74,9 @@ class _TaskLogPageState extends State<TaskLogPage>  {
         selectedDate = picked;
       });
 
-      // Filter based on selected date when date changes
+      // Fetch logList for the selected date
       await getLogList();
+      // Filter based on selected date when date changes
       logList = filterTaskLog(logList, selectedDate);
     }
   }
@@ -107,13 +111,12 @@ class _TaskLogPageState extends State<TaskLogPage>  {
                     child: TextButton(
                       onPressed: () => _selectDate(context),
                       child: Text(
-                        'Select Date: ${DateFormat('yyyy-MM-dd').format(selectedDate)}',
-                        style: TextStyle(color: Colors.white),
+                        'Select a Date: ${DateFormat('yyyy-MM-dd').format(selectedDate)}',
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
                 ),
-
                 Expanded(
                   child: logList.isEmpty
                       ? const Center(
@@ -148,4 +151,3 @@ class _TaskLogPageState extends State<TaskLogPage>  {
     );
   }
 }
-
