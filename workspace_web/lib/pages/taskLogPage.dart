@@ -19,11 +19,11 @@ class _TaskLogPageState extends State<TaskLogPage> {
   @override
   void initState() {
     super.initState();
-    getLogList();
+    //getLogList(selectedDate);
+    _fetchTodayLogs();
   }
 
-  Future<void> getLogList() async {
-    logList.clear();
+  Future<List<TaskLog>> getLogList(DateTime selectedDate) async {
     var data = {
       'selectedDate': selectedDate.toLocal().toString(),
     };
@@ -40,11 +40,11 @@ class _TaskLogPageState extends State<TaskLogPage> {
 
     if (res.statusCode == 200) {
       final responseJson = json.decode(res.body) as List<dynamic>;
-      setState(() {
-        for (Map<String, dynamic> details in responseJson) {
-          logList.add(TaskLog.fromJson(details));
-        }
-      });
+      List<TaskLog> logs = [];
+      for (Map<String, dynamic> details in responseJson) {
+        logs.add(TaskLog.fromJson(details));
+      }
+      return logs;
     } else {
       throw Exception('Failed to load jobs from API');
     }
@@ -56,8 +56,8 @@ class _TaskLogPageState extends State<TaskLogPage> {
 
     // Filter based on selected date
     return data
-        ?.where((log) => log.logCreateByDate == selectedDateStr)
-        .toList() ??
+            ?.where((log) => log.logCreateByDate == selectedDateStr)
+            .toList() ??
         [];
   }
 
@@ -75,10 +75,30 @@ class _TaskLogPageState extends State<TaskLogPage> {
       });
 
       // Fetch logList for the selected date
-      await getLogList();
+      List<TaskLog> selectedDateLogs = await getLogList(selectedDate);
+
       // Filter based on selected date when date changes
-      logList = filterTaskLog(logList, selectedDate);
+      List<TaskLog> filteredLogs =
+          filterTaskLog(selectedDateLogs, selectedDate);
+
+      // Concatenate the filtered logs with the existing logList
+      setState(() {
+        logList = filteredLogs;
+      });
     }
+  }
+
+  Future<void> _fetchTodayLogs() async {
+    DateTime today = DateTime.now();
+    List<TaskLog> todayLogs = await getLogList(today);
+
+    // Filter logs for today's date
+    List<TaskLog> filteredLogs = filterTaskLog(todayLogs, today);
+
+    // Set the filtered logs to the logList
+    setState(() {
+      logList = filteredLogs;
+    });
   }
 
   @override
@@ -88,11 +108,13 @@ class _TaskLogPageState extends State<TaskLogPage> {
         elevation: 1,
         backgroundColor: Colors.white,
         foregroundColor: AppColor.appBlue,
-        title: Text(
-          'Task Log',
-          style: TextStyle(
-            color: AppColor.appBlue,
-            fontSize: 20,
+        title: Center(
+          child: Text(
+            'Task Log',
+            style: TextStyle(
+              color: AppColor.appBlue,
+              fontSize: 20,
+            ),
           ),
         ),
       ),
@@ -100,52 +122,82 @@ class _TaskLogPageState extends State<TaskLogPage> {
       body: Row(
         children: [
           Expanded(
-            flex: 2,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    height: 60,
-                    color: AppColor.appDarkBlue,
-                    child: TextButton(
-                      onPressed: () => _selectDate(context),
-                      child: Text(
-                        'Select a Date: ${DateFormat('yyyy-MM-dd').format(selectedDate)}',
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
+              flex: 1,
+              child: Column(
+                children: [],
+              )),
+          Expanded(
+            flex: 4,
+            child: Container(
+              margin: EdgeInsets.all(10),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey, // Shadow color
+                    blurRadius: 5, // Spread radius
+                    offset: Offset(0, 3), // Offset in x and y directions
                   ),
-                ),
-                Expanded(
-                  child: logList.isEmpty
-                      ? const Center(
-                    child: Text(
-                      'There is no Log List found!!',
-                      style: TextStyle(fontSize: 16, color: Colors.red),
-                    ),
-                  )
-                      : ListView.builder(
-                    itemCount: logList.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        child: ListTile(
-                          title: Text(
-                              '${logList[index].logCreateBy} ${logList[index].logSummary} ${logList[index].logType} : ${logList[index].taskName} as: ${logList[index].logDetails} '),
-                          subtitle: Text(logList[index].logId),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                          onPressed: _fetchTodayLogs,
+                          child: Text("Today Log List"),
                         ),
-                      );
-                    },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          height: 60,
+                          color: AppColor.appDarkBlue,
+                          child: TextButton(
+                            onPressed: () => _selectDate(context),
+                            child: Text(
+                              'Select a Date: ${DateFormat('yyyy-MM-dd').format(selectedDate)}',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: logList.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'There is no Log List to show!!',
+                              style: TextStyle(fontSize: 16, color: Colors.red),
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: logList.length,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                child: ListTile(
+                                  title: Text(
+                                      '${logList[index].logCreateBy} ${logList[index].logSummary} ${logList[index].logType} : ${logList[index].taskName} as: ${logList[index].logDetails} '),
+                                  subtitle: Text(logList[index].logId),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
             ),
           ),
-          Divider(),
           Expanded(
-            flex: 1,
-            child: Column(),
-          ),
+              flex: 1,
+              child: Column(
+                children: [],
+              )),
         ],
       ),
     );
