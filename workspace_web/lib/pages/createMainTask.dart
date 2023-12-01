@@ -277,7 +277,7 @@ class _CreateMainTaskState extends State<CreateMainTask> {
                               controller: descriptionController,
                               maxLines: null,
                               decoration: InputDecoration(
-                                labelText: 'Description',
+                                labelText: 'Description: ',
                                 labelStyle: TextStyle(color: AppColor.appDarkBlue,fontSize: 20),
                                 hintText: 'Enter task description',
                                 hintStyle: TextStyle(fontSize: 14),
@@ -437,16 +437,40 @@ class _CreateMainTaskState extends State<CreateMainTask> {
                                     title: Text('Assign To: ',style: TextStyle(color: AppColor.appDarkBlue,fontSize: 18),),
                                     dataSource: [
                                       {
-                                        "display": "Assign A",
-                                        "value": "Assign A",
+                                        "display": "Deshika",
+                                        "value": "Deshika",
                                       },
                                       {
-                                        "display": "Assign B",
-                                        "value": "Assign B",
+                                        "display": "Damith",
+                                        "value": "Damith",
                                       },
                                       {
-                                        "display": "Assign C",
-                                        "value": "Assign C",
+                                        "display": "Iqlas",
+                                        "value": "Iqlas",
+                                      },
+                                      {
+                                        "display": "Udari",
+                                        "value": "Udari",
+                                      },
+                                      {
+                                        "display": "Shahiru",
+                                        "value": "Shahiru",
+                                      },
+                                      {
+                                        "display": "Dinethri",
+                                        "value": "Dinethri",
+                                      },
+                                      {
+                                        "display": "Sulakshana",
+                                        "value": "Sulakshana",
+                                      },
+                                      {
+                                        "display": "Samadhi",
+                                        "value": "Samadhi",
+                                      },
+                                      {
+                                        "display": "Sanjana",
+                                        "value": "Sanjana",
                                       },
                                       // Add other items as needed
                                     ],
@@ -487,7 +511,7 @@ class _CreateMainTaskState extends State<CreateMainTask> {
                                       Expanded(
                                         child: Autocomplete<String>(
                                           optionsBuilder: (TextEditingValue textEditingValue) {
-                                            return ['Low', 'Medium', 'High'].where((String option) {
+                                            return ['Top Urgent', 'Medium', 'Regular', 'Low'].where((String option) {
                                               return option.toLowerCase().contains(
                                                 textEditingValue.text.toLowerCase(),
                                               );
@@ -573,7 +597,12 @@ class _CreateMainTaskState extends State<CreateMainTask> {
                                       Expanded(
                                         child: Autocomplete<String>(
                                           optionsBuilder: (TextEditingValue textEditingValue) {
-                                            return ['Source A', 'Source B', 'Source C'].where((String option) {
+                                            return ['Skype',
+                                              'Corporate Email',
+                                              'Emojot Email',
+                                              'On Call',
+                                              'Company Chat',
+                                              'Other',].where((String option) {
                                               return option.toLowerCase().contains(
                                                 textEditingValue.text.toLowerCase(),
                                               );
@@ -619,7 +648,7 @@ class _CreateMainTaskState extends State<CreateMainTask> {
                                                 elevation: 4.0,
                                                 child: Container(
                                                   constraints: BoxConstraints(maxHeight: 200),
-                                                  width: MediaQuery.of(context).size.width,
+                                                  width: MediaQuery.of(context).size.width*0.35,
                                                   child: ListView(
                                                     children: options
                                                         .map((String option) => ListTile(
@@ -708,7 +737,7 @@ class _CreateMainTaskState extends State<CreateMainTask> {
                                               child: Material(
                                                 elevation: 4.0,
                                                 child: Container(
-                                                  constraints: BoxConstraints(maxHeight: 300),
+                                                  constraints: BoxConstraints(maxHeight: 200),
                                                   width: MediaQuery.of(context).size.width*0.25,
                                                   child: ListView(
                                                     children: options
