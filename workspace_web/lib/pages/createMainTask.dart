@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -6,6 +8,7 @@ import 'dart:convert';
 import '../colors.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
 
+import '../componants.dart';
 import '../sizes.dart';
 
 class CreateMainTask extends StatefulWidget {
@@ -151,6 +154,33 @@ class _CreateMainTaskState extends State<CreateMainTask> {
     'Tikiri Banda & Sons/Dr. Bandara',
     'Univiser (Pvt) Ltd',
     'UP Weerasinghe Properties Pvt. Ltd'];
+
+  String getCurrentDateTime() {
+    final now = DateTime.now();
+    final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+    return formattedDate;
+  }
+
+  String getCurrentDate() {
+    final now = DateTime.now();
+    final formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    return formattedDate;
+  }
+
+  String getCurrentMonth() {
+    final now = DateTime.now();
+    final formattedDate = DateFormat('yy-MM').format(now);
+    return formattedDate;
+  }
+
+  String generatedTaskId() {
+    final random = Random();
+    int min = 1; // Smallest 9-digit number
+    int max = 999999999; // Largest 9-digit number
+    int randomNumber = min + random.nextInt(max - min + 1);
+    return randomNumber.toString().padLeft(9, '0');
+  }
+
   @override
   void initState() {
     super.initState();
@@ -171,19 +201,7 @@ class _CreateMainTaskState extends State<CreateMainTask> {
           'Data laded in create main task > userName: $userName > userRole: $userRole');
     });
   }
-
-  Future<void> createMainTask() async {
-    // Validate input fields...
-    // (existing validation code)
-
-    // Your data preparation code here...
-
-    var url = "http://dev.workspace.cbs.lk/mainTaskCreate.php";
-    // ... (rest of your code for preparing data)
-
-    // HTTP request handling...
-  }
-
+  
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -208,6 +226,7 @@ class _CreateMainTaskState extends State<CreateMainTask> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         foregroundColor: AppColor.appBlue,
         title: Center(child: Text('Create Main Task')),
@@ -737,7 +756,7 @@ class _CreateMainTaskState extends State<CreateMainTask> {
                                               child: Material(
                                                 elevation: 4.0,
                                                 child: Container(
-                                                  constraints: BoxConstraints(maxHeight: 200),
+                                                  constraints: BoxConstraints(maxHeight: 100),
                                                   width: MediaQuery.of(context).size.width*0.25,
                                                   child: ListView(
                                                     children: options
@@ -796,6 +815,7 @@ class _CreateMainTaskState extends State<CreateMainTask> {
                                   primary: Colors.redAccent, // Change this to the desired color
                                 ),
                                 onPressed: () {
+                                  Navigator.pushNamed(context, '/Task');
                                 },
                                 child: Text('Cancel'),
                               ),
@@ -827,4 +847,149 @@ class _CreateMainTaskState extends State<CreateMainTask> {
       ),
     );
   }
-}
+
+  Future<void> createMainTask() async {
+    if (titleController.text.trim().isEmpty ||
+        descriptionController.text.isEmpty) {
+      // Show an error message if any of the required fields are empty
+      snackBar(context, "Please fill in all required fields", Colors.red);
+      return;
+    }
+
+    // Other validation logic can be added here
+    // If all validations pass, proceed with the registration
+    var url = "http://dev.workspace.cbs.lk/mainTaskCreate.php";
+
+    String logType ='Main Task';
+    String logSummary ='Created';
+    String logDetails ='Due Date: $dueDate';
+    String firstLetterFirstName =
+    firstName.isNotEmpty ? firstName[0] : '';
+    String firstLetterLastName =
+    lastName.isNotEmpty ? lastName[0] : '';
+    String geCategory = categoryName.substring(categoryName.length - 3);
+    String taskID = getCurrentMonth() +
+        firstLetterFirstName +
+        firstLetterLastName +
+        geCategory +
+        generatedTaskId();
+
+    var data = {
+      "task_id": taskID,
+      "task_title": titleController.text,
+      "task_type": '0',
+      "task_type_name": priority,
+      "due_date": dueDate,
+      "task_description": descriptionController.text,
+      "task_create_by_id": userName,
+      "task_create_by": '$firstName $lastName',
+      "task_create_date": getCurrentDate(),
+      "task_create_month": getCurrentMonth(),
+      "task_created_timestamp": getCurrentDateTime(),
+      "task_status": "0",
+      "task_status_name": "Pending",
+      "task_reopen_by": "",
+      "task_reopen_by_id": "",
+      "task_reopen_date": "",
+      "task_reopen_timestamp": "0",
+      "task_finished_by": "",
+      "task_finished_by_id": "",
+      "task_finished_by_date": "",
+      "task_finished_by_timestamp": "0",
+      "task_edit_by": "",
+      "task_edit_by_id": "",
+      "task_edit_by_date": "",
+      "task_edit_by_timestamp": "0",
+      "task_delete_by": "",
+      "task_delete_by_id": "",
+      "task_delete_by_date": "",
+      "task_delete_by_timestamp": "0",
+      "source_from": sourceFrom,
+      "assign_to": selectedAssignTo.toString(),
+      "company": beneficiary,
+      "document_number": '',
+      "action_taken_by_id": "",
+      "action_taken_by": "",
+      "action_taken_date": "",
+      "action_taken_timestamp": "0",
+      "category_name": categoryName,
+      "category": category,
+    };
+
+    http.Response res = await http.post(
+      Uri.parse(url),
+      body: data,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      encoding: Encoding.getByName("utf-8"),
+    );
+
+    if (res.statusCode.toString() == "200") {
+      if (jsonDecode(res.body) == "true") {
+        if (!mounted) return;
+        print('Create main task!!');
+        snackBar(context, "Create main task!!", Colors.green);
+        addLog(context,
+            taskId: taskID,
+            taskName: titleController.text,
+            createBy: firstName,
+            createByID: userName,
+            logType: logType,
+            logSummary: logSummary,
+            logDetails: logDetails);
+        Navigator.pushNamed(context, '/Task');
+
+        // Show the success SnackBar
+
+        }
+      } else {
+        if (!mounted) return;
+        snackBar(context, "Error", Colors.red);
+      }
+    }
+
+  Future<void> addLog(BuildContext context, {required String taskId, required taskName, required String createBy, required String createByID, required logType, required logSummary, required logDetails}) async {
+    var url = "http://dev.workspace.cbs.lk/addLogUpdate.php";
+
+    var data = {
+      "log_id": getCurrentDateTime(),
+      "task_id": taskId,
+      "task_name": taskName,
+      "log_summary": logSummary,
+      "log_type": logType,
+      "log_details": logDetails,
+      "log_create_by": createBy,
+      "log_create_by_id": createByID,
+      "log_create_by_date": getCurrentDate(),
+      "log_create_by_month": getCurrentMonth(),
+      "log_create_by_year": '',
+      "log_created_by_timestamp": getCurrentDateTime(),
+    };
+
+    http.Response res = await http.post(
+      Uri.parse(url),
+      body: data,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      encoding: Encoding.getByName("utf-8"),
+    );
+
+    if (res.statusCode.toString() == "200") {
+      if (jsonDecode(res.body) == "true") {
+        if (!mounted) return;
+        print('Log added!!');
+      } else {
+        if (!mounted) return;
+        snackBar(context, "Error", Colors.red);
+      }
+    } else {
+      if (!mounted) return;
+      snackBar(context, "Error", Colors.redAccent);
+    }
+  }
+  }
+
