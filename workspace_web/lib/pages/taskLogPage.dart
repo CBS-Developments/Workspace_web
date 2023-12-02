@@ -19,7 +19,6 @@ class _TaskLogPageState extends State<TaskLogPage> {
   @override
   void initState() {
     super.initState();
-    //getLogList(selectedDate);
     _fetchTodayLogs();
   }
 
@@ -54,10 +53,9 @@ class _TaskLogPageState extends State<TaskLogPage> {
     final formatter = DateFormat('yyyy-MM-dd');
     final selectedDateStr = formatter.format(selectedDate);
 
-    // Filter based on selected date
     return data
-            ?.where((log) => log.logCreateByDate == selectedDateStr)
-            .toList() ??
+        ?.where((log) => log.logCreateByDate == selectedDateStr)
+        .toList() ??
         [];
   }
 
@@ -74,14 +72,9 @@ class _TaskLogPageState extends State<TaskLogPage> {
         selectedDate = picked;
       });
 
-      // Fetch logList for the selected date
       List<TaskLog> selectedDateLogs = await getLogList(selectedDate);
+      List<TaskLog> filteredLogs = filterTaskLog(selectedDateLogs, selectedDate);
 
-      // Filter based on selected date when date changes
-      List<TaskLog> filteredLogs =
-          filterTaskLog(selectedDateLogs, selectedDate);
-
-      // Concatenate the filtered logs with the existing logList
       setState(() {
         logList = filteredLogs;
       });
@@ -91,11 +84,8 @@ class _TaskLogPageState extends State<TaskLogPage> {
   Future<void> _fetchTodayLogs() async {
     DateTime today = DateTime.now();
     List<TaskLog> todayLogs = await getLogList(today);
-
-    // Filter logs for today's date
     List<TaskLog> filteredLogs = filterTaskLog(todayLogs, today);
 
-    // Set the filtered logs to the logList
     setState(() {
       logList = filteredLogs;
     });
@@ -134,60 +124,86 @@ class _TaskLogPageState extends State<TaskLogPage> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey, // Shadow color
-                    blurRadius: 5, // Spread radius
-                    offset: Offset(0, 3), // Offset in x and y directions
+                    color: Colors.grey,
+                    blurRadius: 5,
+                    offset: Offset(0, 3),
                   ),
                 ],
               ),
               child: Column(
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
                           onPressed: _fetchTodayLogs,
-                          child: Text("Today Log List"),
+                          style: ElevatedButton.styleFrom(
+                            primary: AppColor.appDarkBlue, // Change the color to your desired one
+                          ),
+                          child: Text(
+                            "Today Task Log",
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
+
+                    ],
+                  ),
+                  Row(
+                    children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          height: 60,
-                          color: AppColor.appDarkBlue,
-                          child: TextButton(
-                            onPressed: () => _selectDate(context),
-                            child: Text(
-                              'Select a Date: ${DateFormat('yyyy-MM-dd').format(selectedDate)}',
-                              style: const TextStyle(color: Colors.white),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    _selectDate(context);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    primary: AppColor.appDarkBlue, // Change the color to your desired one
+                                  ),
+                                  child: Text("Select Previous Date :"),
+                                ),
+                              ],
                             ),
-                          ),
+                            SizedBox(height: 10,),
+                            Text(
+                              "Selected Date: ${DateFormat('yyyy-MM-dd').format(selectedDate)}",
+                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
+                  Divider(),
                   Expanded(
                     child: logList.isEmpty
                         ? const Center(
-                            child: Text(
-                              'There is no Log List to show!!',
-                              style: TextStyle(fontSize: 16, color: Colors.red),
-                            ),
-                          )
+                      child: Text(
+                        'There is no Log List to show!!',
+                        style: TextStyle(fontSize: 16, color: Colors.red),
+                      ),
+                    )
                         : ListView.builder(
-                            itemCount: logList.length,
-                            itemBuilder: (context, index) {
-                              return Container(
-                                child: ListTile(
-                                  title: Text(
-                                      '${logList[index].logCreateBy} ${logList[index].logSummary} ${logList[index].logType} : ${logList[index].taskName} as: ${logList[index].logDetails} '),
-                                  subtitle: Text(logList[index].logId),
-                                ),
-                              );
-                            },
+                      itemCount: logList.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          child: ListTile(
+                            title: Text(
+                              '${logList[index].logCreateBy} ${logList[index].logSummary} ${logList[index].logType} : ${logList[index].taskName} as: ${logList[index].logDetails} ',
+                            ),
+                            subtitle: Text(logList[index].logId),
                           ),
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),
