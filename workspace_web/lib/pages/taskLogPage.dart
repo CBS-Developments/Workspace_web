@@ -194,12 +194,16 @@ class _TaskLogPageState extends State<TaskLogPage> {
                         : ListView.builder(
                       itemCount: logList.length,
                       itemBuilder: (context, index) {
-                        return Container(
+                        return Card(
+                          color: Colors.grey[200],
+                          elevation: 3, // Adjust the elevation as needed
+                          margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                           child: ListTile(
                             title: Text(
                               '${logList[index].logCreateBy} ${logList[index].logSummary} ${logList[index].logType} : ${logList[index].taskName} as: ${logList[index].logDetails} ',
                             ),
                             subtitle: Text(logList[index].logId),
+                            // You can add more decorations or styles here
                           ),
                         );
                       },
