@@ -1,5 +1,6 @@
+import 'dart:convert';
 import 'dart:math';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
@@ -185,10 +186,14 @@ class _CreateSubTaskPageState extends State<CreateSubTaskPage> {
   void initState() {
     super.initState();
     // Initialize assignTo based on selectedAssignTo
-    assignTo = selectedAssignTo.join(', ');
+    // assignTo = selectedAssignTo.toString();
     loadData();
     beneficiary = widget.mainTaskDetails.company;
     priority = widget.mainTaskDetails.taskTypeName;
+    sourceFrom = widget.mainTaskDetails.sourceFrom;
+    assignTo = widget.mainTaskDetails.assignTo;
+    categoryName = widget.mainTaskDetails.category_name;
+    category = widget.mainTaskDetails.category;
     // titleController.text = "Default Text";
   }
 
@@ -496,7 +501,7 @@ class _CreateSubTaskPageState extends State<CreateSubTaskPage> {
                                       // Add other items as needed
                                     ],
                                     textField: 'display',
-                                    hintWidget: Text('Tap to select assignes'),
+                                    hintWidget: Text('${widget.mainTaskDetails.assignTo}'),
                                     valueField: 'value',
                                     okButtonLabel: 'OK',
                                     cancelButtonLabel: 'CANCEL',
@@ -505,6 +510,7 @@ class _CreateSubTaskPageState extends State<CreateSubTaskPage> {
                                       if (value == null) return;
                                       setState(() {
                                         selectedAssignTo = value.cast<String>(); // Ensure the value is a list of strings
+                                        assignTo = selectedAssignTo.toString();
                                       });
                                     },
                                   ),
@@ -647,7 +653,7 @@ class _CreateSubTaskPageState extends State<CreateSubTaskPage> {
                                                 // Perform search or filtering here
                                               },
                                               decoration: InputDecoration(
-                                                hintText: 'Select source from',
+                                                hintText: '${widget.mainTaskDetails.sourceFrom}',
                                                 hintStyle: TextStyle(fontSize: 16),
                                                 enabledBorder: UnderlineInputBorder(
                                                   borderSide: BorderSide(color: Colors.lightBlueAccent), // Normal border color
@@ -737,7 +743,7 @@ class _CreateSubTaskPageState extends State<CreateSubTaskPage> {
                                                 // Perform search or filtering here
                                               },
                                               decoration: InputDecoration(
-                                                hintText: 'Select Category',
+                                                hintText: '${widget.mainTaskDetails.category_name}',
                                                 hintStyle: TextStyle(fontSize: 16),
                                                 enabledBorder: UnderlineInputBorder(
                                                   borderSide: BorderSide(color: Colors.lightBlueAccent), // Normal border color
@@ -797,13 +803,13 @@ class _CreateSubTaskPageState extends State<CreateSubTaskPage> {
                                       .appDarkBlue, // Change this to the desired color
                                 ),
                                 onPressed: () {
-                                  // createSubTask();
+                                  createSubTask();
                                   print('Title:${titleController.text}');
                                   print('Description:${descriptionController.text}');
                                   print('Selected Priority:${priority}');
                                   print('Selected Due Date:${dueDate}');
                                   print('Selected Source From:${sourceFrom}');
-                                  print('Selected Assign To:${selectedAssignTo}');
+                                  print('Selected Assign To:${assignTo}');
                                   print('Selected Beneficiary:${beneficiary}');
                                   print('Selected Category Name:${categoryName}');
                                   print('Selected Category:${category}');
@@ -853,5 +859,149 @@ class _CreateSubTaskPageState extends State<CreateSubTaskPage> {
         ],
       ),
     );
+  }
+
+  Future<void> createSubTask() async {
+    if (titleController.text.trim().isEmpty ||
+        descriptionController.text.isEmpty) {
+      // Show an error message if any of the required fields are empty
+      snackBar(context, "Please fill in all required fields", Colors.red);
+      return;
+    }
+
+    // Other validation logic can be added here
+    // If all validations pass, proceed with the registration
+    var url = "http://dev.workspace.cbs.lk/subTaskCreate.php";
+
+    String logType ='Sub Task';
+    String logSummary ='Created';
+    String logDetails ='Due Date: $dueDate';
+    String firstLetterFirstName = firstName.isNotEmpty ? firstName[0] : '';
+    String firstLetterLastName = lastName.isNotEmpty ? lastName[0] : '';
+    String geCategory = categoryName.substring(categoryName.length - 3);
+    String taskID = getCurrentMonth() + firstLetterFirstName + firstLetterLastName + geCategory + generatedTaskId();
+
+    var data = {
+      "main_task_id": widget.mainTaskDetails.taskId,
+      "task_id": taskID,
+      "task_title":  titleController.text,
+      "task_type": '0',
+      "task_type_name": priority,
+      "due_date": dueDate,
+      "task_description": descriptionController.text,
+      "task_create_by_id": userName,
+      "task_create_by": '$firstName $lastName',
+      "task_create_date": getCurrentDate(),
+      "task_create_month": getCurrentMonth(),
+      "task_created_timestamp": getCurrentDateTime(),
+      "task_status": "0",
+      "task_status_name": "Pending",
+      "task_reopen_by": "",
+      "task_reopen_by_id": "",
+      "task_reopen_date": "",
+      "task_reopen_timestamp": "0",
+      "task_finished_by": "",
+      "task_finished_by_id": "",
+      "task_finished_by_date": "",
+      "task_finished_by_timestamp": "0",
+      "task_edit_by": "",
+      "task_edit_by_id": "",
+      "task_edit_by_date": "",
+      "task_edit_by_timestamp": "0",
+      "task_delete_by": "",
+      "task_delete_by_id": "",
+      "task_delete_by_date": "",
+      "task_delete_by_timestamp": "0",
+      "source_from": sourceFrom,
+      "assign_to": assignTo,
+      "company": beneficiary,
+      "document_number": '',
+      "watch_list": '0',
+      "action_taken_by_id": "",
+      "action_taken_by": "",
+      "action_taken_date": "",
+      "action_taken_timestamp": "0",
+      "category_name": categoryName,
+      "category": category,
+    };
+
+
+    http.Response res = await http.post(
+      Uri.parse(url),
+      body: data,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      encoding: Encoding.getByName("utf-8"),
+    );
+
+    if (res.statusCode.toString() == "200") {
+      if (jsonDecode(res.body) == "true") {
+        if (!mounted) return;
+        print('Sud task created!!');
+        addLog(context,
+            taskId: taskID,
+            taskName: titleController.text,
+            createBy: firstName,
+            createByID: userName,
+            logType: logType,
+            logSummary: logSummary,
+            logDetails: logDetails);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => OpenMainTaskPage(taskDetails: widget.mainTaskDetails)
+        ));
+
+      } else {
+        if (!mounted) return;
+        snackBar(context, "Error", Colors.red);
+      }
+    } else {
+      if (!mounted) return;
+      snackBar(context, "Error", Colors.yellow);
+    }
+  }
+
+  Future<void> addLog(BuildContext context, {required String taskId, required String taskName, required String createBy, required String createByID, required String logType, required String logSummary, required String logDetails}) async {
+    var url = "http://dev.workspace.cbs.lk/addLogUpdate.php";
+
+    var data = {
+      "log_id": getCurrentDateTime(),
+      "task_id": taskId,
+      "task_name": taskName,
+      "log_summary": logSummary,
+      "log_type": logType,
+      "log_details": logDetails,
+      "log_create_by": createBy,
+      "log_create_by_id": createByID,
+      "log_create_by_date": getCurrentDate(),
+      "log_create_by_month": getCurrentMonth(),
+      "log_create_by_year": '',
+      "log_created_by_timestamp": getCurrentDateTime(),
+    };
+
+    http.Response res = await http.post(
+      Uri.parse(url),
+      body: data,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      encoding: Encoding.getByName("utf-8"),
+    );
+
+    if (res.statusCode.toString() == "200") {
+      if (jsonDecode(res.body) == "true") {
+        if (!mounted) return;
+        print('Log added!!');
+      } else {
+        if (!mounted) return;
+        snackBar(context, "Error", Colors.red);
+      }
+    } else {
+      if (!mounted) return;
+      snackBar(context, "Error", Colors.redAccent);
+    }
   }
 }
