@@ -200,7 +200,7 @@ class _TaskLogPageState extends State<TaskLogPage> {
                           margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                           child: ListTile(
                             title: Text(
-                              '${logList[index].logCreateBy} ${logList[index].logSummary} ${logList[index].logType} : ${logList[index].taskName} as: ${logList[index].logDetails} ',
+                              '${logList[index].logCreateBy} ${logList[index].logSummary} ${logList[index].logType} : ${logList[index].taskName} | ${logList[index].logDetails} ',
                             ),
                             subtitle: Text(logList[index].logId),
                             // You can add more decorations or styles here

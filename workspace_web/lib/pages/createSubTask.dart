@@ -233,12 +233,14 @@ class _CreateSubTaskPageState extends State<CreateSubTaskPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         foregroundColor: AppColor.appBlue,
         title: Center(child: Text('Create Sub Task to: ${widget.mainTaskDetails.taskTitle} ',)),
       ),
 
-      body: Row(
+      body:
+      Row(
         children: [
           Expanded(
               flex: 1,

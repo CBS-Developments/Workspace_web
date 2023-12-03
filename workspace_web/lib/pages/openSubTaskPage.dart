@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../colors.dart';
 import '../componants.dart';
+import 'createSubTask.dart';
 import 'openMainTask.dart';
 
 class OpenSubTask extends StatefulWidget {
@@ -643,7 +644,14 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                               ),
                             ),
                             OutlinedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => CreateSubTaskPage(mainTaskDetails: widget.mainTaskDetails,) // Pass the task details
+                                  ),
+                                );
+                              },
                               style: OutlinedButton.styleFrom(
                                 side: BorderSide(
                                     color: AppColor
@@ -899,7 +907,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                               firstName: firstName,
                               lastName: lastName,
                               logType: 'to Sub Task',
-                              logSummary: 'Commented', logDetails: commentTextController.text,
+                              logSummary: 'Commented', logDetails: "Comment: ${commentTextController.text}",
                             );
                           },
                           icon: Icon(

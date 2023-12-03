@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workspace_web/pages/createSubTask.dart';
+import 'package:workspace_web/pages/editMainTask.dart';
 import '../colors.dart';
 import '../componants.dart';
 import 'openSubTaskPage.dart';
@@ -318,7 +319,14 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
               margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
               child: IconButton(
                   tooltip: 'Edit Main Task',
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EditMainTaskPage(mainTaskDetails: widget.taskDetails,) // Pass the task details
+                      ),
+                    );
+                  },
                   icon: Icon(
                     Icons.edit_note_rounded,
                     color: Colors.black87,
@@ -954,7 +962,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                 lastName: lastName,
                                 logType: 'to Main Task',
                                 logSummary: 'Commented',
-                                logDetails: commentTextController.text);
+                                logDetails: " Comment: ${commentTextController.text}");
                           },
                           icon: Icon(
                             Icons.add_comment_rounded,
