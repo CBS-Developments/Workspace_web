@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workspace_web/pages/editSubTask.dart';
 import '../colors.dart';
 import '../componants.dart';
 import 'createSubTask.dart';
@@ -329,7 +330,14 @@ class _OpenSubTaskState extends State<OpenSubTask> {
               margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
               child: IconButton(
                   tooltip: 'Edit Sub Task',
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EditSubTaskPage(mainTaskDetails: widget.mainTaskDetails, subTaskDetails: widget.subTaskDetails)// Pass the task details
+                      ),
+                    );
+                  },
                   icon: Icon(
                     Icons.edit_note_rounded,
                     color: Colors.black87,

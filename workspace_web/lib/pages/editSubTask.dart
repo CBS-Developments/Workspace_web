@@ -5,21 +5,23 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:workspace_web/pages/openSubTaskPage.dart';
 
 import '../colors.dart';
 import '../componants.dart';
 import '../sizes.dart';
 import 'openMainTask.dart';
 
-class EditMainTaskPage extends StatefulWidget {
+class EditSubTaskPage extends StatefulWidget {
+  final Task subTaskDetails;
   final MainTask mainTaskDetails;
-  const EditMainTaskPage({super.key, required this.mainTaskDetails});
+  const EditSubTaskPage({super.key, required this.subTaskDetails, required this.mainTaskDetails});
 
   @override
-  State<EditMainTaskPage> createState() => _EditMainTaskPageState();
+  State<EditSubTaskPage> createState() => _EditSubTaskPageState();
 }
 
-class _EditMainTaskPageState extends State<EditMainTaskPage> {
+class _EditSubTaskPageState extends State<EditSubTaskPage> {
 
   String userName = "";
   String firstName = "";
@@ -189,15 +191,15 @@ class _EditMainTaskPageState extends State<EditMainTaskPage> {
     // Initialize assignTo based on selectedAssignTo
     // assignTo = selectedAssignTo.toString();
     loadData();
-    beneficiary = widget.mainTaskDetails.company;
-    priority = widget.mainTaskDetails.taskTypeName;
-    sourceFrom = widget.mainTaskDetails.sourceFrom;
-    assignTo = widget.mainTaskDetails.assignTo;
-    categoryName = widget.mainTaskDetails.category_name;
-    category = widget.mainTaskDetails.category;
-    titleController.text =  widget.mainTaskDetails.taskTitle;
-    descriptionController.text =  widget.mainTaskDetails.task_description;
-    dueDate = widget.mainTaskDetails.dueDate;
+    beneficiary = widget.subTaskDetails.company;
+    priority = widget.subTaskDetails.taskTypeName;
+    sourceFrom = widget.subTaskDetails.sourceFrom;
+    assignTo = widget.subTaskDetails.assignTo;
+    categoryName = widget.subTaskDetails.categoryName;
+    category = widget.subTaskDetails.category;
+    titleController.text =  widget.subTaskDetails.taskTitle;
+    descriptionController.text =  widget.subTaskDetails.taskDescription;
+    dueDate = widget.subTaskDetails.dueDate;
   }
 
   void loadData() async {
@@ -239,11 +241,9 @@ class _EditMainTaskPageState extends State<EditMainTaskPage> {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         foregroundColor: AppColor.appBlue,
-        title: Center(child: Text('Editing Main Task: ${widget.mainTaskDetails.taskId}')),
+        title: Center(child: Text('Editing Main Task: ${widget.subTaskDetails.taskId}')),
       ),
-
-      body:
-      Row(
+      body: Row(
         children: [
           Expanded(
               flex: 1,
@@ -357,7 +357,7 @@ class _EditMainTaskPageState extends State<EditMainTaskPage> {
                                                 // Perform search or filtering here
                                               },
                                               decoration: InputDecoration(
-                                                hintText: '${widget.mainTaskDetails.company}',
+                                                hintText: '${widget.subTaskDetails.company}',
                                                 hintStyle: TextStyle(fontSize: 16),
                                                 enabledBorder: UnderlineInputBorder(
                                                   borderSide: BorderSide(color: Colors.lightBlueAccent), // Normal border color
@@ -506,7 +506,7 @@ class _EditMainTaskPageState extends State<EditMainTaskPage> {
                                       // Add other items as needed
                                     ],
                                     textField: 'display',
-                                    hintWidget: Text('${widget.mainTaskDetails.assignTo}'),
+                                    hintWidget: Text('${widget.subTaskDetails.assignTo}'),
                                     valueField: 'value',
                                     okButtonLabel: 'OK',
                                     cancelButtonLabel: 'CANCEL',
@@ -567,7 +567,7 @@ class _EditMainTaskPageState extends State<EditMainTaskPage> {
                                                 // Perform search or filtering here
                                               },
                                               decoration: InputDecoration(
-                                                hintText: '${widget.mainTaskDetails.taskTypeName}',
+                                                hintText: '${widget.subTaskDetails.taskTypeName}',
                                                 hintStyle: TextStyle(fontSize: 16),
                                                 enabledBorder: UnderlineInputBorder(
                                                   borderSide: BorderSide(color: Colors.lightBlueAccent), // Normal border color
@@ -658,7 +658,7 @@ class _EditMainTaskPageState extends State<EditMainTaskPage> {
                                                 // Perform search or filtering here
                                               },
                                               decoration: InputDecoration(
-                                                hintText: '${widget.mainTaskDetails.sourceFrom}',
+                                                hintText: '${widget.subTaskDetails.sourceFrom}',
                                                 hintStyle: TextStyle(fontSize: 16),
                                                 enabledBorder: UnderlineInputBorder(
                                                   borderSide: BorderSide(color: Colors.lightBlueAccent), // Normal border color
@@ -748,7 +748,7 @@ class _EditMainTaskPageState extends State<EditMainTaskPage> {
                                                 // Perform search or filtering here
                                               },
                                               decoration: InputDecoration(
-                                                hintText: '${widget.mainTaskDetails.category_name}',
+                                                hintText: '${widget.subTaskDetails.categoryName}',
                                                 hintStyle: TextStyle(fontSize: 16),
                                                 enabledBorder: UnderlineInputBorder(
                                                   borderSide: BorderSide(color: Colors.lightBlueAccent), // Normal border color
@@ -808,7 +808,7 @@ class _EditMainTaskPageState extends State<EditMainTaskPage> {
                                       .appDarkBlue, // Change this to the desired color
                                 ),
                                 onPressed: () {
-                                  editMainTask();
+                                  editSubTask();
                                   print('Title:${titleController.text}');
                                   print('Description:${descriptionController.text}');
                                   print('Selected Priority:${priority}');
@@ -831,7 +831,7 @@ class _EditMainTaskPageState extends State<EditMainTaskPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => OpenMainTaskPage(taskDetails: widget.mainTaskDetails,)// Pass the task details
+                                        builder: (context) => OpenSubTask(mainTaskDetails: widget.mainTaskDetails, subTaskDetails: widget.subTaskDetails)// Pass the task details
                                     ),
                                   );
                                 },
@@ -866,16 +866,16 @@ class _EditMainTaskPageState extends State<EditMainTaskPage> {
     );
   }
 
-  Future<bool> editMainTask() async {
-    String logType ='Main Task';
+  Future<bool> editSubTask() async {
+    String logType ='Sub Task';
     String logSummary ='Edited';
     String logDetails ='';
     var data = {
-      "task_id": widget.mainTaskDetails.taskId,
+      "task_id": widget.subTaskDetails.taskId,
       "task_title": titleController.text,
       "task_type_name": priority,
       "task_description": descriptionController.text,
-      "task_status_name": widget.mainTaskDetails.taskStatusName,
+      "task_status_name": widget.subTaskDetails.taskStatusName,
       "action_taken_by_id": userName,
       "action_taken_by": firstName,
       "action_taken_date": getCurrentDate(),
@@ -893,7 +893,7 @@ class _EditMainTaskPageState extends State<EditMainTaskPage> {
     };
 
     // URL of your PHP script.
-    const url = "http://dev.workspace.cbs.lk/editMainTask.php";
+    const url = "http://dev.workspace.cbs.lk/editSubTask.php";
 
     try {
       final res = await http.post(
@@ -912,18 +912,22 @@ class _EditMainTaskPageState extends State<EditMainTaskPage> {
         print("Response from PHP script: $responseBody");
 
         if (responseBody == "true") {
-          print('Main task edit Successful');
+          print('Successful');
           addLog(context,
-              taskId: widget.mainTaskDetails.taskId,
-              taskName: widget.mainTaskDetails.taskTitle,
+              taskId: widget.subTaskDetails.taskId,
+              taskName: widget.subTaskDetails.taskTitle,
               createBy: firstName,
               createByID: userName,
               logType: logType,
               logSummary: logSummary,
               logDetails: logDetails);
-          snackBar(context, " Edit Main Task successful!", Colors.green);
-          Navigator.pushNamed(context, '/Task');
-
+          snackBar(context, " Edit Sub Task successful!", Colors.green);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => OpenMainTaskPage(taskDetails: widget.mainTaskDetails,)// Pass the task details
+            ),
+          );
           return true; // PHP code was successful.
         } else {
           print('PHP code returned "false".');
@@ -979,6 +983,5 @@ class _EditMainTaskPageState extends State<EditMainTaskPage> {
       if (!mounted) return;
       snackBar(context, "Error", Colors.redAccent);
     }
-
   }
 }
