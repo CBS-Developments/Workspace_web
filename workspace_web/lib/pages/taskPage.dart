@@ -10,6 +10,7 @@ import 'package:workspace_web/pages/profilePage.dart';
 
 import '../componants.dart';
 import 'openMainTask.dart';
+import 'openSubTaskPage.dart';
 
 class TaskPage extends StatefulWidget {
   const TaskPage({Key? key}) : super(key: key);
@@ -531,50 +532,50 @@ class _TaskPageState extends State<TaskPage> {
                                       SizedBox(
                                         width: 20,
                                       ),
-                                      TextButton(
-                                        onPressed: () {
-                                          if (subTaskList[index].taskStatus ==
-                                              '0') {
-                                            // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
-                                            // Handle 'Mark In Progress' action
-                                          } else if (subTaskList[index]
-                                                  .taskStatus ==
-                                              '1') {
-                                            // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
-                                            // Handle 'Mark As Complete' action
-                                          }
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(0.0),
-                                          child: Text(
-                                            subTaskList[index].taskStatus == '0'
-                                                ? 'Mark In Progress'
-                                                : 'Mark As Complete',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: subTaskList[index]
-                                                          .taskStatus ==
-                                                      '0'
-                                                  ? Colors.blueAccent
-                                                  : Colors.green,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                      // TextButton(
+                                      //   onPressed: () {
+                                      //     if (subTaskList[index].taskStatus ==
+                                      //         '0') {
+                                      //       // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                      //       // Handle 'Mark In Progress' action
+                                      //     } else if (subTaskList[index]
+                                      //             .taskStatus ==
+                                      //         '1') {
+                                      //       // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                      //       // Handle 'Mark As Complete' action
+                                      //     }
+                                      //   },
+                                      //   child: Padding(
+                                      //     padding: const EdgeInsets.all(0.0),
+                                      //     child: Text(
+                                      //       subTaskList[index].taskStatus == '0'
+                                      //           ? 'Mark In Progress'
+                                      //           : 'Mark As Complete',
+                                      //       style: TextStyle(
+                                      //         fontSize: 14,
+                                      //         color: subTaskList[index]
+                                      //                     .taskStatus ==
+                                      //                 '0'
+                                      //             ? Colors.blueAccent
+                                      //             : Colors.green,
+                                      //       ),
+                                      //     ),
+                                      //   ),
+                                      // ),
                                     ],
                                   ),
                                 ),
                               ],
                             ),
 
-                            trailing: IconButton(
-                              onPressed: () {
-                                print('open task');
-                              },
-                              icon: Icon(Icons.open_in_new_rounded),
-                              tooltip: 'Open Sub Task',
-                              focusColor: AppColor.appBlue,
-                            ),
+                            // trailing: IconButton(
+                            //   onPressed: () {
+                            //     print('open task');
+                            //   },
+                            //   icon: Icon(Icons.open_in_new_rounded),
+                            //   tooltip: 'Open Sub Task',
+                            //   focusColor: AppColor.appBlue,
+                            // ),
 
                             // Add onTap functionality if needed
                           ),
@@ -913,53 +914,63 @@ class _TaskPageState extends State<TaskPage> {
                                           SizedBox(
                                             width: 20,
                                           ),
-                                          TextButton(
-                                            onPressed: () {
-                                              if (subTaskList[index]
-                                                      .taskStatus ==
-                                                  '0') {
-                                                // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
-                                                // Handle 'Mark In Progress' action
-                                              } else if (subTaskList[index]
-                                                      .taskStatus ==
-                                                  '1') {
-                                                // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
-                                                // Handle 'Mark As Complete' action
-                                              }
-                                            },
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(0.0),
-                                              child: Text(
-                                                subTaskList[index].taskStatus ==
-                                                        '0'
-                                                    ? 'Mark In Progress'
-                                                    : 'Mark As Complete',
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: subTaskList[index]
-                                                              .taskStatus ==
-                                                          '0'
-                                                      ? Colors.blueAccent
-                                                      : Colors.green,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
+                                          // TextButton(
+                                          //   onPressed: () {
+                                          //     if (subTaskList[index]
+                                          //             .taskStatus ==
+                                          //         '0') {
+                                          //       // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                          //       // Handle 'Mark In Progress' action
+                                          //     } else if (subTaskList[index]
+                                          //             .taskStatus ==
+                                          //         '1') {
+                                          //       // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
+                                          //       // Handle 'Mark As Complete' action
+                                          //     }
+                                          //   },
+                                          //   child: Padding(
+                                          //     padding:
+                                          //         const EdgeInsets.all(0.0),
+                                          //     child: Text(
+                                          //       subTaskList[index].taskStatus ==
+                                          //               '0'
+                                          //           ? 'Mark In Progress'
+                                          //           : 'Mark As Complete',
+                                          //       style: TextStyle(
+                                          //         fontSize: 14,
+                                          //         color: subTaskList[index]
+                                          //                     .taskStatus ==
+                                          //                 '0'
+                                          //             ? Colors.blueAccent
+                                          //             : Colors.green,
+                                          //       ),
+                                          //     ),
+                                          //   ),
+                                          // ),
                                         ],
                                       ),
                                     ),
                                   ],
                                 ),
 
-                                trailing: IconButton(
-                                  onPressed: () {
-                                    print('open task');
-                                  },
-                                  icon: Icon(Icons.open_in_new_rounded),
-                                  tooltip: 'Open Sub Task',
-                                  focusColor: AppColor.appBlue,
-                                ),
+                                // trailing: IconButton(
+                                //   onPressed: () {
+                                //     Navigator.push(
+                                //       context,
+                                //       MaterialPageRoute(
+                                //           builder: (context) => OpenSubTask(
+                                //             mainTaskDetails:
+                                //             filteredTasks[index],
+                                //             subTaskDetails:
+                                //             subTaskList[index],
+                                //           )),
+                                //     );
+                                //     print('open task');
+                                //   },
+                                //   icon: Icon(Icons.open_in_new_rounded),
+                                //   tooltip: 'Open Sub Task',
+                                //   focusColor: AppColor.appBlue,
+                                // ),
 
                                 // Add onTap functionality if needed
                               ),

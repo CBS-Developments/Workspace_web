@@ -149,6 +149,73 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
     }
   }
 
+  Future<bool> markInProgressSubTask(
+    String taskName,
+    String userName,
+    String firstName,
+    String taskID,
+    String dueDate,
+  ) async {
+    String logType = 'Sub Task';
+    String logSummary = 'Marked In-Progress';
+    String logDetails = 'Sub Task Due Date: $dueDate';
+    // Prepare the data to be sent to the PHP script.
+    var data = {
+      "task_id": taskID,
+      "task_status": '1',
+      "task_status_name": 'In Progress',
+      "action_taken_by_id": userName,
+      "action_taken_by": firstName,
+      "action_taken_date": getCurrentDateTime(),
+      "action_taken_timestamp": getCurrentDate(),
+    };
+
+    // URL of your PHP script.
+    const url = "http://dev.workspace.cbs.lk/deleteSubTask.php";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final responseBody = jsonDecode(res.body);
+
+        // Debugging: Print the response data.
+        print("Response from PHP script: $responseBody");
+
+        if (responseBody == "true") {
+          print('Successful');
+          // snackBar(context, "Sub Task Marked as In Progress!", Colors.blueAccent);
+          addLog(context,
+              taskId: taskID,
+              taskName: taskName,
+              createBy: firstName,
+              createByID: userName,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
+          getSubTaskListByMainTaskId(widget.taskDetails.taskId);
+          return true; // PHP code was successful.
+        } else {
+          print('PHP code returned "false".');
+          return false; // PHP code returned "false."
+        }
+      } else {
+        print('HTTP request failed with status code: ${res.statusCode}');
+        return false; // HTTP request failed.
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false; // An error occurred.
+    }
+  }
+
   Future<void> addLog(
     BuildContext context, {
     required taskId,
@@ -323,8 +390,10 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => EditMainTaskPage(mainTaskDetails: widget.taskDetails,) // Pass the task details
-                      ),
+                          builder: (context) => EditMainTaskPage(
+                                mainTaskDetails: widget.taskDetails,
+                              ) // Pass the task details
+                          ),
                     );
                   },
                   icon: Icon(
@@ -648,8 +717,10 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => CreateSubTaskPage(mainTaskDetails: widget.taskDetails,) // Pass the task details
-                                  ),
+                                      builder: (context) => CreateSubTaskPage(
+                                            mainTaskDetails: widget.taskDetails,
+                                          ) // Pass the task details
+                                      ),
                                 );
                               },
                               style: OutlinedButton.styleFrom(
@@ -751,6 +822,14 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                                 if (subTaskList[index]
                                                         .taskStatus ==
                                                     '0') {
+                                                  markInProgressSubTask(
+                                                      subTaskList[index]
+                                                          .taskTitle,
+                                                      userName,
+                                                      firstName,
+                                                      subTaskList[index].taskId,
+                                                      subTaskList[index]
+                                                          .dueDate);
                                                   // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
                                                   // Handle 'Mark In Progress' action
                                                 } else if (subTaskList[index]
@@ -962,7 +1041,8 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                 lastName: lastName,
                                 logType: 'to Main Task',
                                 logSummary: 'Commented',
-                                logDetails: " Comment: ${commentTextController.text}");
+                                logDetails:
+                                    " Comment: ${commentTextController.text}");
                           },
                           icon: Icon(
                             Icons.add_comment_rounded,
