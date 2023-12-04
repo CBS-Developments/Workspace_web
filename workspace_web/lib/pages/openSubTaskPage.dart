@@ -101,6 +101,118 @@ class _OpenSubTaskState extends State<OpenSubTask> {
     print('Data laded in sub task > userName: $userName > userRole: $userRole');
   }
 
+  void showDeleteConfirmationDialog(
+      BuildContext context,
+      String userRole,
+      String taskId,
+      ) {
+    print('User Role in showDeleteConfirmationDialog Sub: $userRole');
+    if (userRole == '1') {
+      print(userRole);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Confirm Delete'),
+            content: Text('Are you sure you want to delete this task?'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+              TextButton(
+                child: Text('Delete'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  deleteSubTask(taskId);
+                  // Call the deleteMainTask method// Close the dialog
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // Display a message or take other actions for users who are not admins
+      print(userRole);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Permission Denied'),
+            content: Text('Only admins are allowed to delete tasks.'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<bool> deleteSubTask(
+      String taskID,
+      ) async {
+    String logType = 'Sub Task';
+    String logSummary = 'Deleted';
+    String logDetails = '';
+    // Prepare the data to be sent to the PHP script.
+    var data = {
+      "task_id": taskID,
+      "task_status": '99',
+      "task_status_name": 'Deleted',
+      "action_taken_by_id": userName,
+      "action_taken_by": firstName,
+      "action_taken_date": getCurrentDateTime(),
+      "action_taken_timestamp": getCurrentDate(),
+    };
+
+    // URL of your PHP script.
+    const url = "http://dev.workspace.cbs.lk/deleteSubTask.php";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final responseBody = jsonDecode(res.body);
+
+        // Debugging: Print the response data.
+        print("Response from PHP script: $responseBody");
+
+        if (responseBody == "true") {
+          print('Successful');
+          snackBar(context, "Sub Task Deleted successful!", Colors.redAccent);
+          addLog(context, taskId: taskID, taskName: widget.subTaskDetails.taskTitle, createBy: firstName, createByID: userName, logType: logType, logSummary: logSummary, logDetails: logDetails);
+
+          return true; // PHP code was successful.
+        } else {
+          print('PHP code returned "false".');
+          return false; // PHP code returned "false."
+        }
+      } else {
+        print('HTTP request failed with status code: ${res.statusCode}');
+        return false; // HTTP request failed.
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false; // An error occurred.
+    }
+  }
+
   Future<void> addLog(
     BuildContext context, {
     required taskId,
@@ -517,7 +629,9 @@ class _OpenSubTaskState extends State<OpenSubTask> {
             margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
             child: IconButton(
                 tooltip: 'Delete Sub Task',
-                onPressed: () {},
+                onPressed: () {
+                  showDeleteConfirmationDialog(context, userRole, widget.subTaskDetails.taskId);
+                },
                 icon: Icon(
                   Icons.delete_sweep_outlined,
                   color: Colors.redAccent,
