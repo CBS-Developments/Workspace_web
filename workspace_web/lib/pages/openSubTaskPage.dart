@@ -33,6 +33,10 @@ class _OpenSubTaskState extends State<OpenSubTask> {
   String lastName = "";
   String phone = "";
   String userRole = "";
+  String taskStatusName = "";
+  String taskStatusNameController = "";
+  String taskStatus = "";
+  String buttonController = "";
 
   Color _getColorForTaskTypeName(String taskTypeName) {
     Map<String, Color> colorMap = {
@@ -73,6 +77,16 @@ class _OpenSubTaskState extends State<OpenSubTask> {
     // Adding widget.taskDetails to taskDetailsList
     taskDetailsListBox.add(TaskDetailsBox(
         widget.subTaskDetails.taskDescription, widget.subTaskDetails.taskId));
+
+    setState(() {
+      taskStatus = widget.subTaskDetails.taskStatus; // Update taskStatus here
+      buttonController = taskStatus; // Update buttonController based on taskStatus
+
+      taskStatusName=widget.subTaskDetails.taskStatusName;
+      taskStatusNameController =taskStatusName;
+
+    });
+
   }
 
   void loadData() async {
@@ -138,6 +152,159 @@ class _OpenSubTaskState extends State<OpenSubTask> {
       snackBar(context, "Error", Colors.redAccent);
     }
   }
+
+  Future<bool> markInProgressSubTask(
+      String taskName,
+      String userName,
+      String firstName,
+      String taskID,
+      String dueDate,
+      ) async {
+    String logType = 'Sub Task';
+    String logSummary = 'Marked In-Progress';
+    String logDetails = 'Sub Task Due Date: $dueDate';
+    // Prepare the data to be sent to the PHP script.
+    var data = {
+      "task_id": taskID,
+      "task_status": '1',
+      "task_status_name": 'In Progress',
+      "action_taken_by_id": userName,
+      "action_taken_by": firstName,
+      "action_taken_date": getCurrentDateTime(),
+      "action_taken_timestamp": getCurrentDate(),
+    };
+
+    // URL of your PHP script.
+    const url = "http://dev.workspace.cbs.lk/deleteSubTask.php";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final responseBody = jsonDecode(res.body);
+
+        // Debugging: Print the response data.
+        print("Response from PHP script: $responseBody");
+
+        if (responseBody == "true") {
+          print('Successful');
+          // snackBar(context, "Sub Task Marked as In Progress!", Colors.blueAccent);
+          addLog(context,
+              taskId: taskID,
+              taskName: taskName,
+              createBy: firstName,
+              createByID: userName,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
+          setState(() {
+            // Update taskStatus here
+            buttonController = '1';
+            taskStatusNameController= 'In Progress';// Update buttonController based on taskStatus
+          });
+          return true; // PHP code was successful.
+        } else {
+          print('PHP code returned "false".');
+          return false; // PHP code returned "false."
+        }
+      } else {
+        print('HTTP request failed with status code: ${res.statusCode}');
+        return false; // HTTP request failed.
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false; // An error occurred.
+    }
+  }
+
+  Future<bool> markCompleteSubTask(
+      String taskName,
+      String userName,
+      String firstName,
+      String taskID,
+      String dueDate,
+      ) async {
+    String logType = 'Sub Task';
+    String logSummary = 'Marked as Completed';
+    String logDetails = 'Sub Task Due Date: $dueDate';
+    // Prepare the data to be sent to the PHP script.
+    var data = {
+      "task_id": taskID,
+      "task_status": '2',
+      "task_status_name": 'Completed',
+      "action_taken_by_id": userName,
+      "action_taken_by": firstName,
+      "action_taken_date": getCurrentDateTime(),
+      "action_taken_timestamp": getCurrentDate(),
+    };
+
+    // URL of your PHP script.
+    const url = "http://dev.workspace.cbs.lk/deleteSubTask.php";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final responseBody = jsonDecode(res.body);
+
+        // Debugging: Print the response data.
+        print("Response from PHP script: $responseBody");
+
+        if (responseBody == "true") {
+          print('Successful');
+          // snackBar(context, "Sub Task Marked as In Progress!", Colors.blueAccent);
+          addLog(context,
+              taskId: taskID,
+              taskName: taskName,
+              createBy: firstName,
+              createByID: userName,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
+          // setState(() {
+          //   // Update taskStatus here
+          //   buttonController = '1';
+          //   taskStatusNameController= 'In Progress';// Update buttonController based on taskStatus
+          // });
+
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OpenMainTaskPage(
+                  taskDetails: widget.mainTaskDetails,
+                ),
+              ));
+
+
+          return true; // PHP code was successful.
+        } else {
+          print('PHP code returned "false".');
+          return false; // PHP code returned "false."
+        }
+      } else {
+        print('HTTP request failed with status code: ${res.statusCode}');
+        return false; // HTTP request failed.
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false; // An error occurred.
+    }
+  }
+
 
   Future<bool> addComment(
     BuildContext context, {
@@ -597,7 +764,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                     padding: const EdgeInsets.only(
                                         left: 18, bottom: 8),
                                     child: Text(
-                                      widget.subTaskDetails.taskStatusName,
+                                      taskStatusNameController,
                                       style: const TextStyle(
                                         fontSize: 14,
                                         color: Colors.black,
@@ -628,26 +795,28 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                           children: [
                             OutlinedButton(
                               onPressed: () {
-                                if (widget.subTaskDetails.taskStatus == '0') {
+                                if (buttonController == '0') {
+                                  markInProgressSubTask(widget.subTaskDetails.taskTitle, userName, firstName, widget.subTaskDetails.taskId, widget.subTaskDetails.dueDate);
                                   // Handle 'Mark In Progress' action
-                                } else if (widget.subTaskDetails.taskStatus ==
+                                } else if (buttonController ==
                                     '1') {
+                                  markCompleteSubTask(widget.subTaskDetails.taskTitle, userName, firstName, widget.subTaskDetails.taskId, widget.subTaskDetails.dueDate);
                                   // Handle 'Mark As Complete' action
                                 }
                               },
                               child: Padding(
                                 padding: const EdgeInsets.all(0.0),
                                 child: Text(
-                                  widget.subTaskDetails.taskStatus == '0'
+                                  buttonController == '0'
                                       ? 'Mark In Progress'
-                                      : widget.subTaskDetails.taskStatus == '1'
+                                      : buttonController == '1'
                                       ? 'Mark As Completed'
                                       : 'Completed',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: widget.subTaskDetails.taskStatus == '0'
+                                    color: buttonController == '0'
                                         ? Colors.deepPurple.shade600
-                                        : widget.subTaskDetails.taskStatus == '1'
+                                        : buttonController == '1'
                                         ? Colors.green
                                         : Colors.grey, // Assuming '2' represents Completed status
                                   ),
