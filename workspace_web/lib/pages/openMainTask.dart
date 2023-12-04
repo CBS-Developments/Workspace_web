@@ -28,6 +28,11 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
   String lastName = "";
   String phone = "";
   String userRole = "";
+  String taskStatusName = "";
+  String taskStatusNameController = "";
+  String taskStatus = "";
+  String buttonController = "";
+
 
   Color _getColorForTaskTypeName(String taskTypeName) {
     Map<String, Color> colorMap = {
@@ -68,6 +73,14 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
     // Adding widget.taskDetails to taskDetailsList
     taskDetailsList.add(TaskDetailsBox(
         widget.taskDetails.task_description, widget.taskDetails.taskId));
+    setState(() {
+      taskStatus = widget.taskDetails.taskStatus; // Update taskStatus here
+      buttonController = taskStatus; // Update buttonController based on taskStatus
+
+      taskStatusName=widget.taskDetails.taskStatusName;
+      taskStatusNameController =taskStatusName;
+
+    });
   }
 
   void loadData() async {
@@ -148,6 +161,148 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
       throw Exception('Failed to load subtasks from API');
     }
   }
+
+
+  Future<bool> markInProgressMainTask(
+      BuildContext context, {
+        required taskName,
+        required userName,
+        required firstName,
+        required taskID,
+        required logType,
+        required logSummary,
+        required logDetails,
+      }) async {
+    // Prepare the data to be sent to the PHP script.
+    var data = {
+      "task_id": taskID,
+      "task_status": '1',
+      "task_status_name": 'In Progress',
+      "action_taken_by_id": userName,
+      "action_taken_by": firstName,
+      "action_taken_date": getCurrentDateTime(),
+      "action_taken_timestamp": getCurrentDate(),
+    };
+
+    // URL of your PHP script.
+    const url = "http://dev.workspace.cbs.lk/deleteMainTask.php";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final responseBody = jsonDecode(res.body);
+
+        // Debugging: Print the response data.
+        print("Response from PHP script: $responseBody");
+
+        if (responseBody == "true") {
+          print('Successful');
+          addLog(context,
+              taskId: taskID,
+              taskName: taskName,
+              createBy: firstName,
+              createByID: userName,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
+          setState(() {
+            // Update taskStatus here
+            buttonController = '1';
+            taskStatusNameController= 'In Progress';// Update buttonController based on taskStatus
+          });
+
+          return true; // PHP code was successful.
+        } else {
+          print('PHP code returned "false".');
+          return false; // PHP code returned "false."
+        }
+      } else {
+        print('HTTP request failed with status code: ${res.statusCode}');
+        return false; // HTTP request failed.
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false; // An error occurred.
+    }
+  }
+
+
+  Future<bool> markCompleteMainTask(
+      BuildContext context, {
+        required taskName,
+        required userName,
+        required firstName,
+        required taskID,
+        required logType,
+        required logSummary,
+        required logDetails,
+      }) async {
+    // Prepare the data to be sent to the PHP script.
+    var data = {
+      "task_id": taskID,
+      "task_status": '2',
+      "task_status_name": 'Completed',
+      "action_taken_by_id": userName,
+      "action_taken_by": firstName,
+      "action_taken_date": getCurrentDateTime(),
+      "action_taken_timestamp": getCurrentDate(),
+    };
+
+    // URL of your PHP script.
+    const url = "http://dev.workspace.cbs.lk/deleteMainTask.php";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final responseBody = jsonDecode(res.body);
+
+        // Debugging: Print the response data.
+        print("Response from PHP script: $responseBody");
+
+        if (responseBody == "true") {
+          print('Successful');
+          addLog(context,
+              taskId: taskID,
+              taskName: taskName,
+              createBy: firstName,
+              createByID: userName,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
+          Navigator.pushNamed(context, '/Task');
+
+
+          return true; // PHP code was successful.
+        } else {
+          print('PHP code returned "false".');
+          return false; // PHP code returned "false."
+        }
+      } else {
+        print('HTTP request failed with status code: ${res.statusCode}');
+        return false; // HTTP request failed.
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false; // An error occurred.
+    }
+  }
+
 
   Future<bool> markInProgressSubTask(
     String taskName,
@@ -724,7 +879,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                     padding: const EdgeInsets.only(
                                         left: 18, bottom: 8),
                                     child: Text(
-                                      widget.taskDetails.taskStatusName,
+                                      taskStatusNameController,
                                       style: const TextStyle(
                                         fontSize: 14,
                                         color: Colors.black,
@@ -757,22 +912,44 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                           children: [
                             OutlinedButton(
                               onPressed: () {
-                                if (widget.taskDetails.taskStatus == '0') {
+                                if (buttonController == '0') {
+                                  markInProgressMainTask(context, taskName: widget.taskDetails
+                                      .taskTitle,
+                                    userName: userName,
+                                    firstName: firstName,
+                                    taskID: widget.taskDetails
+                                        .taskId,
+                                    logType: 'Main Task',
+                                    logSummary:
+                                    'Marked In-Progress',
+                                    logDetails:
+                                    'Main Task Due Date: ${widget.taskDetails.dueDate}',);
                                   // Handle 'Mark In Progress' action
-                                } else if (widget.taskDetails.taskStatus ==
+                                } else if (buttonController ==
                                     '1') {
+                                  markCompleteMainTask(context, taskName: widget.taskDetails
+                                      .taskTitle,
+                                    userName: userName,
+                                    firstName: firstName,
+                                    taskID: widget.taskDetails
+                                        .taskId,
+                                    logType: 'Main Task',
+                                    logSummary:
+                                    'Marked as Completed',
+                                    logDetails:
+                                    'Main Task Due Date: ${widget.taskDetails.dueDate}',);
                                   // Handle 'Mark As Complete' action
                                 }
                               },
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
-                                  widget.taskDetails.taskStatus == '0'
+                                  buttonController == '0'
                                       ? 'Mark In Progress'
                                       : 'Mark As Complete',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: widget.taskDetails.taskStatus == '0'
+                                    color: buttonController == '0'
                                         ? Colors.deepPurple.shade600
                                         : Colors.green,
                                   ),
