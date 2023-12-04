@@ -86,6 +86,7 @@ class _TaskLogPageState extends State<TaskLogPage> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
+        selectedUser = 'Select User';
       });
 
       _fetchTodayLogs(); // Fetch logs for the selected date
