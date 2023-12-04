@@ -33,7 +33,6 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
   String taskStatus = "";
   String buttonController = "";
 
-
   Color _getColorForTaskTypeName(String taskTypeName) {
     Map<String, Color> colorMap = {
       'Top Urgent': Colors.red,
@@ -75,11 +74,11 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
         widget.taskDetails.task_description, widget.taskDetails.taskId));
     setState(() {
       taskStatus = widget.taskDetails.taskStatus; // Update taskStatus here
-      buttonController = taskStatus; // Update buttonController based on taskStatus
+      buttonController =
+          taskStatus; // Update buttonController based on taskStatus
 
-      taskStatusName=widget.taskDetails.taskStatusName;
-      taskStatusNameController =taskStatusName;
-
+      taskStatusName = widget.taskDetails.taskStatusName;
+      taskStatusNameController = taskStatusName;
     });
   }
 
@@ -94,6 +93,123 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
     });
     print(
         'Data laded in main task > userName: $userName > userRole: $userRole');
+  }
+
+  void showDeleteConfirmationDialog(
+    BuildContext context,
+    String userRole,
+    String taskId,
+  ) {
+    print('User Role in showDeleteConfirmationDialog: $userRole');
+    if (userRole == '1') {
+      print(userRole);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Confirm Delete'),
+            content: const Text('Are you sure you want to delete this task?'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+              TextButton(
+                child: const Text('Delete'),
+                onPressed: () {
+                  deleteMainTask(taskId); // Call the deleteMainTask method
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // Display a message or take other actions for users who are not admins
+      print(userRole);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Permission Denied'),
+            content: const Text('Only admins are allowed to delete tasks.'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<bool> deleteMainTask(
+    String taskID,
+  ) async {
+    String logType = 'Main Task';
+    String logSummary = 'Deleted';
+    String logDetails = '';
+    // Prepare the data to be sent to the PHP script.
+    var data = {
+      "task_id": taskID,
+      "task_status": '99',
+      "task_status_name": 'Deleted',
+      "action_taken_by_id": userName,
+      "action_taken_by": firstName,
+      "action_taken_date": getCurrentDateTime(),
+      "action_taken_timestamp": getCurrentDate(),
+    };
+
+    // URL of your PHP script.
+    const url = "http://dev.workspace.cbs.lk/deleteMainTask.php";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final responseBody = jsonDecode(res.body);
+
+        // Debugging: Print the response data.
+        print("Response from PHP script: $responseBody");
+
+        if (responseBody == "true") {
+          print('Deleted Successful');
+          addLog(context,
+              taskId: taskID,
+              taskName: widget.taskDetails.taskTitle,
+              createBy: firstName,
+              createByID: userName,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
+          Navigator.pushNamed(context, '/Task');
+          return true; // PHP code was successful.
+        } else {
+          print('PHP code returned "false".');
+          return false; // PHP code returned "false."
+        }
+      } else {
+        print('HTTP request failed with status code: ${res.statusCode}');
+        return false; // HTTP request failed.
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false; // An error occurred.
+    }
   }
 
   Future<void> getCommentList(String taskId) async {
@@ -162,17 +278,16 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
     }
   }
 
-
   Future<bool> markInProgressMainTask(
-      BuildContext context, {
-        required taskName,
-        required userName,
-        required firstName,
-        required taskID,
-        required logType,
-        required logSummary,
-        required logDetails,
-      }) async {
+    BuildContext context, {
+    required taskName,
+    required userName,
+    required firstName,
+    required taskID,
+    required logType,
+    required logSummary,
+    required logDetails,
+  }) async {
     // Prepare the data to be sent to the PHP script.
     var data = {
       "task_id": taskID,
@@ -216,7 +331,8 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
           setState(() {
             // Update taskStatus here
             buttonController = '1';
-            taskStatusNameController= 'In Progress';// Update buttonController based on taskStatus
+            taskStatusNameController =
+                'In Progress'; // Update buttonController based on taskStatus
           });
 
           return true; // PHP code was successful.
@@ -234,17 +350,16 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
     }
   }
 
-
   Future<bool> markCompleteMainTask(
-      BuildContext context, {
-        required taskName,
-        required userName,
-        required firstName,
-        required taskID,
-        required logType,
-        required logSummary,
-        required logDetails,
-      }) async {
+    BuildContext context, {
+    required taskName,
+    required userName,
+    required firstName,
+    required taskID,
+    required logType,
+    required logSummary,
+    required logDetails,
+  }) async {
     // Prepare the data to be sent to the PHP script.
     var data = {
       "task_id": taskID,
@@ -287,7 +402,6 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
               logDetails: logDetails);
           Navigator.pushNamed(context, '/Task');
 
-
           return true; // PHP code was successful.
         } else {
           print('PHP code returned "false".');
@@ -302,7 +416,6 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
       return false; // An error occurred.
     }
   }
-
 
   Future<bool> markInProgressSubTask(
     String taskName,
@@ -372,12 +485,12 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
   }
 
   Future<bool> markCompleteSubTask(
-      String taskName,
-      String userName,
-      String firstName,
-      String taskID,
-      String dueDate,
-      ) async {
+    String taskName,
+    String userName,
+    String firstName,
+    String taskID,
+    String dueDate,
+  ) async {
     String logType = 'Sub Task';
     String logSummary = 'Marked as Completed';
     String logDetails = 'Sub Task Due Date: $dueDate';
@@ -630,7 +743,9 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
             margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
             child: IconButton(
                 tooltip: 'Delete Main Task',
-                onPressed: () {},
+                onPressed: () {
+                  showDeleteConfirmationDialog(context, userRole, widget.taskDetails.taskId);
+                },
                 icon: Icon(
                   Icons.delete_sweep_outlined,
                   color: Colors.redAccent,
@@ -913,31 +1028,30 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                             OutlinedButton(
                               onPressed: () {
                                 if (buttonController == '0') {
-                                  markInProgressMainTask(context, taskName: widget.taskDetails
-                                      .taskTitle,
+                                  markInProgressMainTask(
+                                    context,
+                                    taskName: widget.taskDetails.taskTitle,
                                     userName: userName,
                                     firstName: firstName,
-                                    taskID: widget.taskDetails
-                                        .taskId,
+                                    taskID: widget.taskDetails.taskId,
                                     logType: 'Main Task',
-                                    logSummary:
-                                    'Marked In-Progress',
+                                    logSummary: 'Marked In-Progress',
                                     logDetails:
-                                    'Main Task Due Date: ${widget.taskDetails.dueDate}',);
+                                        'Main Task Due Date: ${widget.taskDetails.dueDate}',
+                                  );
                                   // Handle 'Mark In Progress' action
-                                } else if (buttonController ==
-                                    '1') {
-                                  markCompleteMainTask(context, taskName: widget.taskDetails
-                                      .taskTitle,
+                                } else if (buttonController == '1') {
+                                  markCompleteMainTask(
+                                    context,
+                                    taskName: widget.taskDetails.taskTitle,
                                     userName: userName,
                                     firstName: firstName,
-                                    taskID: widget.taskDetails
-                                        .taskId,
+                                    taskID: widget.taskDetails.taskId,
                                     logType: 'Main Task',
-                                    logSummary:
-                                    'Marked as Completed',
+                                    logSummary: 'Marked as Completed',
                                     logDetails:
-                                    'Main Task Due Date: ${widget.taskDetails.dueDate}',);
+                                        'Main Task Due Date: ${widget.taskDetails.dueDate}',
+                                  );
                                   // Handle 'Mark As Complete' action
                                 }
                               },
@@ -1078,37 +1192,47 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                                   // Handle 'Mark In Progress' action
                                                 } else if (subTaskList[index]
                                                         .taskStatus ==
-                                                    '1') {markCompleteSubTask(
-                                                    subTaskList[index]
-                                                        .taskTitle,
-                                                    userName,
-                                                    firstName,
-                                                    subTaskList[index].taskId,
-                                                    subTaskList[index]
-                                                        .dueDate);
+                                                    '1') {
+                                                  markCompleteSubTask(
+                                                      subTaskList[index]
+                                                          .taskTitle,
+                                                      userName,
+                                                      firstName,
+                                                      subTaskList[index].taskId,
+                                                      subTaskList[index]
+                                                          .dueDate);
                                                   // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
                                                   // Handle 'Mark As Complete' action
                                                 }
                                               },
                                               child: Padding(
-                                                padding: const EdgeInsets.all(0.0),
+                                                padding:
+                                                    const EdgeInsets.all(0.0),
                                                 child: Text(
-                                                  subTaskList[index].taskStatus == '0'
+                                                  subTaskList[index]
+                                                              .taskStatus ==
+                                                          '0'
                                                       ? 'Mark In Progress'
-                                                      : subTaskList[index].taskStatus == '1'
-                                                      ? 'Mark As Completed'
-                                                      : 'Completed',
+                                                      : subTaskList[index]
+                                                                  .taskStatus ==
+                                                              '1'
+                                                          ? 'Mark As Completed'
+                                                          : 'Completed',
                                                   style: TextStyle(
                                                     fontSize: 14,
-                                                    color: subTaskList[index].taskStatus == '0'
+                                                    color: subTaskList[index]
+                                                                .taskStatus ==
+                                                            '0'
                                                         ? Colors.blueAccent
-                                                        : subTaskList[index].taskStatus == '1'
-                                                        ? Colors.green
-                                                        : Colors.grey, // Assuming '2' represents Completed status
+                                                        : subTaskList[index]
+                                                                    .taskStatus ==
+                                                                '1'
+                                                            ? Colors.green
+                                                            : Colors
+                                                                .grey, // Assuming '2' represents Completed status
                                                   ),
                                                 ),
                                               ),
-
                                             ),
                                           ],
                                         ),
