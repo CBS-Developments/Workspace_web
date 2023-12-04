@@ -224,6 +224,7 @@ class _TaskLogPageState extends State<TaskLogPage> {
                         : ListView.builder(
                       itemCount: filteredLogList.length,
                       itemBuilder: (context, index) {
+                        bool isDeleted = filteredLogList[index].logSummary.toLowerCase() == 'deleted';
                         return Card(
                           color: Colors.grey[200],
                           elevation: 3,
@@ -231,8 +232,11 @@ class _TaskLogPageState extends State<TaskLogPage> {
                           child: ListTile(
                             title: Text(
                               '${filteredLogList[index].logCreateBy} ${filteredLogList[index].logSummary} ${filteredLogList[index].logType} : ${filteredLogList[index].taskName} | ${filteredLogList[index].logDetails} ',
+                              style: TextStyle(color: isDeleted ? Colors.red : null),
                             ),
-                            subtitle: Text(filteredLogList[index].logId),
+                            subtitle: Text(filteredLogList[index].logId,
+                              style: TextStyle(color: isDeleted ? Colors.red : null),),
+
                           ),
                         );
                       },
