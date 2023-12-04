@@ -17,10 +17,10 @@ class _TaskLogPageState extends State<TaskLogPage> {
   List<TaskLog> logList = [];
   List<TaskLog> filteredLogList = []; // Added for filtered logs
   DateTime selectedDate = DateTime.now();
-  String selectedUser = 'Select User';
+  String selectedUser = '-- Select User --';
 
   List<String> users = [
-    'Select User',
+    '-- Select User --',
     'Deshika',
     'Iqlas',
     'Udari',
@@ -86,7 +86,7 @@ class _TaskLogPageState extends State<TaskLogPage> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        selectedUser = 'Select User';
+        selectedUser = '-- Select User --';
       });
 
       _fetchTodayLogs(); // Fetch logs for the selected date
