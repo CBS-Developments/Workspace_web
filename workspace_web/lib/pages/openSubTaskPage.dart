@@ -101,6 +101,120 @@ class _OpenSubTaskState extends State<OpenSubTask> {
     print('Data laded in sub task > userName: $userName > userRole: $userRole');
   }
 
+  void showDeleteCommentConfirmation(
+      BuildContext context,
+      String commentID,
+      String createBy,
+      String nameNowUser,
+      ) {
+    print('Now user: $nameNowUser');
+    print('Crate By: $createBy');
+    if (createBy == nameNowUser) {
+      print(createBy);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Confirm Delete'),
+            content: const Text('Are you sure you want to delete this Comment?'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+              TextButton(
+                child: const Text('Delete'),
+                onPressed: () {
+                  deleteComment(commentID);
+                  // deleteMainTask(taskId); // Call the deleteMainTask method
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // Display a message or take other actions for users who are not admins
+      print(createBy);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Permission Denied'),
+            content: const Text('Only your comments allowed to delete.'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<bool> deleteComment(
+      String commentId,
+      ) async {
+    String logType = 'Comment';
+    String logSummary = 'Deleted';
+    String logDetails = '';
+    // Prepare the data to be sent to the PHP script.
+
+    var data = {
+      "comment_id": commentId,
+      "comment_delete_by": userName,
+      "comment_delete_by_id": firstName,
+      "comment_delete_by_date": getCurrentDate(),
+      "comment_delete_by_timestamp": getCurrentDateTime(),
+    };
+
+    // URL of your PHP script.
+    const url = "http://dev.workspace.cbs.lk/deleteComment.php";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final responseBody = jsonDecode(res.body);
+
+        // Debugging: Print the response data.
+        print("Response from PHP script: $responseBody");
+
+        if (responseBody == "true") {
+          print('Successful');
+          // snackBar(context, "Comment Deleted successful!", Colors.redAccent);
+          addLog(context, taskId: widget.subTaskDetails.taskId, taskName: widget.subTaskDetails.taskTitle, createBy: firstName, createByID: userName, logType: logType, logSummary: logSummary, logDetails: logDetails);
+          getCommentList(widget.subTaskDetails.taskId);
+          return true; // PHP code was successful.
+        } else {
+          print('PHP code returned "false".');
+          return false; // PHP code returned "false."
+        }
+      } else {
+        print('HTTP request failed with status code: ${res.statusCode}');
+        return false; // HTTP request failed.
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false; // An error occurred.
+    }
+  }
+
+
   void showDeleteConfirmationDialog(
       BuildContext context,
       String userRole,
@@ -1148,6 +1262,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
 
                                 trailing: IconButton(
                                   onPressed: () {
+                                    showDeleteCommentConfirmation(context, commentsList[index].commentId, commentsList[index].commentCreateBy, '${firstName} ${lastName}');
                                     print('Delete Comment');
                                   },
                                   icon: Icon(
