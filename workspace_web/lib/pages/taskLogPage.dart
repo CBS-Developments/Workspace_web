@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'dart:convert';
+
 import '../colors.dart';
 import '../componants.dart';
 
@@ -14,7 +15,22 @@ class TaskLogPage extends StatefulWidget {
 
 class _TaskLogPageState extends State<TaskLogPage> {
   List<TaskLog> logList = [];
+  List<TaskLog> filteredLogList = []; // Added for filtered logs
   DateTime selectedDate = DateTime.now();
+  String selectedUser = 'Select User';
+
+  List<String> users = [
+    'Select User',
+    'Deshika',
+    'Iqlas',
+    'Udari',
+    'Shahiru',
+    'Dinethri',
+    'Damith',
+    'Sulakshana',
+    'Samadhi',
+    'Sanjana',
+  ];
 
   @override
   void initState() {
@@ -72,22 +88,31 @@ class _TaskLogPageState extends State<TaskLogPage> {
         selectedDate = picked;
       });
 
-      List<TaskLog> selectedDateLogs = await getLogList(selectedDate);
-      List<TaskLog> filteredLogs = filterTaskLog(selectedDateLogs, selectedDate);
-
-      setState(() {
-        logList = filteredLogs;
-      });
+      _fetchTodayLogs(); // Fetch logs for the selected date
+      _filterLogs(); // Filter logs based on both date and user
     }
   }
 
   Future<void> _fetchTodayLogs() async {
-    DateTime today = DateTime.now();
-    List<TaskLog> todayLogs = await getLogList(today);
-    List<TaskLog> filteredLogs = filterTaskLog(todayLogs, today);
+    List<TaskLog> todayLogs = await getLogList(selectedDate);
+    List<TaskLog> filteredLogs = filterTaskLog(todayLogs, selectedDate);
 
     setState(() {
       logList = filteredLogs;
+      filteredLogList = logList; // Initialize filteredLogList with all logs
+    });
+  }
+
+  // Added to filter logs based on selected user
+  void _filterLogs() {
+    setState(() {
+      if (selectedUser == 'Select User') {
+        filteredLogList = logList; // Show all logs if 'Assign To' is selected
+      } else {
+        filteredLogList = logList
+            .where((log) => log.logCreateBy == selectedUser)
+            .toList(); // Filter logs based on selected user
+      }
     });
   }
 
@@ -112,10 +137,11 @@ class _TaskLogPageState extends State<TaskLogPage> {
       body: Row(
         children: [
           Expanded(
-              flex: 1,
-              child: Column(
-                children: [],
-              )),
+            flex: 1,
+            child: Column(
+              children: [],
+            ),
+          ),
           Expanded(
             flex: 4,
             child: Container(
@@ -132,59 +158,62 @@ class _TaskLogPageState extends State<TaskLogPage> {
               ),
               child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ElevatedButton(
-                          onPressed: _fetchTodayLogs,
-                          style: ElevatedButton.styleFrom(
-                            primary: AppColor.appDarkBlue, // Change the color to your desired one
-                          ),
-                          child: Text(
-                            "Today Task Log",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    _selectDate(context);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    primary: AppColor.appDarkBlue, // Change the color to your desired one
-                                  ),
-                                  child: Text("Select Previous Date :"),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 10,),
-                            Text(
-                              "Selected Date: ${DateFormat('yyyy-MM-dd').format(selectedDate)}",
-                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                            ElevatedButton(
+                              onPressed: () {
+                                _selectDate(context);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                primary: AppColor.appDarkBlue,
+                              ),
+                              child: Text("Select Date"),
                             ),
                           ],
                         ),
-                      ),
-                    ],
+                        SizedBox(width: 15,),
+                        Text(
+                          "Selected Date: ${DateFormat('yyyy-MM-dd').format(selectedDate)}",
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                        // Padding(
+                        //   padding: const EdgeInsets.all(8.0),
+                        //   child: TextButton(
+                        //     onPressed: _fetchTodayLogs,
+                        //     child: Text(
+                        //       "Today Task Log",
+                        //       style: TextStyle(color: AppColor.appDarkBlue),
+                        //     ),
+                        //   ),
+                        // ),
+                        SizedBox(width: 10,),
+                        DropdownButton<String>(
+                          value: selectedUser,
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedUser = newValue!;
+                            });
+                            _filterLogs(); // Added to filter logs when dropdown value changes
+                          },
+                          items: users.map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
                   ),
                   Divider(),
                   Expanded(
-                    child: logList.isEmpty
+                    child: filteredLogList.isEmpty
                         ? const Center(
                       child: Text(
                         'There is no Log List to show!!',
@@ -192,18 +221,17 @@ class _TaskLogPageState extends State<TaskLogPage> {
                       ),
                     )
                         : ListView.builder(
-                      itemCount: logList.length,
+                      itemCount: filteredLogList.length,
                       itemBuilder: (context, index) {
                         return Card(
                           color: Colors.grey[200],
-                          elevation: 3, // Adjust the elevation as needed
+                          elevation: 3,
                           margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                           child: ListTile(
                             title: Text(
-                              '${logList[index].logCreateBy} ${logList[index].logSummary} ${logList[index].logType} : ${logList[index].taskName} | ${logList[index].logDetails} ',
+                              '${filteredLogList[index].logCreateBy} ${filteredLogList[index].logSummary} ${filteredLogList[index].logType} : ${filteredLogList[index].taskName} | ${filteredLogList[index].logDetails} ',
                             ),
-                            subtitle: Text(logList[index].logId),
-                            // You can add more decorations or styles here
+                            subtitle: Text(filteredLogList[index].logId),
                           ),
                         );
                       },
@@ -214,10 +242,11 @@ class _TaskLogPageState extends State<TaskLogPage> {
             ),
           ),
           Expanded(
-              flex: 1,
-              child: Column(
-                children: [],
-              )),
+            flex: 1,
+            child: Column(
+              children: [],
+            ),
+          ),
         ],
       ),
     );
