@@ -636,17 +636,20 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                 }
                               },
                               child: Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(0.0),
                                 child: Text(
                                   widget.subTaskDetails.taskStatus == '0'
                                       ? 'Mark In Progress'
-                                      : 'Mark As Complete',
+                                      : widget.subTaskDetails.taskStatus == '1'
+                                      ? 'Mark As Completed'
+                                      : 'Completed',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color:
-                                        widget.subTaskDetails.taskStatus == '0'
-                                            ? Colors.deepPurple.shade600
-                                            : Colors.green,
+                                    color: widget.subTaskDetails.taskStatus == '0'
+                                        ? Colors.deepPurple.shade600
+                                        : widget.subTaskDetails.taskStatus == '1'
+                                        ? Colors.green
+                                        : Colors.grey, // Assuming '2' represents Completed status
                                   ),
                                 ),
                               ),
