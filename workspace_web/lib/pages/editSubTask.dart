@@ -241,7 +241,7 @@ class _EditSubTaskPageState extends State<EditSubTaskPage> {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         foregroundColor: AppColor.appBlue,
-        title: Center(child: Text('Editing Main Task: ${widget.subTaskDetails.taskId}')),
+        title: Center(child: Text('Editing Sub Task: ${widget.subTaskDetails.taskId}')),
       ),
       body: Row(
         children: [
