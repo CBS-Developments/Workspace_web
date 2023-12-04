@@ -191,6 +191,76 @@ class _TaskPageState extends State<TaskPage> {
     }
   }
 
+  Future<bool> markCompleteMainTask(
+      BuildContext context, {
+        required taskName,
+        required userName,
+        required firstName,
+        required taskID,
+        required logType,
+        required logSummary,
+        required logDetails,
+      }) async {
+    // Prepare the data to be sent to the PHP script.
+    var data = {
+      "task_id": taskID,
+      "task_status": '2',
+      "task_status_name": 'Completed',
+      "action_taken_by_id": userName,
+      "action_taken_by": firstName,
+      "action_taken_date": getCurrentDateTime(),
+      "action_taken_timestamp": getCurrentDate(),
+    };
+
+    // URL of your PHP script.
+    const url = "http://dev.workspace.cbs.lk/deleteMainTask.php";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final responseBody = jsonDecode(res.body);
+
+        // Debugging: Print the response data.
+        print("Response from PHP script: $responseBody");
+
+        if (responseBody == "true") {
+          print('Successful');
+          getMainTaskList();
+          addLog(context,
+              taskId: taskID,
+              taskName: taskName,
+              createBy: firstName,
+              createByID: userName,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
+          snackBar(
+              context, "Main task completed successfully!", Colors.green);
+
+          return true; // PHP code was successful.
+        } else {
+          print('PHP code returned "false".');
+          return false; // PHP code returned "false."
+        }
+      } else {
+        print('HTTP request failed with status code: ${res.statusCode}');
+        return false; // HTTP request failed.
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false; // An error occurred.
+    }
+  }
+
+
   Future<void> getMainTaskList() async {
     mainTaskList.clear();
     var data = {};
@@ -387,6 +457,17 @@ class _TaskPageState extends State<TaskPage> {
                                           } else if (filteredTasks[index]
                                                   .taskStatus ==
                                               '1') {
+                                            markCompleteMainTask(context, taskName: filteredTasks[index]
+                                                .taskTitle,
+                                              userName: userName,
+                                              firstName: firstName,
+                                              taskID: filteredTasks[index]
+                                                  .taskId,
+                                              logType: 'Main Task',
+                                              logSummary:
+                                              'Marked as Completed',
+                                              logDetails:
+                                              'Main Task Due Date: ${filteredTasks[index].dueDate}',);
                                             // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
                                             // Handle 'Mark As Complete' action
                                           }
@@ -397,7 +478,7 @@ class _TaskPageState extends State<TaskPage> {
                                             filteredTasks[index].taskStatus ==
                                                     '0'
                                                 ? 'Mark In Progress'
-                                                : 'Mark As Complete',
+                                                : 'Mark As Completed',
                                             style: TextStyle(
                                               fontSize: 14,
                                               color: filteredTasks[index]
@@ -763,6 +844,17 @@ class _TaskPageState extends State<TaskPage> {
                                               } else if (filteredTasks[index]
                                                       .taskStatus ==
                                                   '1') {
+                                                markCompleteMainTask(context, taskName: filteredTasks[index]
+                                                    .taskTitle,
+                                                  userName: userName,
+                                                  firstName: firstName,
+                                                  taskID: filteredTasks[index]
+                                                      .taskId,
+                                                  logType: 'Main Task',
+                                                  logSummary:
+                                                  'Marked as Completed',
+                                                  logDetails:
+                                                  'Main Task Due Date: ${filteredTasks[index].dueDate}',);
                                                 // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
                                                 // Handle 'Mark As Complete' action
                                               }
@@ -775,7 +867,7 @@ class _TaskPageState extends State<TaskPage> {
                                                             .taskStatus ==
                                                         '0'
                                                     ? 'Mark In Progress'
-                                                    : 'Mark As Complete',
+                                                    : 'Mark As Completed',
                                                 style: TextStyle(
                                                   fontSize: 14,
                                                   color: filteredTasks[index]
