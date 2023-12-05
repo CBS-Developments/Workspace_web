@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/Dashboard': (context) => Dashboard(),
         '/Task': (context) => TaskPage(),
-        '/Task Log': (context) => TaskLogPage(),
+        '/Log': (context) => TaskLogPage(),
         '/createMainTask': (context) => CreateMainTask(),
         // '/Special Notice': (context) => SpecialNoticeScreen(),
         // '/Chat': (context) => ChatScreen(),
