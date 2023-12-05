@@ -246,8 +246,8 @@ class _TaskLogPageState extends State<TaskLogPage> {
                               style: TextStyle(color: isDeleted ? Colors.red : null),
                             ),
                             subtitle: Text(filteredLogList[index].logId,
-                              style: TextStyle(color: isDeleted ? Colors.red : null),),
-
+                              // style: TextStyle(color: isDeleted ? Colors.red : null),),
+                            )
                           ),
                         );
                       },
