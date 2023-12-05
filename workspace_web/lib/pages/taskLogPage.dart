@@ -21,6 +21,7 @@ class _TaskLogPageState extends State<TaskLogPage> {
 
   List<String> users = [
     '-- Select User --',
+    'All',
     'Deshika',
     'Iqlas',
     'Udari',
@@ -31,6 +32,7 @@ class _TaskLogPageState extends State<TaskLogPage> {
     'Samadhi',
     'Sanjana',
   ];
+
 
   @override
   void initState() {
@@ -107,15 +109,23 @@ class _TaskLogPageState extends State<TaskLogPage> {
   // Added to filter logs based on selected user
   void _filterLogs() {
     setState(() {
-      if (selectedUser == 'Select User') {
-        filteredLogList = logList; // Show all logs if 'Assign To' is selected
+      if (selectedUser == '-- Select User --') {
+        // Show all logs if 'Select User' is selected
+        filteredLogList = logList;
       } else {
+        // Filter logs based on selected user
         filteredLogList = logList
             .where((log) => log.logCreateBy == selectedUser)
-            .toList(); // Filter logs based on selected user
+            .toList();
+      }
+
+      // Check if 'All' is selected from the dropdown, fetch all logs for the selected date
+      if (selectedUser == 'All') {
+        filteredLogList = filterTaskLog(logList, selectedDate);
       }
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -193,7 +203,7 @@ class _TaskLogPageState extends State<TaskLogPage> {
                         //     ),
                         //   ),
                         // ),
-                        SizedBox(width: 10,),
+                       SizedBox(width: 20,),
                         DropdownButton<String>(
                           value: selectedUser,
                           onChanged: (String? newValue) {
@@ -209,6 +219,7 @@ class _TaskLogPageState extends State<TaskLogPage> {
                             );
                           }).toList(),
                         ),
+
                       ],
                     ),
                   ),
