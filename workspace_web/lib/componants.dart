@@ -145,7 +145,7 @@ class _MyDrawerState extends State<MyDrawer> {
       'Chat': false,
       'Users': false,
       //'Meet': false,
-      'Task Log': false,
+      'Log': false,
     };
   }
 
@@ -222,7 +222,7 @@ class _MyDrawerState extends State<MyDrawer> {
         return Icons.person;
       // case 'Meet':
       //   return Icons.video_chat_rounded;
-      case 'Task Log':
+      case 'Log':
         return Icons.app_shortcut_rounded;
       default:
         return Icons.error;
