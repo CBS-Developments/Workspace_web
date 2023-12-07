@@ -45,6 +45,7 @@ class _ProfilePageState extends State<ProfilePage> {
       employee_ID = prefs.getString('employee_ID') ?? "";
       designation = prefs.getString('designation') ?? "";
       company = prefs.getString('company') ?? "";
+      print('Loaded data to profile page');
     });
   }
 
