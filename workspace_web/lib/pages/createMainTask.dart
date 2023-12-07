@@ -784,7 +784,6 @@ class _CreateMainTaskState extends State<CreateMainTask> {
                                   child: Container())
                             ],
                           ),
-
                           SizedBox(height: 40,),
 
                           Row(
@@ -827,11 +826,6 @@ class _CreateMainTaskState extends State<CreateMainTask> {
                           ),
 
                           SizedBox(height: 20,),
-
-
-
-
-
                         ],
                       ),
                     ),
