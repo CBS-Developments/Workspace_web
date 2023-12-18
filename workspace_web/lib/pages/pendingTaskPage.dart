@@ -17,7 +17,7 @@ class _PendingTaskPageState extends State<PendingTaskPage> {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         foregroundColor: AppColor.appBlue,
-        title: Center(child: Text('Pending Main Tasks')),
+        title: Center(child: Text('Pending Main Task')),
       ),
     );
   }

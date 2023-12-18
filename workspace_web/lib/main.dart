@@ -7,6 +7,7 @@ import 'package:workspace_web/pages/loginPage.dart';
 import 'package:workspace_web/pages/openMainTask.dart';
 import 'package:workspace_web/pages/taskLogPage.dart';
 import 'package:workspace_web/pages/taskPage.dart';
+import 'package:workspace_web/pages/usersPage.dart';
 
 
 void main() async {
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
         '/Task': (context) => TaskPage(),
         '/Log': (context) => TaskLogPage(),
         '/createMainTask': (context) => CreateMainTask(),
+        '/Users': (context) => UsersPage(),
         // '/Special Notice': (context) => SpecialNoticeScreen(),
         // '/Chat': (context) => ChatScreen(),
         // '/Users': (context) => UsersScreen(),
