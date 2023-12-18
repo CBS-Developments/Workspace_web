@@ -66,7 +66,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
   @override
   void initState() {
     super.initState();
-    getSubTaskListByMainTaskId(widget.taskDetails.taskId);
+    getSubTaskListByMainTaskId(widget.taskDetails.taskId ,2);
     getCommentList(widget.taskDetails.taskId);
     loadData();
 
@@ -362,7 +362,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
     }
   }
 
-  Future<void> getSubTaskListByMainTaskId(String mainTaskId) async {
+  Future<void> getSubTaskListByMainTaskId(String mainTaskId, int index) async {
     subTaskList.clear();
     var data = {
       "main_task_id": mainTaskId,
@@ -387,7 +387,24 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
           subTaskList.add(Task.fromJson(details));
         }
 
-        subTaskList.sort((a, b) => b.dueDate.compareTo(a.dueDate));
+        switch(index){
+          case 1:
+            subTaskList.sort((a, b) => b.dueDate.compareTo(a.dueDate));
+            break;
+
+          case 2:
+            subTaskList.sort((a, b) => b.taskCreatedTimestamp.compareTo(a.taskCreatedTimestamp));
+            break;
+
+          case 3:
+
+            break;
+
+
+
+        }
+
+
       });
     } else {
       throw Exception('Failed to load subtasks from API');
@@ -584,7 +601,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
               logType: logType,
               logSummary: logSummary,
               logDetails: logDetails);
-          getSubTaskListByMainTaskId(widget.taskDetails.taskId);
+          getSubTaskListByMainTaskId(widget.taskDetails.taskId,2);
           return true; // PHP code was successful.
         } else {
           print('PHP code returned "false".');
@@ -651,7 +668,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
               logType: logType,
               logSummary: logSummary,
               logDetails: logDetails);
-          getSubTaskListByMainTaskId(widget.taskDetails.taskId);
+          getSubTaskListByMainTaskId(widget.taskDetails.taskId,2);
           return true; // PHP code was successful.
         } else {
           print('PHP code returned "false".');
@@ -1241,7 +1258,8 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                   title: Padding(
                                     padding: const EdgeInsets.all(5.0),
                                     child: SelectableText(
-                                      subTaskList[index].taskTitle,
+
+                                        '${index+1}.  ${subTaskList[index].taskTitle}',
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: AppColor.appBlue),
@@ -1276,9 +1294,15 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                       ),
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
-                                            vertical: 2.0, horizontal: 0),
+                                            vertical: 2.0, horizontal: 5),
                                         child: Row(
                                           children: [
+                                            SelectableText(
+                                              'Created Date: ${subTaskList[index].taskCreateDate}',
+                                              style: TextStyle(
+                                                  color: Colors.black87),
+                                            ),
+
                                             Icon(
                                               Icons.arrow_right,
                                               color: Colors.black87,
@@ -1288,6 +1312,8 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                               style: TextStyle(
                                                   color: Colors.black87),
                                             ),
+
+
                                             SizedBox(
                                               width: 20,
                                             ),
