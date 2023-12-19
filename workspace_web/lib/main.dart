@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workspace_web/colors.dart';
 import 'package:workspace_web/pages/createMainTask.dart';
+import 'package:workspace_web/pages/createUserPage.dart';
 import 'package:workspace_web/pages/dashboardPage.dart';
 import 'package:workspace_web/pages/loginPage.dart';
 import 'package:workspace_web/pages/openMainTask.dart';
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         '/Log': (context) => TaskLogPage(),
         '/createMainTask': (context) => CreateMainTask(),
         '/Users': (context) => UsersPage(),
+        '/createUser': (context) => CreateUserPage(),
         // '/Special Notice': (context) => SpecialNoticeScreen(),
         // '/Chat': (context) => ChatScreen(),
         // '/Users': (context) => UsersScreen(),
