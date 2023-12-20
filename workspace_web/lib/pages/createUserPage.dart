@@ -15,6 +15,8 @@ class _CreateUserPageState extends State<CreateUserPage> {
   TextEditingController lastNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController mobileNumberController = TextEditingController();
+  TextEditingController employeeIDController = TextEditingController();
 
   List<String> titles = [
     'Mr.',
@@ -280,7 +282,78 @@ class _CreateUserPageState extends State<CreateUserPage> {
                             ],
                           ),
 
-                          
+                          Row(
+                            children: [
+
+                              Expanded(
+                                flex: 10,
+                                child: Container(
+                                  margin: EdgeInsets.all(8),
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(00),
+                                      color: AppColor.appGrey),
+                                  child: TextField(
+                                    controller: mobileNumberController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Mobile Number: ',
+                                      labelStyle: TextStyle(
+                                          color: AppColor.appDarkBlue,
+                                          fontSize: 20),
+                                      hintText: 'Enter mobile number',
+                                      hintStyle: TextStyle(fontSize: 14),
+                                      // Change border and focused border colors
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors
+                                                .lightBlueAccent), // Normal border color
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: AppColor
+                                                .appDarkBlue), // Focus color
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              Expanded(
+                                flex: 8,
+                                child: Container(
+                                  margin: EdgeInsets.all(8),
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(00),
+                                      color: AppColor.appGrey),
+                                  child: TextField(
+                                    controller: employeeIDController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Employee ID: ',
+                                      labelStyle: TextStyle(
+                                          color: AppColor.appDarkBlue,
+                                          fontSize: 20),
+                                      hintText: 'Enter employee ID',
+                                      hintStyle: TextStyle(fontSize: 14),
+                                      // Change border and focused border colors
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors
+                                                .lightBlueAccent), // Normal border color
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: AppColor
+                                                .appDarkBlue), // Focus color
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+
+
                         ],
                       ),
                     )
