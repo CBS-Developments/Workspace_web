@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workspace_web/colors.dart';
+import 'package:workspace_web/pages/completedTaskPage.dart';
 import 'package:workspace_web/pages/pendingTaskPage.dart';
 import 'package:workspace_web/pages/profilePage.dart';
 
@@ -1308,7 +1309,12 @@ class _TaskPageState extends State<TaskPage> {
                           message: 'Completed Tasks',
                           child: MaterialButton(
                             child: Icon(Icons.task_rounded, color: Colors.green.shade600),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => CompletedTaskPage()),
+                              );
+                            },
                           ),
                         ),
                         Tooltip(
