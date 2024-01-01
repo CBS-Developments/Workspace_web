@@ -50,7 +50,7 @@ class _CompletedTaskPageState extends State<CompletedTaskPage> {
     mainTaskList.clear();
     var data = {};
 
-    const url = "http://dev.workspace.cbs.lk/mainTaskList.php";
+    const url = "http://dev.workspace.cbs.lk/mainTaskListCom.php";
     http.Response res = await http.post(
       Uri.parse(url),
       body: data,
