@@ -330,20 +330,23 @@ class _TaskPageState extends State<TaskPage> {
   }
 
   Widget buildTaskListByCategory(String category) {
-    List<MainTask> filteredTasks = mainTaskList
-        .where((task) => task.category_name == category || category == 'All Tasks')
-        .toList();
+    List<MainTask> filteredTasks = [];
 
     if (selectedAssignee == null ||
         selectedAssignee == 'All' ||
         selectedAssignee == '-- Select Assignee --') {
-      filteredTasks = mainTaskList.toList();
+      filteredTasks = mainTaskList
+          .where((task) =>
+      task.category_name == category || category == 'All Tasks')
+          .toList();
     } else {
       filteredTasks = mainTaskList
           .where((task) =>
+      (task.category_name == category || category == 'All Tasks') &&
           task.assignTo.toLowerCase().contains(selectedAssignee!.toLowerCase()))
           .toList();
     }
+
 
     if (searchController.text.isNotEmpty) {
       filteredTasks = filteredTasks
