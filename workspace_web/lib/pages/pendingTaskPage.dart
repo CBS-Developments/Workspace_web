@@ -30,7 +30,9 @@ class _PendingTaskPageState extends State<PendingTaskPage> {
   String userRole = "";
 
   String? searchAssignee;
-  String? selectedAssignee= '-- Select Assignee --';
+
+
+  String? selectedAssignee;
 
   List<String> assigneeList = [
     '-- Select Assignee --',
@@ -124,6 +126,14 @@ class _PendingTaskPageState extends State<PendingTaskPage> {
       lastName = prefs.getString('last_name') ?? "";
       phone = prefs.getString('phone') ?? "";
       userRole = prefs.getString('user_role') ?? "";
+
+      // Update selectedAssignee based on userRole
+      if (userRole == "1") {
+        selectedAssignee = '-- Select Assignee --';
+      } else if (userRole == "0") {
+        selectedAssignee = firstName;
+      }
+
     });
   }
 
@@ -356,7 +366,8 @@ class _PendingTaskPageState extends State<PendingTaskPage> {
         backgroundColor: Colors.white,
         foregroundColor: AppColor.appBlue,
         title: Center(child: Text('Pending Main Tasks')),
-        actions: [
+        actions: userRole == "1"
+            ? [
           DropdownButton<String>(
             value: selectedAssignee,
             onChanged: (newValue) {
@@ -373,8 +384,10 @@ class _PendingTaskPageState extends State<PendingTaskPage> {
               );
             }).toList(),
           ),
-          const SizedBox(width: 20),  // Spacer if needed
-        ], // Spacer if needed
+          const SizedBox(width: 20), // Spacer if needed
+        ]
+            : null,  // Spacer if needed
+
 
 
       ),
@@ -385,7 +398,7 @@ class _PendingTaskPageState extends State<PendingTaskPage> {
 
   Widget buildAllTasksList() {
     List<MainTask> filteredTasks = [];
-    
+
     // Filter tasks based on taskStatus = 0
     if (selectedAssignee == null || selectedAssignee == 'All' || selectedAssignee == '-- Select Assignee --') {
       filteredTasks = mainTaskList
