@@ -29,6 +29,24 @@ class _PendingTaskPageState extends State<PendingTaskPage> {
   String phone = "";
   String userRole = "";
 
+  String? searchAssignee;
+  String? selectedAssignee= '-- Select Assignee --';
+
+  List<String> assigneeList = [
+    '-- Select Assignee --',
+    'All',
+    'Deshika',
+    'Iqlas',
+    'Udari',
+    'Shahiru',
+    'Dinethri',
+    'Damith',
+    'Sulakshana',
+    'Samadhi',
+    'Sanjana',
+  ];
+
+
 
   Future<void> getSubTaskListByMainTaskId(String mainTaskId) async {
     subTaskList.clear();
@@ -338,6 +356,26 @@ class _PendingTaskPageState extends State<PendingTaskPage> {
         backgroundColor: Colors.white,
         foregroundColor: AppColor.appBlue,
         title: Center(child: Text('Pending Main Tasks')),
+        actions: [
+          DropdownButton<String>(
+            value: selectedAssignee,
+            onChanged: (newValue) {
+              setState(() {
+                selectedAssignee = newValue;
+              });
+              // Filter the task list based on the selected assignee
+              // Implement filtering logic here
+            },
+            items: assigneeList.map<DropdownMenuItem<String>>((assignee) {
+              return DropdownMenuItem<String>(
+                value: assignee,
+                child: Text(assignee),
+              );
+            }).toList(),
+          ),
+          const SizedBox(width: 20),  // Spacer if needed
+        ], // Spacer if needed
+
 
       ),
       body: buildAllTasksList(),
@@ -347,9 +385,19 @@ class _PendingTaskPageState extends State<PendingTaskPage> {
 
   Widget buildAllTasksList() {
     List<MainTask> filteredTasks = [];
-
-// Filter tasks based on taskStatus = 0
-    filteredTasks = mainTaskList.where((task) => task.taskStatus == '0').toList();
+    
+    // Filter tasks based on taskStatus = 0
+    if (selectedAssignee == null || selectedAssignee == 'All' || selectedAssignee == '-- Select Assignee --') {
+      filteredTasks = mainTaskList
+          .where((task) => task.taskStatus == '0')
+          .toList();
+    } else {
+      filteredTasks = mainTaskList
+          .where((task) =>
+      task.taskStatus == '0' &&
+          task.assignTo.toLowerCase().contains(selectedAssignee!.toLowerCase()))
+          .toList();
+    }
 
     return filteredTasks.isNotEmpty
         ? Row(
