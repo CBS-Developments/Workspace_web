@@ -1363,7 +1363,7 @@ class _TaskPageState extends State<TaskPage> {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: Colors.blue, // Change this to your preferred color
+                               // Change this to your preferred color
                               shape: BoxShape.circle,
                             ),
                             // You can add any content inside this container
