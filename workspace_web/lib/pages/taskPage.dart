@@ -1333,13 +1333,12 @@ class _TaskPageState extends State<TaskPage> {
                   ),
                 ),
 
-
                 Expanded(
                     flex: 10,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        if (userRole != 1)
+                        if (userRole == '1')
                           DropdownButton<String>(
                             value: selectedAssignee,
                             onChanged: (newValue) {
@@ -1356,7 +1355,7 @@ class _TaskPageState extends State<TaskPage> {
                               );
                             }).toList(),
                           ),
-                        if (userRole == 1)
+                        if (userRole != '1')
                           Container(
                             width: 40,
                             height: 40,
