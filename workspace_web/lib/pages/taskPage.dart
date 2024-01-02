@@ -37,6 +37,25 @@ class _TaskPageState extends State<TaskPage> {
   TextEditingController searchByNameController = TextEditingController();
   List<MainTask> searchedTasks = [];
 
+
+  String? selectedAssignee;
+
+  List<String> assigneeList = [
+    '-- Select Assignee --',
+    'All',
+    'Deshika',
+    'Iqlas',
+    'Udari',
+    'Shahiru',
+    'Dinethri',
+    'Damith',
+    'Sulakshana',
+    'Samadhi',
+    'Sanjana',
+  ];
+
+
+
   String getCurrentDateTime() {
     final now = DateTime.now();
     final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
@@ -70,6 +89,13 @@ class _TaskPageState extends State<TaskPage> {
       lastName = prefs.getString('last_name') ?? "";
       phone = prefs.getString('phone') ?? "";
       userRole = prefs.getString('user_role') ?? "";
+
+      // Update selectedAssignee based on userRole
+      if (userRole == "1") {
+        selectedAssignee = '-- Select Assignee --';
+      } else if (userRole == "0") {
+        selectedAssignee = firstName;
+      }
     });
   }
 
@@ -305,23 +331,32 @@ class _TaskPageState extends State<TaskPage> {
 
   Widget buildTaskListByCategory(String category) {
     List<MainTask> filteredTasks = mainTaskList
-        .where(
-            (task) => task.category_name == category || category == 'All Tasks')
+        .where((task) => task.category_name == category || category == 'All Tasks')
         .toList();
+
+    if (selectedAssignee == null ||
+        selectedAssignee == 'All' ||
+        selectedAssignee == '-- Select Assignee --') {
+      filteredTasks = mainTaskList.toList();
+    } else {
+      filteredTasks = mainTaskList
+          .where((task) =>
+          task.assignTo.toLowerCase().contains(selectedAssignee!.toLowerCase()))
+          .toList();
+    }
 
     if (searchController.text.isNotEmpty) {
       filteredTasks = filteredTasks
-          .where((task) => task.taskId
-              .toLowerCase()
-              .contains(searchController.text.toLowerCase()))
+          .where((task) =>
+          task.taskId.toLowerCase().contains(searchController.text.toLowerCase()))
           .toList();
     } else if (searchByNameController.text.isNotEmpty) {
       filteredTasks = filteredTasks
-          .where((task) => task.taskTitle
-              .toLowerCase()
-              .contains(searchByNameController.text.toLowerCase()))
+          .where((task) =>
+          task.taskTitle.toLowerCase().contains(searchByNameController.text.toLowerCase()))
           .toList();
     }
+
 
     if (filteredTasks.isNotEmpty) {
       return Row(
@@ -691,20 +726,29 @@ class _TaskPageState extends State<TaskPage> {
 
     if (searchController.text.isNotEmpty) {
       filteredTasks = mainTaskList
-          .where((task) => task.taskId
-              .toLowerCase()
-              .contains(searchController.text.toLowerCase()))
+          .where((task) =>
+          task.taskId.toLowerCase().contains(searchController.text.toLowerCase()))
           .toList();
     } else if (searchByNameController.text.isNotEmpty) {
       filteredTasks = mainTaskList
-          .where((task) => task.taskTitle
-              .toLowerCase()
-              .contains(searchByNameController.text.toLowerCase()))
+          .where((task) =>
+          task.taskTitle.toLowerCase().contains(searchByNameController.text.toLowerCase()))
           .toList();
     } else {
-      filteredTasks =
-          List.from(mainTaskList); // Show all tasks when no search query
+      filteredTasks = List.from(mainTaskList); // Show all tasks when no search query
     }
+
+    if (selectedAssignee == null ||
+        selectedAssignee == 'All' ||
+        selectedAssignee == '-- Select Assignee --') {
+      // No need to filter based on assignee if it's not specified
+    } else {
+      filteredTasks = filteredTasks
+          .where((task) =>
+          task.assignTo.toLowerCase().contains(selectedAssignee!.toLowerCase()))
+          .toList();
+    }
+
 
     return filteredTasks.isNotEmpty
         ? Row(
@@ -1288,12 +1332,41 @@ class _TaskPageState extends State<TaskPage> {
                     ),
                   ),
                 ),
+
+
                 Expanded(
                     flex: 10,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-
+                        if (userRole != 1)
+                          DropdownButton<String>(
+                            value: selectedAssignee,
+                            onChanged: (newValue) {
+                              setState(() {
+                                selectedAssignee = newValue;
+                              });
+                              // Filter the task list based on the selected assignee
+                              // Implement filtering logic here
+                            },
+                            items: assigneeList.map<DropdownMenuItem<String>>((assignee) {
+                              return DropdownMenuItem<String>(
+                                value: assignee,
+                                child: Text(assignee),
+                              );
+                            }).toList(),
+                          ),
+                        if (userRole == 1)
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.blue, // Change this to your preferred color
+                              shape: BoxShape.circle,
+                            ),
+                            // You can add any content inside this container
+                          ),
+                        const SizedBox(width: 20),
                         Tooltip(
                           message: 'Pending Tasks',
                           child: MaterialButton(
@@ -1323,10 +1396,11 @@ class _TaskPageState extends State<TaskPage> {
                           child: MaterialButton(
                             child: Icon(Icons.note_add_rounded, color: Colors.red.shade600),
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => NotesPage()),
-                              );
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(builder: (context) => NotesPage()),
+                              // );
+                              print('user Role $userRole');
                             },
                           ),
                         ),
