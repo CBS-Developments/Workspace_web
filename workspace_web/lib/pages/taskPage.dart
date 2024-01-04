@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workspace_web/colors.dart';
 import 'package:workspace_web/pages/completedTaskPage.dart';
+import 'package:workspace_web/pages/inProgressTaskPage.dart';
 import 'package:workspace_web/pages/notesPage.dart';
 import 'package:workspace_web/pages/pendingTaskPage.dart';
 import 'package:workspace_web/pages/profilePage.dart';
@@ -1381,6 +1382,20 @@ class _TaskPageState extends State<TaskPage> {
                             },
                           ),
                         ),
+
+                        Tooltip(
+                          message: 'In-Progress Tasks',
+                          child: MaterialButton(
+                            child: Icon(Icons.insert_page_break_rounded, color: Colors.blueAccent.shade700),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => InProgressTaskPage()),
+                              );
+                            },
+                          ),
+                        ),
+
                         Tooltip(
                           message: 'Completed Tasks',
                           child: MaterialButton(
