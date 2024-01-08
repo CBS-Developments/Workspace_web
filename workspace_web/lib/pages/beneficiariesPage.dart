@@ -30,7 +30,7 @@ class _BeneficiariesPageState extends State<BeneficiariesPage> {
             padding: const EdgeInsets.all(12.0),
             child: ElevatedButton(
               onPressed: () {
-                // Navigator.pushNamed(context, '/createUser');
+                Navigator.pushNamed(context, '/createBeneficiaries');
               },
               child: Text('Create Beneficiaries'),
               style: ElevatedButton.styleFrom(

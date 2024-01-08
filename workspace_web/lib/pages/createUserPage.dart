@@ -353,6 +353,36 @@ class _CreateUserPageState extends State<CreateUserPage> {
                             ],
                           ),
 
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: AppColor
+                                      .appDarkBlue, // Change this to the desired color
+                                ),
+                                onPressed: () {
+
+                                },
+                                child: Text('Create User'),
+                              ),
+                              SizedBox(width: 20,),
+
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.redAccent, // Change this to the desired color
+                                ),
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/Users');
+                                },
+                                child: Text('Cancel'),
+                              ),
+
+                              SizedBox(width: 40,),
+
+                            ],
+                          ),
+
 
                         ],
                       ),
