@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workspace_web/colors.dart';
+import 'package:workspace_web/pages/beneficiariesPage.dart';
 import 'package:workspace_web/pages/createMainTask.dart';
 import 'package:workspace_web/pages/createUserPage.dart';
 import 'package:workspace_web/pages/dashboardPage.dart';
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
         '/createMainTask': (context) => CreateMainTask(),
         '/Users': (context) => UsersPage(),
         '/createUser': (context) => CreateUserPage(),
-        // '/Special Notice': (context) => SpecialNoticeScreen(),
+        '/Beneficiaries': (context) => BeneficiariesPage(),
         // '/Chat': (context) => ChatScreen(),
         // '/Users': (context) => UsersScreen(),
         // '/Meet': (context) => MeetScreen(),

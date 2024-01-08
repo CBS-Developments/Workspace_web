@@ -141,8 +141,8 @@ class _MyDrawerState extends State<MyDrawer> {
       'Task': false,
       'Mail': false,
       'Calendar': false,
-      'Special Notice': false,
       'Chat': false,
+      'Beneficiaries': false,
       'Users': false,
       //'Meet': false,
       'Log': false,
@@ -214,10 +214,10 @@ class _MyDrawerState extends State<MyDrawer> {
         return Icons.mail_rounded;
       case 'Calendar':
         return Icons.calendar_month_rounded;
-      case 'Special Notice':
-        return Icons.notifications;
       case 'Chat':
         return Icons.chat;
+      case 'Beneficiaries':
+        return Icons.business_rounded;
       case 'Users':
         return Icons.person;
       // case 'Meet':
