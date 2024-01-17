@@ -1413,10 +1413,10 @@ class _TaskPageState extends State<TaskPage> {
                           child: MaterialButton(
                             child: Icon(Icons.note_add_rounded, color: Colors.red.shade600),
                             onPressed: () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(builder: (context) => NotesPage()),
-                              // );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => NotesPage()),
+                              );
                               print('user Role $userRole');
                             },
                           ),

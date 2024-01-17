@@ -25,7 +25,9 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
           Expanded(flex: 1, child: Column()),
 
           Expanded(flex: 4,
-              child: Column()),
+              child: Column(
+
+              )),
 
           Expanded(flex: 1, child: Column()),
         ],
