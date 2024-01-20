@@ -34,6 +34,11 @@ class _TaskPageState extends State<TaskPage> {
   String mainTaskName =
       'Please select a Main Task'; // Define this variable in your class scope
 
+  int pendingTaskCount = 0;
+  int inProgressTaskCount = 0;
+  int completedTaskCount = 0;
+  String? selectedCategory = 'All Tasks';
+
   TextEditingController searchController = TextEditingController();
   TextEditingController searchByNameController = TextEditingController();
   List<MainTask> searchedTasks = [];
@@ -313,10 +318,42 @@ class _TaskPageState extends State<TaskPage> {
         }
         mainTaskList.sort(
             (a, b) => b.taskCreatedTimestamp.compareTo(a.taskCreatedTimestamp));
+        updateTaskCounts();
       });
+
     } else {
       throw Exception('Failed to load jobs from API');
     }
+  }
+
+  void updateTaskCounts({String? assignee, String? category}) {
+    pendingTaskCount = 0;
+    inProgressTaskCount = 0;
+    completedTaskCount = 0;
+
+    for (var task in mainTaskList) {
+      bool assigneeMatch = assignee == null || assignee == '-- Select Assignee --' || assignee == 'All' ||
+          task.assignTo.toLowerCase().contains(assignee.toLowerCase());
+      bool categoryMatch = category == null || category == 'All Tasks' ||
+          task.category_name == category;
+
+      if (assigneeMatch && categoryMatch) {
+        switch (task.taskStatus) {
+          case '0':
+            pendingTaskCount++;
+            break;
+          case '1':
+            inProgressTaskCount++;
+            break;
+          case '2':
+            completedTaskCount++;
+            break;
+          default:
+            break;
+        }
+      }
+    }
+    setState(() {}); // Update UI
   }
 
   Color _getColorForTaskTypeName(String taskTypeName) {
@@ -1230,6 +1267,22 @@ class _TaskPageState extends State<TaskPage> {
                 color: AppColor.appGrey),
             labelColor: Colors.black,
             dividerColor: AppColor.appDarkBlue,
+            onTap: (index) {
+              setState(() {
+                // Update selectedCategory based on the tab selected
+                switch (index) {
+                  case 0: selectedCategory = 'All Tasks'; break;
+                  case 1: selectedCategory = 'Taxation - TAS'; break;
+                  case 2: selectedCategory = 'Talent Management - TMS'; break;
+                  case 3: selectedCategory = 'Finance & Accounting - AFSS'; break;
+                  case 4: selectedCategory = 'Audit & Assurance - ASS'; break;
+                  case 5: selectedCategory = 'Company Secretarial - CSS'; break;
+                  case 6: selectedCategory = 'Development - DEV'; break;
+                  default: break;
+                }
+              });
+              updateTaskCounts(assignee: selectedAssignee, category: selectedCategory);
+            },
             tabs: [
               Tab(text: 'All Tasks'),
               Tab(text: 'Taxation - TAS'),
@@ -1349,6 +1402,7 @@ class _TaskPageState extends State<TaskPage> {
                               setState(() {
                                 selectedAssignee = newValue;
                               });
+                              updateTaskCounts(assignee: newValue, category: selectedCategory);
                               // Filter the task list based on the selected assignee
                               // Implement filtering logic here
                             },
@@ -1371,9 +1425,18 @@ class _TaskPageState extends State<TaskPage> {
                           ),
                         const SizedBox(width: 20),
                         Tooltip(
-                          message: 'Pending Tasks',
+                          message: "Pending Tasks",
                           child: MaterialButton(
-                            child: Icon(Icons.pending_actions_rounded, color: Colors.orange.shade600),
+                            child: Row(
+                              children: [
+                                Icon(Icons.pending_actions_rounded, color: Colors.orange.shade600),
+
+                                Padding(
+                                  padding: const EdgeInsets.all(3.0),
+                                  child: Text(' |  $pendingTaskCount',style: TextStyle(color: Colors.orange.shade500),),
+                                )
+                              ],
+                            ),
                             onPressed: () {
                               Navigator.push(
                                 context,
@@ -1386,7 +1449,16 @@ class _TaskPageState extends State<TaskPage> {
                         Tooltip(
                           message: 'In-Progress Tasks',
                           child: MaterialButton(
-                            child: Icon(Icons.insert_page_break_rounded, color: Colors.blueAccent.shade700),
+                            child: Row(
+                              children: [
+                                Icon(Icons.insert_page_break_rounded, color: Colors.blueAccent.shade700),
+
+                                Padding(
+                                  padding: const EdgeInsets.all(3.0),
+                                  child: Text(' |  $inProgressTaskCount',style: TextStyle(color: Colors.blueAccent.shade400),),
+                                )
+                              ],
+                            ),
                             onPressed: () {
                               Navigator.push(
                                 context,
@@ -1399,7 +1471,16 @@ class _TaskPageState extends State<TaskPage> {
                         Tooltip(
                           message: 'Completed Tasks',
                           child: MaterialButton(
-                            child: Icon(Icons.task_rounded, color: Colors.green.shade600),
+                            child: Row(
+                              children: [
+                                Icon(Icons.task_rounded, color: Colors.green.shade600),
+                                // Padding(
+                                //   padding: const EdgeInsets.all(3.0),
+                                //   child: Text(' |  $completedTaskCount',style: TextStyle(color: Colors.green.shade400),),
+                                // )
+
+                              ],
+                            ),
                             onPressed: () {
                               Navigator.push(
                                 context,
