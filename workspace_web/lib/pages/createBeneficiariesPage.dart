@@ -336,7 +336,7 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                                   child: TextField(
                                     controller: mobileNumberController,
                                     decoration: InputDecoration(
-                                      labelText: 'Email: ',
+                                      labelText: 'Mobile: ',
                                       labelStyle: TextStyle(
                                           color: AppColor.appDarkBlue,
                                           fontSize: 20),
@@ -369,7 +369,291 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                                   child: TextField(
                                     controller: employeeIDController,
                                     decoration: InputDecoration(
-                                      labelText: 'Fixed Line: ',
+                                      labelText: 'Whatsapp Number: ',
+                                      labelStyle: TextStyle(
+                                          color: AppColor.appDarkBlue,
+                                          fontSize: 20),
+                                      hintText: '',
+                                      hintStyle: TextStyle(fontSize: 14),
+                                      // Change border and focused border colors
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors
+                                                .lightBlueAccent), // Normal border color
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: AppColor
+                                                .appDarkBlue), // Focus color
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+
+                          Row(
+                            children: [
+
+                              Expanded(
+                                flex: 10,
+                                child: Container(
+                                  margin: EdgeInsets.all(8),
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(00),
+                                      color: AppColor.appGrey),
+                                  child: TextField(
+                                    controller: mobileNumberController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Address: ',
+                                      labelStyle: TextStyle(
+                                          color: AppColor.appDarkBlue,
+                                          fontSize: 20),
+                                      hintText: '',
+                                      hintStyle: TextStyle(fontSize: 14),
+                                      // Change border and focused border colors
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors
+                                                .lightBlueAccent), // Normal border color
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: AppColor
+                                                .appDarkBlue), // Focus color
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              Expanded(
+                                flex: 10,
+                                child: Container(
+                                  margin: EdgeInsets.all(8),
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(00),
+                                      color: AppColor.appGrey),
+                                  child: TextField(
+                                    controller: employeeIDController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Resident Country: ',
+                                      labelStyle: TextStyle(
+                                          color: AppColor.appDarkBlue,
+                                          fontSize: 20),
+                                      hintText: '',
+                                      hintStyle: TextStyle(fontSize: 14),
+                                      // Change border and focused border colors
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors
+                                                .lightBlueAccent), // Normal border color
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: AppColor
+                                                .appDarkBlue), // Focus color
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+
+                          Row(
+                            children: [
+
+                              Expanded(
+                                flex: 10,
+                                child: Container(
+                                  margin: EdgeInsets.all(8),
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(00),
+                                      color: AppColor.appGrey),
+                                  child: TextField(
+                                    controller: mobileNumberController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Country Citizen: ',
+                                      labelStyle: TextStyle(
+                                          color: AppColor.appDarkBlue,
+                                          fontSize: 20),
+                                      hintText: '',
+                                      hintStyle: TextStyle(fontSize: 14),
+                                      // Change border and focused border colors
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors
+                                                .lightBlueAccent), // Normal border color
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: AppColor
+                                                .appDarkBlue), // Focus color
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              Expanded(
+                                flex: 10,
+                                child: Container(
+                                  margin: EdgeInsets.all(8),
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(00),
+                                      color: AppColor.appGrey),
+                                  child: TextField(
+                                    controller: employeeIDController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Services Category: ',
+                                      labelStyle: TextStyle(
+                                          color: AppColor.appDarkBlue,
+                                          fontSize: 20),
+                                      hintText: '',
+                                      hintStyle: TextStyle(fontSize: 14),
+                                      // Change border and focused border colors
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors
+                                                .lightBlueAccent), // Normal border color
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: AppColor
+                                                .appDarkBlue), // Focus color
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+
+                          Row(
+                            children: [
+
+                              Expanded(
+                                flex: 10,
+                                child: Container(
+                                  margin: EdgeInsets.all(8),
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(00),
+                                      color: AppColor.appGrey),
+                                  child: TextField(
+                                    controller: mobileNumberController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Contact Person Name (If Company): ',
+                                      labelStyle: TextStyle(
+                                          color: AppColor.appDarkBlue,
+                                          fontSize: 20),
+                                      hintText: '',
+                                      hintStyle: TextStyle(fontSize: 14),
+                                      // Change border and focused border colors
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors
+                                                .lightBlueAccent), // Normal border color
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: AppColor
+                                                .appDarkBlue), // Focus color
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              Expanded(
+                                flex: 10,
+                                child: Container(
+                                  margin: EdgeInsets.all(8),
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(00),
+                                      color: AppColor.appGrey),
+                                  child: TextField(
+                                    controller: employeeIDController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Designation: ',
+                                      labelStyle: TextStyle(
+                                          color: AppColor.appDarkBlue,
+                                          fontSize: 20),
+                                      hintText: '',
+                                      hintStyle: TextStyle(fontSize: 14),
+                                      // Change border and focused border colors
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors
+                                                .lightBlueAccent), // Normal border color
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: AppColor
+                                                .appDarkBlue), // Focus color
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+
+                          Row(
+                            children: [
+
+                              Expanded(
+                                flex: 10,
+                                child: Container(
+                                  margin: EdgeInsets.all(8),
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(00),
+                                      color: AppColor.appGrey),
+                                  child: TextField(
+                                    controller: mobileNumberController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Mobile Number of Contact Person: ',
+                                      labelStyle: TextStyle(
+                                          color: AppColor.appDarkBlue,
+                                          fontSize: 20),
+                                      hintText: '',
+                                      hintStyle: TextStyle(fontSize: 14),
+                                      // Change border and focused border colors
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors
+                                                .lightBlueAccent), // Normal border color
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: AppColor
+                                                .appDarkBlue), // Focus color
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              Expanded(
+                                flex: 10,
+                                child: Container(
+                                  margin: EdgeInsets.all(8),
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(00),
+                                      color: AppColor.appGrey),
+                                  child: TextField(
+                                    controller: employeeIDController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Whatsapp Number of Contact Person: ',
                                       labelStyle: TextStyle(
                                           color: AppColor.appDarkBlue,
                                           fontSize: 20),
