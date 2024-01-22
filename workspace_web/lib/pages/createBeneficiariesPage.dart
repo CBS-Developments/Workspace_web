@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../colors.dart';
+import '../componants.dart';
 import '../sizes.dart';
+import 'beneficiariesPage.dart';
 
 class CreateBeneficiariesPage extends StatefulWidget {
   const CreateBeneficiariesPage({super.key});
@@ -33,11 +36,87 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
     'Company',
     'Partnership',
     'Individual',
+    'Association',
 
     // Add more titles as needed
   ];
 
   String entityType = '';
+
+
+
+  Future<void> createBeneficiaries(BuildContext context) async {
+    // Validate input fields
+    if (fullNameController.text.trim().isEmpty ) {
+      // Show an error message if any of the required fields are empty
+      snackBar(context, "Please fill in all required fields", Colors.red);
+      return;
+    }
+
+    // Other validation logic can be added here
+
+    // If all validations pass, proceed with the registration
+    var url = "http://dev.workspace.cbs.lk/createBeneficiaries.php";
+
+    var data = {
+      "cin_no": '0',
+      "beneficiary_full_name": fullNameController.text.toString().trim(),
+      "name_with_initial": initialNameController.text.toString().trim(),
+      "short_key": '0',
+      "entity_type": entityType,
+      "registration_no": registrationNoController.text.toString().trim(),
+      "email": emailController.text.toString().trim(),
+      "fixed_line": fixedLineController.text.toString().trim(),
+      "mobile": mobileController.text.toString().trim(),
+      "whatsapp_No": whatsappNoController.text.toString().trim(),
+      "address_": addressController.text.toString().trim(),
+      "resident_country": residentCountryController.text.toString().trim(),
+      "country_citizen": countryCitizenController.text.toString().trim(),
+      "contact_person_name": contactPersonNameController.text.toString().trim(),
+      "designation": designationController.text.toString().trim(),
+      "contact_person_mobile": contactPersonMobileController.text.toString().trim(),
+      "contact_person_Wh": contactPersonWhatsappController.text.toString().trim(),
+      "contact_person_email": emailController.text.toString().trim(),
+      "services_category": servicesCategoryController.text.toString().trim(),
+      "activate": '1',
+    };
+
+    http.Response res = await http.post(
+      Uri.parse(url),
+      body: data,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      encoding: Encoding.getByName("utf-8"),
+    );
+
+    if (res.statusCode.toString() == "200") {
+      if (jsonDecode(res.body) == "true") {
+        if (!mounted) return;
+        showSuccessSnackBar(context); // Show the success SnackBar
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => BeneficiariesPage()),
+        );
+      } else {
+        if (!mounted) return;
+        snackBar(context, "Error 01", Colors.yellowAccent);
+      }
+    } else {
+      if (!mounted) return;
+      snackBar(context, "Error", Colors.redAccent);
+    }
+  }
+
+  void showSuccessSnackBar(BuildContext context) {
+    final snackBar = SnackBar(
+      content:
+      Text('Create Beneficiary successful!'),
+      backgroundColor: Colors.blueAccent, // You can customize the color
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -695,6 +774,7 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                                       .appDarkBlue, // Change this to the desired color
                                 ),
                                 onPressed: () {
+                                  createBeneficiaries(context);
 
                                 },
                                 child: Text('Create Beneficiary'),
