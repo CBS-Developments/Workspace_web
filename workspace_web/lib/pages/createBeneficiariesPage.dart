@@ -14,11 +14,20 @@ class CreateBeneficiariesPage extends StatefulWidget {
 class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
 
   TextEditingController fullNameController = TextEditingController();
-  TextEditingController lastNameController = TextEditingController();
+  TextEditingController initialNameController = TextEditingController();
+  TextEditingController designationController = TextEditingController();
+  TextEditingController registrationNoController = TextEditingController();
+  TextEditingController mobileController = TextEditingController();
+  TextEditingController whatsappNoController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
   TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController mobileNumberController = TextEditingController();
-  TextEditingController employeeIDController = TextEditingController();
+  TextEditingController residentCountryController = TextEditingController();
+  TextEditingController fixedLineController = TextEditingController();
+  TextEditingController countryCitizenController = TextEditingController();
+  TextEditingController contactPersonNameController = TextEditingController();
+  TextEditingController contactPersonMobileController = TextEditingController();
+  TextEditingController contactPersonWhatsappController = TextEditingController();
+  TextEditingController servicesCategoryController = TextEditingController();
 
   List<String> entityTypes = [
     'Company',
@@ -113,7 +122,7 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                                       borderRadius: BorderRadius.circular(00),
                                       color: AppColor.appGrey),
                                   child: TextField(
-                                    controller: lastNameController,
+                                    controller: initialNameController,
                                     decoration: InputDecoration(
                                       labelText: 'Name with Initial (for Individual)',
                                       labelStyle: TextStyle(
@@ -153,7 +162,7 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                                       borderRadius: BorderRadius.circular(00),
                                       color: AppColor.appGrey),
                                   child: TextField(
-                                    controller: emailController,
+                                    controller: registrationNoController,
                                     decoration: InputDecoration(
                                       labelText: 'Registration No / NIC / Passport : ',
                                       labelStyle: TextStyle(
@@ -263,7 +272,7 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                                       borderRadius: BorderRadius.circular(00),
                                       color: AppColor.appGrey),
                                   child: TextField(
-                                    controller: mobileNumberController,
+                                    controller: emailController,
                                     decoration: InputDecoration(
                                       labelText: 'Email: ',
                                       labelStyle: TextStyle(
@@ -296,7 +305,7 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                                       borderRadius: BorderRadius.circular(00),
                                       color: AppColor.appGrey),
                                   child: TextField(
-                                    controller: employeeIDController,
+                                    controller: fixedLineController,
                                     decoration: InputDecoration(
                                       labelText: 'Fixed Line: ',
                                       labelStyle: TextStyle(
@@ -334,7 +343,7 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                                       borderRadius: BorderRadius.circular(00),
                                       color: AppColor.appGrey),
                                   child: TextField(
-                                    controller: mobileNumberController,
+                                    controller: mobileController,
                                     decoration: InputDecoration(
                                       labelText: 'Mobile: ',
                                       labelStyle: TextStyle(
@@ -367,7 +376,7 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                                       borderRadius: BorderRadius.circular(00),
                                       color: AppColor.appGrey),
                                   child: TextField(
-                                    controller: employeeIDController,
+                                    controller: whatsappNoController,
                                     decoration: InputDecoration(
                                       labelText: 'Whatsapp Number: ',
                                       labelStyle: TextStyle(
@@ -405,7 +414,7 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                                       borderRadius: BorderRadius.circular(00),
                                       color: AppColor.appGrey),
                                   child: TextField(
-                                    controller: mobileNumberController,
+                                    controller: addressController,
                                     decoration: InputDecoration(
                                       labelText: 'Address: ',
                                       labelStyle: TextStyle(
@@ -438,7 +447,7 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                                       borderRadius: BorderRadius.circular(00),
                                       color: AppColor.appGrey),
                                   child: TextField(
-                                    controller: employeeIDController,
+                                    controller: residentCountryController,
                                     decoration: InputDecoration(
                                       labelText: 'Resident Country: ',
                                       labelStyle: TextStyle(
@@ -476,7 +485,7 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                                       borderRadius: BorderRadius.circular(00),
                                       color: AppColor.appGrey),
                                   child: TextField(
-                                    controller: mobileNumberController,
+                                    controller: countryCitizenController,
                                     decoration: InputDecoration(
                                       labelText: 'Country Citizen: ',
                                       labelStyle: TextStyle(
@@ -509,7 +518,7 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                                       borderRadius: BorderRadius.circular(00),
                                       color: AppColor.appGrey),
                                   child: TextField(
-                                    controller: employeeIDController,
+                                    controller: servicesCategoryController,
                                     decoration: InputDecoration(
                                       labelText: 'Services Category: ',
                                       labelStyle: TextStyle(
@@ -547,7 +556,7 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                                       borderRadius: BorderRadius.circular(00),
                                       color: AppColor.appGrey),
                                   child: TextField(
-                                    controller: mobileNumberController,
+                                    controller: contactPersonNameController,
                                     decoration: InputDecoration(
                                       labelText: 'Contact Person Name (If Company): ',
                                       labelStyle: TextStyle(
@@ -580,7 +589,7 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                                       borderRadius: BorderRadius.circular(00),
                                       color: AppColor.appGrey),
                                   child: TextField(
-                                    controller: employeeIDController,
+                                    controller: designationController,
                                     decoration: InputDecoration(
                                       labelText: 'Designation: ',
                                       labelStyle: TextStyle(
@@ -618,7 +627,7 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                                       borderRadius: BorderRadius.circular(00),
                                       color: AppColor.appGrey),
                                   child: TextField(
-                                    controller: mobileNumberController,
+                                    controller: contactPersonMobileController,
                                     decoration: InputDecoration(
                                       labelText: 'Mobile Number of Contact Person: ',
                                       labelStyle: TextStyle(
@@ -651,7 +660,7 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                                       borderRadius: BorderRadius.circular(00),
                                       color: AppColor.appGrey),
                                   child: TextField(
-                                    controller: employeeIDController,
+                                    controller: contactPersonWhatsappController,
                                     decoration: InputDecoration(
                                       labelText: 'Whatsapp Number of Contact Person: ',
                                       labelStyle: TextStyle(

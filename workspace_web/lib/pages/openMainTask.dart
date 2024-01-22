@@ -1277,10 +1277,6 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                             SizedBox(
                                               width: 10,
                                             ),
-                                            Icon(Icons
-                                                .person_pin_circle_rounded),
-                                            Text(
-                                                '${subTaskList[index].assignTo} '),
                                             Icon(
                                               Icons.double_arrow_rounded,
                                               color: _getColorForTaskTypeName(
@@ -1289,6 +1285,19 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                             ),
                                             Text(
                                                 ' ${subTaskList[index].taskStatusName}...'),
+                                          ],
+                                        ),
+                                      ),
+
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 2.0, horizontal: 5),
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons
+                                                .person_pin_circle_rounded),
+                                            Text(
+                                                '${subTaskList[index].assignTo} '),
                                           ],
                                         ),
                                       ),
