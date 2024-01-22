@@ -62,9 +62,25 @@ class _BeneficiariesPageState extends State<BeneficiariesPage> {
                 ? ListView.builder(
               itemCount: beneficiariesList.length,
               itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Text(beneficiariesList[index].fullName),
-                  subtitle: Text(beneficiariesList[index].entityType),
+                return Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(2.0),
+                      margin: const EdgeInsets.all(5.0),
+                      color: AppColor.appGrey,
+                      child: ListTile(
+                        title: Text(beneficiariesList[index].fullName),
+                        subtitle: Text(beneficiariesList[index].entityType),
+                        trailing: IconButton(
+                          icon: Icon(Icons.edit_note_rounded, color: Colors.blueAccent.shade400),
+                          onPressed: () {
+
+                          },
+                        ),
+                      ),
+                    ),
+                    Divider()
+                  ],
                 );
               },
             )
