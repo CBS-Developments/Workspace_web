@@ -764,6 +764,7 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
                               )
                             ],
                           ),
+                          SizedBox(height: 20,),
 
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -795,6 +796,8 @@ class _CreateBeneficiariesPageState extends State<CreateBeneficiariesPage> {
 
                             ],
                           ),
+
+                          SizedBox(height: 20,),
 
 
                         ],
