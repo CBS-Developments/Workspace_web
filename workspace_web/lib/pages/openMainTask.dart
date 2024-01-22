@@ -19,7 +19,9 @@ class OpenMainTaskPage extends StatefulWidget {
 
 class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
   TextEditingController commentTextController = TextEditingController();
+  TextEditingController searchSubTaskController = TextEditingController();
   List<Task> subTaskList = [];
+  List<Task> searchedSubTasks = [];
   List<comment> commentsList = [];
   List<TaskDetailsBox> taskDetailsList = [];
 
@@ -83,6 +85,9 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
       nameNowUser= '${firstName} ${lastName}';
 
     });
+    // setState(() {
+    //   searchedSubTasks = List.from(subTaskList);
+    // });
   }
 
   void loadData() async {
@@ -403,6 +408,9 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
 
 
         }
+        setState(() {
+          searchedSubTasks = List.from(subTaskList); // Initialize with the full list
+        });
 
 
       });
@@ -1158,47 +1166,52 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            OutlinedButton(
-                              onPressed: () {
-                                if (buttonController == '0') {
-                                  markInProgressMainTask(
-                                    context,
-                                    taskName: widget.taskDetails.taskTitle,
-                                    userName: userName,
-                                    firstName: firstName,
-                                    taskID: widget.taskDetails.taskId,
-                                    logType: 'Main Task',
-                                    logSummary: 'Marked In-Progress',
-                                    logDetails:
-                                        'Main Task Due Date: ${widget.taskDetails.dueDate}',
-                                  );
-                                  // Handle 'Mark In Progress' action
-                                } else if (buttonController == '1') {
-                                  markCompleteMainTask(
-                                    context,
-                                    taskName: widget.taskDetails.taskTitle,
-                                    userName: userName,
-                                    firstName: firstName,
-                                    taskID: widget.taskDetails.taskId,
-                                    logType: 'Main Task',
-                                    logSummary: 'Marked as Completed',
-                                    logDetails:
-                                        'Main Task Due Date: ${widget.taskDetails.dueDate}',
-                                  );
-                                  // Handle 'Mark As Complete' action
-                                }
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  buttonController == '0'
-                                      ? 'Mark In Progress'
-                                      : 'Mark As Complete',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: buttonController == '0'
-                                        ? Colors.deepPurple.shade600
-                                        : Colors.green,
+
+
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                child: TextField(
+                                  controller: searchSubTaskController,
+                                  onChanged: (String value) {
+                                    setState(() {
+                                      if (value.isEmpty) {
+                                        // If search field is empty, show all subtasks
+                                        searchedSubTasks = List.from(subTaskList);
+                                      } else {
+                                        // If search field has text, filter subtasks
+                                        searchedSubTasks = subTaskList.where((task) =>
+                                        task.taskTitle.toLowerCase().contains(value.toLowerCase()) ||
+                                            task.taskId.toLowerCase().contains(value.toLowerCase())
+                                        ).toList();
+                                      }
+                                    });
+                                  },
+                                  decoration: InputDecoration(
+                                    prefixIcon: Icon(Icons.search),
+                                    suffixIcon: IconButton(
+                                      onPressed: () {
+                                        searchSubTaskController.clear();
+                                        setState(() {
+                                          searchedSubTasks = List.from(
+                                              subTaskList); // Reset to show all tasks
+                                        });
+                                      },
+                                      icon: const Icon(Icons.cancel_rounded),
+                                    ),
+                                    hintText: 'Search Sub Task',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide:
+                                      BorderSide(color: AppColor.appDarkBlue, width: 3),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                          color: AppColor
+                                              .appDarkBlue), // Change focus border color
+                                    ),
+                                    // Change the color of icons in normal and focused state
                                   ),
                                 ),
                               ),
@@ -1231,6 +1244,53 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                 ),
                               ),
                             ),
+
+                            SizedBox(width: 10,),
+                            OutlinedButton(
+                              onPressed: () {
+                                if (buttonController == '0') {
+                                  markInProgressMainTask(
+                                    context,
+                                    taskName: widget.taskDetails.taskTitle,
+                                    userName: userName,
+                                    firstName: firstName,
+                                    taskID: widget.taskDetails.taskId,
+                                    logType: 'Main Task',
+                                    logSummary: 'Marked In-Progress',
+                                    logDetails:
+                                    'Main Task Due Date: ${widget.taskDetails.dueDate}',
+                                  );
+                                  // Handle 'Mark In Progress' action
+                                } else if (buttonController == '1') {
+                                  markCompleteMainTask(
+                                    context,
+                                    taskName: widget.taskDetails.taskTitle,
+                                    userName: userName,
+                                    firstName: firstName,
+                                    taskID: widget.taskDetails.taskId,
+                                    logType: 'Main Task',
+                                    logSummary: 'Marked as Completed',
+                                    logDetails:
+                                    'Main Task Due Date: ${widget.taskDetails.dueDate}',
+                                  );
+                                  // Handle 'Mark As Complete' action
+                                }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  buttonController == '0'
+                                      ? 'Mark In Progress'
+                                      : 'Mark As Complete',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: buttonController == '0'
+                                        ? Colors.deepPurple.shade600
+                                        : Colors.green,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -1241,16 +1301,12 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                           padding: const EdgeInsets.all(8.0),
                           color: Colors.white,
                           child: ListView.builder(
-                            itemCount: subTaskList.length,
+                            itemCount: searchedSubTasks.length, // Use the length of the filtered subtasks list
                             itemBuilder: (context, index) {
+                              var subTask = searchedSubTasks[index]; // Current subtask item
                               return Container(
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(
-                                        0.0), // Adjust these values as needed
-                                    bottomRight: Radius.circular(
-                                        0.0), // Adjust these values as needed
-                                  ),
+                                  borderRadius: BorderRadius.circular(5.0), // Rounded borders for the container
                                   color: Colors.grey.shade200,
                                 ),
                                 margin: EdgeInsets.all(10),
@@ -1258,165 +1314,70 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                   title: Padding(
                                     padding: const EdgeInsets.all(5.0),
                                     child: SelectableText(
-
-                                        '${index+1}.  ${subTaskList[index].taskTitle}',
+                                      '${index + 1}. ${subTask.taskTitle}', // Subtask title
                                       style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: AppColor.appBlue),
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColor.appBlue,
+                                      ),
                                     ),
                                   ),
                                   subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 2.0, horizontal: 5),
-                                        child: Row(
-                                          children: [
-                                            SelectableText(
-                                                'ID: ${subTaskList[index].taskId}'),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            Icon(
-                                              Icons.double_arrow_rounded,
-                                              color: _getColorForTaskTypeName(
-                                                  subTaskList[index]
-                                                      .taskTypeName),
-                                            ),
-                                            Text(
-                                                ' ${subTaskList[index].taskStatusName}...'),
-                                          ],
-                                        ),
+                                      Row(
+                                        children: [
+                                          Text('ID: ${subTask.taskId}'), // Subtask ID
+                                          SizedBox(width: 10),
+                                          Icon(
+                                            Icons.double_arrow_rounded,
+                                            color: _getColorForTaskTypeName(subTask.taskTypeName), // Color based on task type
+                                          ),
+                                          Expanded(
+                                            child: Text(' ${subTask.taskStatusName}'), // Subtask status
+                                          ),
+                                        ],
                                       ),
-
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 2.0, horizontal: 5),
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons
-                                                .person_pin_circle_rounded),
-                                            Text(
-                                                '${subTaskList[index].assignTo} '),
-                                          ],
-                                        ),
+                                      Row(
+                                        children: [
+                                          Icon(Icons.person_pin_circle_rounded),
+                                          Expanded(
+                                            child: Text(' ${subTask.assignTo}'), // Assigned to
+                                          ),
+                                        ],
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 2.0, horizontal: 5),
-                                        child: Row(
-                                          children: [
-                                            SelectableText(
-                                              'Created Date: ${subTaskList[index].taskCreateDate}',
-                                              style: TextStyle(
-                                                  color: Colors.black87),
-                                            ),
-
-                                            Icon(
-                                              Icons.arrow_right,
-                                              color: Colors.black87,
-                                            ),
-                                            SelectableText(
-                                              'Due Date: ${subTaskList[index].dueDate}',
-                                              style: TextStyle(
-                                                  color: Colors.black87),
-                                            ),
-
-
-                                            SizedBox(
-                                              width: 20,
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                if (subTaskList[index]
-                                                        .taskStatus ==
-                                                    '0') {
-                                                  markInProgressSubTask(
-                                                      subTaskList[index]
-                                                          .taskTitle,
-                                                      userName,
-                                                      firstName,
-                                                      subTaskList[index].taskId,
-                                                      subTaskList[index]
-                                                          .dueDate);
-                                                  // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
-                                                  // Handle 'Mark In Progress' action
-                                                } else if (subTaskList[index]
-                                                        .taskStatus ==
-                                                    '1') {
-                                                  markCompleteSubTask(
-                                                      subTaskList[index]
-                                                          .taskTitle,
-                                                      userName,
-                                                      firstName,
-                                                      subTaskList[index].taskId,
-                                                      subTaskList[index]
-                                                          .dueDate);
-                                                  // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
-                                                  // Handle 'Mark As Complete' action
-                                                }
-                                              },
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(0.0),
-                                                child: Text(
-                                                  subTaskList[index]
-                                                              .taskStatus ==
-                                                          '0'
-                                                      ? 'Mark In Progress'
-                                                      : subTaskList[index]
-                                                                  .taskStatus ==
-                                                              '1'
-                                                          ? 'Mark As Completed'
-                                                          : 'Completed',
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: subTaskList[index]
-                                                                .taskStatus ==
-                                                            '0'
-                                                        ? Colors.blueAccent
-                                                        : subTaskList[index]
-                                                                    .taskStatus ==
-                                                                '1'
-                                                            ? Colors.green
-                                                            : Colors
-                                                                .grey, // Assuming '2' represents Completed status
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                      Row(
+                                        children: [
+                                          Text('Created Date: ${subTask.taskCreateDate}'), // Creation date
+                                          SizedBox(width: 5),
+                                          Icon(Icons.arrow_forward, size: 15),
+                                          Text('Due Date: ${subTask.dueDate}'), // Due date
+                                        ],
                                       ),
+                                      // Add more rows for additional information if needed
                                     ],
                                   ),
-
                                   trailing: IconButton(
                                     onPressed: () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => OpenSubTask(
-                                                  mainTaskDetails:
-                                                      widget.taskDetails,
-                                                  subTaskDetails:
-                                                      subTaskList[index],
-                                                )),
+                                          builder: (context) => OpenSubTask(
+                                            mainTaskDetails: widget.taskDetails,
+                                            subTaskDetails: subTask, // Passing the current subtask
+                                          ),
+                                        ),
                                       );
-                                      print('open sub task');
                                     },
                                     icon: Icon(Icons.open_in_new_rounded),
                                     tooltip: 'Open Sub Task',
-                                    focusColor: AppColor.appBlue,
                                   ),
-
-                                  // Add onTap functionality if needed
                                 ),
                               );
                             },
                           ),
                         ),
                       ),
+
                     ],
                   ),
                 ),
