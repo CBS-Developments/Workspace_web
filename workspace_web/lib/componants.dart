@@ -714,6 +714,24 @@ class TaskLog {
   }
 }
 
+
+class BeneficiaryF {
+  String fullName = '';
+
+
+  BeneficiaryF({
+    required this.fullName,
+
+  });
+
+  factory BeneficiaryF.fromJson(Map<String, dynamic> json) {
+    return BeneficiaryF(
+      fullName: json['beneficiary_full_name'],
+
+    );
+  }
+}
+
 //
 // TextButton(
 // onPressed: () {

@@ -155,6 +155,9 @@ class _CreateMainTaskState extends State<CreateMainTask> {
     'Univiser (Pvt) Ltd',
     'UP Weerasinghe Properties Pvt. Ltd'];
 
+  List<String> beneficiaryNames = [];
+  int beneficiaryNamesCount = 0;
+
   String getCurrentDateTime() {
     final now = DateTime.now();
     final formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
@@ -187,6 +190,7 @@ class _CreateMainTaskState extends State<CreateMainTask> {
     // Initialize assignTo based on selectedAssignTo
     assignTo = selectedAssignTo.join(', ');
     loadData();
+    getBeneficiaryList();
   }
 
   void loadData() async {
@@ -200,6 +204,34 @@ class _CreateMainTaskState extends State<CreateMainTask> {
       print(
           'Data laded in create main task > userName: $userName > userRole: $userRole');
     });
+  }
+
+  Future<void> getBeneficiaryList() async {
+    beneficiaryNames.clear();
+    var data = {};
+
+    const url = "http://dev.workspace.cbs.lk/getBeneficiaries.php";
+    final res = await http.post(
+      Uri.parse(url),
+      body: data,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    );
+
+    if (res.statusCode == 200) {
+      final responseJson = json.decode(res.body) as List<dynamic>;
+      setState(() {
+        for (Map<String, dynamic> details in responseJson) {
+          BeneficiaryF beneficiary = BeneficiaryF.fromJson(details);
+          beneficiaryNames.add(beneficiary.fullName); // Add the full name of the beneficiary to the list
+        }
+      });
+      print("beneficiaryNames Count: ${beneficiaryNames.length}");
+    } else {
+      throw Exception('Failed to load users from API');
+    }
   }
   
   Future<void> _selectDate(BuildContext context) async {
@@ -327,7 +359,7 @@ class _CreateMainTaskState extends State<CreateMainTask> {
                                     Expanded(
                                       child: Autocomplete<String>(
                                         optionsBuilder: (TextEditingValue textEditingValue) {
-                                          return beneficiaries.where((String option) {
+                                          return beneficiaryNames.where((String option) {
                                             return option.toLowerCase().contains(
                                               textEditingValue.text.toLowerCase(),
                                             );
