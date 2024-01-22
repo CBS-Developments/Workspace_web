@@ -155,6 +155,8 @@ class _CreateSubTaskPageState extends State<CreateSubTaskPage> {
     'Tikiri Banda & Sons/Dr. Bandara',
     'Univiser (Pvt) Ltd',
     'UP Weerasinghe Properties Pvt. Ltd'];
+  List<String> beneficiaryNames = [];
+  int beneficiaryNamesCount = 0;
 
   String getCurrentDateTime() {
     final now = DateTime.now();
@@ -188,6 +190,7 @@ class _CreateSubTaskPageState extends State<CreateSubTaskPage> {
     // Initialize assignTo based on selectedAssignTo
     // assignTo = selectedAssignTo.toString();
     loadData();
+    getBeneficiaryList();
     beneficiary = widget.mainTaskDetails.company;
     priority = widget.mainTaskDetails.taskTypeName;
     sourceFrom = widget.mainTaskDetails.sourceFrom;
@@ -208,6 +211,34 @@ class _CreateSubTaskPageState extends State<CreateSubTaskPage> {
       print(
           'Data laded in create main task > userName: $userName > userRole: $userRole');
     });
+  }
+
+  Future<void> getBeneficiaryList() async {
+    beneficiaryNames.clear();
+    var data = {};
+
+    const url = "http://dev.workspace.cbs.lk/getBeneficiaries.php";
+    final res = await http.post(
+      Uri.parse(url),
+      body: data,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    );
+
+    if (res.statusCode == 200) {
+      final responseJson = json.decode(res.body) as List<dynamic>;
+      setState(() {
+        for (Map<String, dynamic> details in responseJson) {
+          BeneficiaryF beneficiary = BeneficiaryF.fromJson(details);
+          beneficiaryNames.add(beneficiary.fullName); // Add the full name of the beneficiary to the list
+        }
+      });
+      print("beneficiaryNames Count: ${beneficiaryNames.length}");
+    } else {
+      throw Exception('Failed to load users from API');
+    }
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -335,7 +366,7 @@ class _CreateSubTaskPageState extends State<CreateSubTaskPage> {
                                       Expanded(
                                         child: Autocomplete<String>(
                                           optionsBuilder: (TextEditingValue textEditingValue) {
-                                            return beneficiaries.where((String option) {
+                                            return beneficiaryNames.where((String option) {
                                               return option.toLowerCase().contains(
                                                 textEditingValue.text.toLowerCase(),
                                               );
