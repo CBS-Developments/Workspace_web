@@ -144,7 +144,7 @@ class _MyDrawerState extends State<MyDrawer> {
       'Chat': false,
       'Beneficiaries': false,
       'Users': false,
-      //'Meet': false,
+      'Taxperts': false,
       'Log': false,
     };
   }
@@ -220,8 +220,8 @@ class _MyDrawerState extends State<MyDrawer> {
         return Icons.business_rounded;
       case 'Users':
         return Icons.person;
-      // case 'Meet':
-      //   return Icons.video_chat_rounded;
+      case 'Taxperts':
+        return Icons.insert_chart;
       case 'Log':
         return Icons.app_shortcut_rounded;
       default:

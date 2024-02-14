@@ -9,6 +9,7 @@ import 'package:workspace_web/pages/dashboardPage.dart';
 import 'package:workspace_web/pages/loginPage.dart';
 import 'package:workspace_web/pages/taskLogPage.dart';
 import 'package:workspace_web/pages/taskPage.dart';
+import 'package:workspace_web/pages/taxpertsPage.dart';
 import 'package:workspace_web/pages/usersPage.dart';
 
 void main() async {
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
         '/createUser': (context) => CreateUserPage(),
         '/Beneficiaries': (context) => BeneficiariesPage(),
         '/createBeneficiaries': (context) => CreateBeneficiariesPage(),
-        // '/Chat': (context) => ChatScreen(),
+        '/Taxperts': (context) => TaxpertsPage(),
         // '/Users': (context) => UsersScreen(),
         // '/Meet': (context) => MeetScreen(),
         // '/Apps': (context) => AppsScreen(),
