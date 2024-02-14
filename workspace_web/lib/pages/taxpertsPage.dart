@@ -15,6 +15,7 @@ class TaxpertsPage extends StatefulWidget {
 class _TaxpertsPageState extends State<TaxpertsPage> {
   List<Submission> submissionsList = [];
   Submission? selectedSubmission;
+  TextEditingController actionController = TextEditingController();
 
   @override
   void initState() {
@@ -29,7 +30,8 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
       if (response.statusCode == 200) {
         final List submissionsJson = json.decode(response.body);
         setState(() {
-          submissionsList = submissionsJson.map((json) => Submission.fromJson(json)).toList();
+          submissionsList =
+              submissionsJson.map((json) => Submission.fromJson(json)).toList();
         });
       } else {
         // Handle server errors
@@ -61,24 +63,50 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
       body: Row(
         children: [
           Expanded(
+            flex: 2,
             child: submissionsList.isEmpty
                 ? Center(child: CircularProgressIndicator())
                 : ListView.builder(
-              itemCount: submissionsList.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(submissionsList[index].name,style: TextStyle(fontSize: 18),),
-                  subtitle: Text("From: ${submissionsList[index].from}"),
-                  onTap: () {
-                    setState(() {
-                      selectedSubmission = submissionsList[index];
-                    });
-                  },
-                );
-              },
-            ),
+                    itemCount: submissionsList.length,
+                    itemBuilder: (context, index) {
+                      return Column(
+                        children: [
+                          Container(
+                            color: submissionsList[index].readStatus == '1'
+                                ? Colors.white
+                                : AppColor
+                                    .appGrey, // Conditional color based on readStatus
+                            child: ListTile(
+                              trailing: IconButton(
+                                onPressed: () {},
+                                icon: Icon(
+                                  Icons.remove_circle_outline,
+                                  color: Colors.redAccent,
+                                ),
+                              ),
+                              title: Text(
+                                submissionsList[index].name,
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              subtitle:
+                                  Text("From: ${submissionsList[index].from}"),
+                              onTap: () {
+                                setState(() {
+                                  selectedSubmission = submissionsList[index];
+                                });
+                              },
+                            ),
+                          ),
+                          Divider(
+                            color: AppColor.appBlue,
+                          )
+                        ],
+                      );
+                    },
+                  ),
           ),
           Expanded(
+            flex: 3,
             child: selectedSubmission == null
                 ? Center(child: Text('Select a submission'))
                 : submissionDetails(selectedSubmission!),
@@ -100,18 +128,34 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
           width: 1.0,
         ),
       ),
-      child: SingleChildScrollView( // Use SingleChildScrollView to handle overflow
+      child: SingleChildScrollView(
+        // Use SingleChildScrollView to handle overflow
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 20),
-            Text(
-              'Submission Details:',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Submission Details:',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {},
+                  child: Text(
+                    'Mark as Read',
+                    style: TextStyle(
+                      color: Colors.blueAccent,
+                      fontSize: 16,
+                    ),
+                  ),
+                )
+              ],
             ),
             SizedBox(height: 10),
             detailText('Name:', submission.name),
@@ -122,8 +166,43 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
             detailText('Message:', submission.message),
             detailText('From:', submission.from),
             detailText('Device:', submission.device),
-            detailText('Actions:', submission.actions),
-            SizedBox(height: 20),
+            detailText('Action:', submission.actions),
+            SizedBox(height: 10),
+            Row(
+              children: [
+                Container(
+                  width: 300,
+                  height: 40,
+                  child: TextField(
+                    controller: actionController,
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                    decoration: InputDecoration(
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                      ),
+                      fillColor: Colors.white,
+                      filled: true,
+                      hintText: 'Enter your action',
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 10.0, horizontal: 10),
+                    ),
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: ElevatedButton(onPressed: (){}, child: Text('Save')),
+                )
+
+
+              ],
+            )
           ],
         ),
       ),
@@ -149,7 +228,6 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
       ),
     );
   }
-
 }
 
 class Submission {
