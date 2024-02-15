@@ -30,8 +30,12 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
       if (response.statusCode == 200) {
         final List submissionsJson = json.decode(response.body);
         setState(() {
-          submissionsList =
-              submissionsJson.map((json) => Submission.fromJson(json)).toList();
+          // Filter the submissions where 'active' is '1' before mapping them to Submission objects
+          submissionsList = submissionsJson
+              .where((json) =>
+                  json['active'] == '1') // Filter for active submissions
+              .map((json) => Submission.fromJson(json))
+              .toList();
         });
       } else {
         // Handle server errors
@@ -42,6 +46,177 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
       print('Error fetching submissions: $e');
     }
   }
+
+  void showRemoveConfirmationDialog(BuildContext context, String email) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Remove'),
+          content: const Text('Are you sure you want to remove this Submission?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Delete'),
+              onPressed: () {
+                removeSubmission(email);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool> removeSubmission(
+    String email,
+  ) async {
+    // Prepare the data to be sent to the PHP script.
+    var data = {
+      "email": email,
+      "active": '0',
+    };
+
+    // URL of your PHP script.
+    const url = "http://dev.workspace.cbs.lk/removeSubmissions.php";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final responseBody = jsonDecode(res.body);
+
+        // Debugging: Print the response data.
+        print("Response from PHP script: $responseBody");
+
+        if (responseBody == "true") {
+          print('Remove Successful');
+          Navigator.of(context).pop(); // Close the dialog
+          getSubmissionsList();
+
+          return true; // PHP code was successful.
+        } else {
+          print('PHP code returned "false".');
+          return false; // PHP code returned "false."
+        }
+      } else {
+        print('HTTP request failed with status code: ${res.statusCode}');
+        return false; // HTTP request failed.
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false; // An error occurred.
+    }
+  }
+
+  Future<bool> markAsRead(
+      String email,
+      ) async {
+    // Prepare the data to be sent to the PHP script.
+    var data = {
+      "email": email,
+      "read_status": '1',
+    };
+
+    // URL of your PHP script.
+    const url = "http://dev.workspace.cbs.lk/readStatus.php";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final responseBody = jsonDecode(res.body);
+
+        // Debugging: Print the response data.
+        print("Response from PHP script: $responseBody");
+
+        if (responseBody == "true") {
+          print('Mark as read Successful'); // Close the dialog
+          getSubmissionsList();
+
+          return true; // PHP code was successful.
+        } else {
+          print('PHP code returned "false".');
+          return false; // PHP code returned "false."
+        }
+      } else {
+        print('HTTP request failed with status code: ${res.statusCode}');
+        return false; // HTTP request failed.
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false; // An error occurred.
+    }
+  }
+
+
+  Future<bool> markAsUnRead(
+      String email,
+      ) async {
+    // Prepare the data to be sent to the PHP script.
+    var data = {
+      "email": email,
+      "read_status": '0',
+    };
+
+    // URL of your PHP script.
+    const url = "http://dev.workspace.cbs.lk/readStatus.php";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final responseBody = jsonDecode(res.body);
+
+        // Debugging: Print the response data.
+        print("Response from PHP script: $responseBody");
+
+        if (responseBody == "true") {
+          print('Mark as unread Successful'); // Close the dialog
+          getSubmissionsList();
+
+          return true; // PHP code was successful.
+        } else {
+          print('PHP code returned "false".');
+          return false; // PHP code returned "false."
+        }
+      } else {
+        print('HTTP request failed with status code: ${res.statusCode}');
+        return false; // HTTP request failed.
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false; // An error occurred.
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +232,14 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
             fontSize: 20,
           ),
         ),
-        actions: [],
+        actions: [
+          IconButton(
+              onPressed: () {
+                getSubmissionsList();
+              },
+              tooltip: 'Refresh',
+              icon: Icon(Icons.refresh_rounded))
+        ],
       ),
       drawer: MyDrawer(), // Your custom Drawer
       body: Row(
@@ -67,43 +249,56 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
             child: submissionsList.isEmpty
                 ? Center(child: CircularProgressIndicator())
                 : ListView.builder(
-                    itemCount: submissionsList.length,
-                    itemBuilder: (context, index) {
-                      return Column(
-                        children: [
-                          Container(
-                            color: submissionsList[index].readStatus == '1'
-                                ? Colors.white
-                                : AppColor
-                                    .appGrey, // Conditional color based on readStatus
-                            child: ListTile(
-                              trailing: IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.remove_circle_outline,
-                                  color: Colors.redAccent,
-                                ),
-                              ),
-                              title: Text(
-                                submissionsList[index].name,
-                                style: TextStyle(fontSize: 18),
-                              ),
-                              subtitle:
-                                  Text("From: ${submissionsList[index].from}"),
-                              onTap: () {
-                                setState(() {
-                                  selectedSubmission = submissionsList[index];
-                                });
-                              },
-                            ),
+              itemCount: submissionsList.length,
+              itemBuilder: (context, index) {
+                final submission = submissionsList[index];
+                return Column(
+                  children: [
+                    Container(
+                      color: submission.readStatus == '1' ? Colors.white : AppColor.appGrey,
+                      child: ListTile(
+                        leading: IconButton(
+                          icon: Icon(
+                            submission.readStatus == '1' ? Icons.check_box_rounded : Icons.check_box_outline_blank_rounded,
+                            color: submission.readStatus == '1' ? Colors.green : Colors.blueAccent,
                           ),
-                          Divider(
-                            color: AppColor.appBlue,
-                          )
-                        ],
-                      );
-                    },
-                  ),
+                          tooltip: submission.readStatus == '1' ? 'Mark as unread' : 'Mark as read',
+                          onPressed: () {
+                            if (submission.readStatus == '1') {
+                              // Call markAsUnRead for this submission
+                              markAsUnRead(submission.email);
+                            } else {
+                              // Call markAsRead for this submission
+                              markAsRead(submission.email);
+                            }
+                          },
+                        ),
+                        trailing: IconButton(
+                          onPressed: () {
+                            showRemoveConfirmationDialog(context, submission.email);
+                          },
+                          icon: Icon(
+                            Icons.remove_circle_outline,
+                            color: Colors.redAccent,
+                          ),
+                        ),
+                        title: Text(
+                          submission.name,
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        subtitle: Text("From: ${submission.from}"),
+                        onTap: () {
+                          setState(() {
+                            selectedSubmission = submission;
+                          });
+                        },
+                      ),
+                    ),
+                    Divider(color: AppColor.appBlue),
+                  ],
+                );
+              },
+            ),
           ),
           Expanded(
             flex: 3,
@@ -135,27 +330,12 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Submission Details:',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    'Mark as Read',
-                    style: TextStyle(
-                      color: Colors.blueAccent,
-                      fontSize: 16,
-                    ),
-                  ),
-                )
-              ],
+            Text(
+              'Submission Details:',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
             ),
             SizedBox(height: 10),
             detailText('Name:', submission.name),
@@ -194,13 +374,10 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
                     ),
                   ),
                 ),
-
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: ElevatedButton(onPressed: (){}, child: Text('Save')),
+                  child: ElevatedButton(onPressed: () {}, child: Text('Save')),
                 )
-
-
               ],
             )
           ],
