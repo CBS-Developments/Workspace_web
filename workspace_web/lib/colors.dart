@@ -11,5 +11,6 @@ class AppColor {
   static  Color appGrey = const Color(0xFFD7DCE0);
   static  Color appBlue = const Color(0xFF2A2F6D);
   static  Color appTeal = const Color(0xFF09A9AA);
+  static Color circleGreen = const Color(0xFFC2E3C1);
 
 }
