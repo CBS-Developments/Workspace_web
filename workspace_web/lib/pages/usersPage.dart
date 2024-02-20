@@ -45,16 +45,16 @@ class _UsersPageState extends State<UsersPage> {
               onPressed: () {
                 Navigator.pushNamed(context, '/createUser');
               },
-              child: Text('Create User'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColor.appDarkBlue,
               ),
+              child: const Text('Create User'),
             ),
           ),
-          Center(child: Text(' $userCount    ', style: TextStyle(fontSize: 16))),
+          Center(child: Text(' $userCount    ', style: const TextStyle(fontSize: 16))),
         ],
       ),
-      drawer: MyDrawer(),
+      drawer: const MyDrawer(),
       body: Row(
         children: [
           Expanded(
@@ -91,7 +91,7 @@ class _UsersPageState extends State<UsersPage> {
                         },
                       ),
                     ),
-                    Divider()
+                    const Divider()
                   ],
                 );
               },
@@ -99,7 +99,7 @@ class _UsersPageState extends State<UsersPage> {
           ),
           Expanded(
             flex: 1,
-            child: selectedUser != null ? userDetails(selectedUser!) : SizedBox(),
+            child: selectedUser != null ? userDetails(selectedUser!) : const SizedBox(),
           ),
         ],
       ),
@@ -108,8 +108,8 @@ class _UsersPageState extends State<UsersPage> {
 
   Widget userDetails(User user) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 40),
-      margin: EdgeInsets.symmetric(horizontal: 40),
+      padding: const EdgeInsets.symmetric(horizontal: 40),
+      margin: const EdgeInsets.symmetric(horizontal: 40),
       width: 200,
       height: 300,
       decoration: BoxDecoration(
@@ -124,23 +124,23 @@ class _UsersPageState extends State<UsersPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'User Details:',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text('ID: ${user.employeeID}',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               color: Colors.black87,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text('${user.firstName} ${user.lastName}',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
@@ -153,14 +153,14 @@ class _UsersPageState extends State<UsersPage> {
               color: Colors.grey[700],
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(
             children: [
-              Padding(
+              const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 2.0),
                 child: Icon(Icons.phone,size: 16,),
               ),
-              Text(
+              const Text(
                 'Tel: ',
                 style: TextStyle(
                   fontSize: 16,
@@ -169,21 +169,21 @@ class _UsersPageState extends State<UsersPage> {
               ),
               Text(
                 '0${user.phone}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   color: Colors.black87,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Row(
             children: [
-              Padding(
+              const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 3.0),
                 child: Icon(Icons.email_outlined,size: 16,),
               ),
-              Text(
+              const Text(
                 'Email: ',
                 style: TextStyle(
                   fontSize: 16,
@@ -191,22 +191,22 @@ class _UsersPageState extends State<UsersPage> {
                 ),
               ),
               Text(
-                '${user.email}',
-                style: TextStyle(
+                user.email,
+                style: const TextStyle(
                   fontSize: 16,
                   color: Colors.black87,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Row(
             children: [
-              Padding(
+              const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 3.0),
                 child: Icon(Icons.maps_home_work_outlined,size: 16,),
               ),
-              Text(
+              const Text(
                 'Company: ',
                 style: TextStyle(
                   fontSize: 16,
@@ -215,14 +215,14 @@ class _UsersPageState extends State<UsersPage> {
               ),
               Text(
                 user.company,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   color: Colors.black87,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 50),
+          const SizedBox(height: 50),
         ],
       ),
     );

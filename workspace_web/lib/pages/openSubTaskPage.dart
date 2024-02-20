@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:js_util';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -80,13 +79,12 @@ class _OpenSubTaskState extends State<OpenSubTask> {
 
     setState(() {
       taskStatus = widget.subTaskDetails.taskStatus; // Update taskStatus here
-      buttonController = taskStatus; // Update buttonController based on taskStatus
+      buttonController =
+          taskStatus; // Update buttonController based on taskStatus
 
-      taskStatusName=widget.subTaskDetails.taskStatusName;
-      taskStatusNameController =taskStatusName;
-
+      taskStatusName = widget.subTaskDetails.taskStatusName;
+      taskStatusNameController = taskStatusName;
     });
-
   }
 
   void loadData() async {
@@ -102,11 +100,11 @@ class _OpenSubTaskState extends State<OpenSubTask> {
   }
 
   void showDeleteCommentConfirmation(
-      BuildContext context,
-      String commentID,
-      String createBy,
-      String nameNowUser,
-      ) {
+    BuildContext context,
+    String commentID,
+    String createBy,
+    String nameNowUser,
+  ) {
     print('Now user: $nameNowUser');
     print('Crate By: $createBy');
     if (createBy == nameNowUser) {
@@ -116,7 +114,8 @@ class _OpenSubTaskState extends State<OpenSubTask> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Confirm Delete'),
-            content: const Text('Are you sure you want to delete this Comment?'),
+            content:
+                const Text('Are you sure you want to delete this Comment?'),
             actions: <Widget>[
               TextButton(
                 child: const Text('Cancel'),
@@ -160,8 +159,8 @@ class _OpenSubTaskState extends State<OpenSubTask> {
   }
 
   Future<bool> deleteComment(
-      String commentId,
-      ) async {
+    String commentId,
+  ) async {
     String logType = 'Comment';
     String logSummary = 'Deleted';
     String logDetails = '';
@@ -197,7 +196,14 @@ class _OpenSubTaskState extends State<OpenSubTask> {
         if (responseBody == "true") {
           print('Successful');
           // snackBar(context, "Comment Deleted successful!", Colors.redAccent);
-          addLog(context, taskId: widget.subTaskDetails.taskId, taskName: widget.subTaskDetails.taskTitle, createBy: firstName, createByID: userName, logType: logType, logSummary: logSummary, logDetails: logDetails);
+          addLog(context,
+              taskId: widget.subTaskDetails.taskId,
+              taskName: widget.subTaskDetails.taskTitle,
+              createBy: firstName,
+              createByID: userName,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
           getCommentList(widget.subTaskDetails.taskId);
           return true; // PHP code was successful.
         } else {
@@ -214,12 +220,11 @@ class _OpenSubTaskState extends State<OpenSubTask> {
     }
   }
 
-
   void showDeleteConfirmationDialog(
-      BuildContext context,
-      String userRole,
-      String taskId,
-      ) {
+    BuildContext context,
+    String userRole,
+    String taskId,
+  ) {
     print('User Role in showDeleteConfirmationDialog Sub: $userRole');
     if (userRole == '1') {
       print(userRole);
@@ -227,17 +232,17 @@ class _OpenSubTaskState extends State<OpenSubTask> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Confirm Delete'),
-            content: Text('Are you sure you want to delete this task?'),
+            title: const Text('Confirm Delete'),
+            content: const Text('Are you sure you want to delete this task?'),
             actions: <Widget>[
               TextButton(
-                child: Text('Cancel'),
+                child: const Text('Cancel'),
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the dialog
                 },
               ),
               TextButton(
-                child: Text('Delete'),
+                child: const Text('Delete'),
                 onPressed: () {
                   Navigator.of(context).pop();
                   deleteSubTask(taskId);
@@ -255,11 +260,11 @@ class _OpenSubTaskState extends State<OpenSubTask> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Permission Denied'),
-            content: Text('Only admins are allowed to delete tasks.'),
+            title: const Text('Permission Denied'),
+            content: const Text('Only admins are allowed to delete tasks.'),
             actions: <Widget>[
               TextButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the dialog
                 },
@@ -272,8 +277,8 @@ class _OpenSubTaskState extends State<OpenSubTask> {
   }
 
   Future<bool> deleteSubTask(
-      String taskID,
-      ) async {
+    String taskID,
+  ) async {
     String logType = 'Sub Task';
     String logSummary = 'Deleted';
     String logDetails = '';
@@ -310,7 +315,14 @@ class _OpenSubTaskState extends State<OpenSubTask> {
         if (responseBody == "true") {
           print('Successful');
           snackBar(context, "Sub Task Deleted successful!", Colors.redAccent);
-          addLog(context, taskId: taskID, taskName: widget.subTaskDetails.taskTitle, createBy: firstName, createByID: userName, logType: logType, logSummary: logSummary, logDetails: logDetails);
+          addLog(context,
+              taskId: taskID,
+              taskName: widget.subTaskDetails.taskTitle,
+              createBy: firstName,
+              createByID: userName,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
 
           return true; // PHP code was successful.
         } else {
@@ -380,12 +392,12 @@ class _OpenSubTaskState extends State<OpenSubTask> {
   }
 
   Future<bool> markInProgressSubTask(
-      String taskName,
-      String userName,
-      String firstName,
-      String taskID,
-      String dueDate,
-      ) async {
+    String taskName,
+    String userName,
+    String firstName,
+    String taskID,
+    String dueDate,
+  ) async {
     String logType = 'Sub Task';
     String logSummary = 'Marked In-Progress';
     String logDetails = 'Sub Task Due Date: $dueDate';
@@ -433,7 +445,8 @@ class _OpenSubTaskState extends State<OpenSubTask> {
           setState(() {
             // Update taskStatus here
             buttonController = '1';
-            taskStatusNameController= 'In Progress';// Update buttonController based on taskStatus
+            taskStatusNameController =
+                'In Progress'; // Update buttonController based on taskStatus
           });
           return true; // PHP code was successful.
         } else {
@@ -451,12 +464,12 @@ class _OpenSubTaskState extends State<OpenSubTask> {
   }
 
   Future<bool> markCompleteSubTask(
-      String taskName,
-      String userName,
-      String firstName,
-      String taskID,
-      String dueDate,
-      ) async {
+    String taskName,
+    String userName,
+    String firstName,
+    String taskID,
+    String dueDate,
+  ) async {
     String logType = 'Sub Task';
     String logSummary = 'Marked as Completed';
     String logDetails = 'Sub Task Due Date: $dueDate';
@@ -515,7 +528,6 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                 ),
               ));
 
-
           return true; // PHP code was successful.
         } else {
           print('PHP code returned "false".');
@@ -531,7 +543,6 @@ class _OpenSubTaskState extends State<OpenSubTask> {
     }
   }
 
-
   Future<bool> addComment(
     BuildContext context, {
     required userName,
@@ -541,7 +552,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
     required lastName,
     required logType,
     required logSummary,
-        required logDetails,
+    required logDetails,
   }) async {
     // Validate input fields
     if (commentTextController.text.trim().isEmpty) {
@@ -685,7 +696,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Main Task > Sub task',
               style: TextStyle(
                 color: Colors.grey,
@@ -712,7 +723,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                   ),
                 ));
           },
-          icon: Icon(Icons.arrow_back_rounded),
+          icon: const Icon(Icons.arrow_back_rounded),
         ),
         actions: [
           Container(
@@ -720,18 +731,21 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(15),
                   border: Border.all(width: 1, color: AppColor.appDarkBlue)),
-              margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
+              margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 6),
               child: IconButton(
                   tooltip: 'Edit Sub Task',
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => EditSubTaskPage(mainTaskDetails: widget.mainTaskDetails, subTaskDetails: widget.subTaskDetails)// Pass the task details
-                      ),
+                          builder: (context) => EditSubTaskPage(
+                              mainTaskDetails: widget.mainTaskDetails,
+                              subTaskDetails: widget
+                                  .subTaskDetails) // Pass the task details
+                          ),
                     );
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.edit_note_rounded,
                     color: Colors.black87,
                   ))),
@@ -740,18 +754,19 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(width: 1, color: AppColor.appDarkBlue)),
-            margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
+            margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 6),
             child: IconButton(
                 tooltip: 'Delete Sub Task',
                 onPressed: () {
-                  showDeleteConfirmationDialog(context, userRole, widget.subTaskDetails.taskId);
+                  showDeleteConfirmationDialog(
+                      context, userRole, widget.subTaskDetails.taskId);
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.delete_sweep_outlined,
                   color: Colors.redAccent,
                 )),
           ),
-          SizedBox(
+          const SizedBox(
             width: 10,
           )
         ],
@@ -770,7 +785,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                       itemBuilder: (context, index) {
                         if (index < taskDetailsListBox.length) {
                           return Container(
-                            padding: EdgeInsets.only(bottom: 15),
+                            padding: const EdgeInsets.only(bottom: 15),
                             color: Colors.white,
                             child: ListTile(
                               title: Padding(
@@ -784,14 +799,14 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                 child: SelectableText(
                                     taskDetailsListBox[index].taskDescription),
                               ),
-                              titleTextStyle: TextStyle(fontSize: 15),
-                              subtitleTextStyle:
-                                  TextStyle(fontSize: 16, color: Colors.black),
+                              titleTextStyle: const TextStyle(fontSize: 15),
+                              subtitleTextStyle: const TextStyle(
+                                  fontSize: 16, color: Colors.black),
                               // Your list item code here...
                             ),
                           );
                         } else {
-                          return SizedBox(); // Or another fallback widget if needed
+                          return const SizedBox(); // Or another fallback widget if needed
                         }
                       },
                     )),
@@ -802,7 +817,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                     children: [
                       Container(
                         // width: 480,
-                        margin: EdgeInsets.all(5),
+                        margin: const EdgeInsets.all(5),
                         height: 160,
                         color: Colors.white,
                         child: Row(
@@ -1024,11 +1039,20 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                             OutlinedButton(
                               onPressed: () {
                                 if (buttonController == '0') {
-                                  markInProgressSubTask(widget.subTaskDetails.taskTitle, userName, firstName, widget.subTaskDetails.taskId, widget.subTaskDetails.dueDate);
+                                  markInProgressSubTask(
+                                      widget.subTaskDetails.taskTitle,
+                                      userName,
+                                      firstName,
+                                      widget.subTaskDetails.taskId,
+                                      widget.subTaskDetails.dueDate);
                                   // Handle 'Mark In Progress' action
-                                } else if (buttonController ==
-                                    '1') {
-                                  markCompleteSubTask(widget.subTaskDetails.taskTitle, userName, firstName, widget.subTaskDetails.taskId, widget.subTaskDetails.dueDate);
+                                } else if (buttonController == '1') {
+                                  markCompleteSubTask(
+                                      widget.subTaskDetails.taskTitle,
+                                      userName,
+                                      firstName,
+                                      widget.subTaskDetails.taskId,
+                                      widget.subTaskDetails.dueDate);
                                   // Handle 'Mark As Complete' action
                                 }
                               },
@@ -1038,15 +1062,16 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                   buttonController == '0'
                                       ? 'Mark In Progress'
                                       : buttonController == '1'
-                                      ? 'Mark As Completed'
-                                      : 'Completed',
+                                          ? 'Mark As Completed'
+                                          : 'Completed',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: buttonController == '0'
                                         ? Colors.deepPurple.shade600
                                         : buttonController == '1'
-                                        ? Colors.green
-                                        : Colors.grey, // Assuming '2' represents Completed status
+                                            ? Colors.green
+                                            : Colors
+                                                .grey, // Assuming '2' represents Completed status
                                   ),
                                 ),
                               ),
@@ -1056,8 +1081,11 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => CreateSubTaskPage(mainTaskDetails: widget.mainTaskDetails,) // Pass the task details
-                                  ),
+                                      builder: (context) => CreateSubTaskPage(
+                                            mainTaskDetails:
+                                                widget.mainTaskDetails,
+                                          ) // Pass the task details
+                                      ),
                                 );
                               },
                               style: OutlinedButton.styleFrom(
@@ -1068,7 +1096,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                     Colors.white, // Change the background color
                               ),
                               child: Padding(
-                                padding: EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: Text(
                                   'Add Sub Task',
                                   style: TextStyle(
@@ -1091,7 +1119,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                             itemBuilder: (context, index) {
                               return Container(
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
+                                  borderRadius: const BorderRadius.only(
                                     topRight: Radius.circular(
                                         0.0), // Adjust these values as needed
                                     bottomRight: Radius.circular(
@@ -1099,7 +1127,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                   ),
                                   color: Colors.grey.shade200,
                                 ),
-                                margin: EdgeInsets.all(10),
+                                margin: const EdgeInsets.all(10),
                                 child: ListTile(
                                   title: Padding(
                                     padding: const EdgeInsets.all(5.0),
@@ -1117,17 +1145,17 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                       children: [
                                         Text(
                                             'ID: ${filteredSubTaskList[index].taskId}'),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 10,
                                         ),
-                                        Icon(
+                                        const Icon(
                                           Icons.arrow_right,
                                           color: Colors.black87,
                                         ),
                                         Text(
                                           'Due Date: ${filteredSubTaskList[index].dueDate}',
-                                          style:
-                                              TextStyle(color: Colors.black87),
+                                          style: const TextStyle(
+                                              color: Colors.black87),
                                         ),
                                       ],
                                     ),
@@ -1148,7 +1176,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                       );
                                       print('open sub task');
                                     },
-                                    icon: Icon(Icons.open_in_new_rounded),
+                                    icon: const Icon(Icons.open_in_new_rounded),
                                     tooltip: 'Open Sub Task',
                                     focusColor: AppColor.appBlue,
                                   ),
@@ -1169,7 +1197,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
             ),
           ),
 
-          Divider(),
+          const Divider(),
 
           ///comment list and add comment
           Expanded(
@@ -1178,7 +1206,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 8),
+                  margin: const EdgeInsets.symmetric(vertical: 8),
                   color: Colors.white,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1186,7 +1214,16 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                       Container(
                         width: 150,
                         height: 40,
-                        child: Row(
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.only(
+                            topRight: Radius.circular(
+                                50.0), // Adjust these values as needed
+                            bottomRight: Radius.circular(
+                                50.0), // Adjust these values as needed
+                          ),
+                          color: AppColor.appLightBlue,
+                        ),
+                        child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
@@ -1200,15 +1237,6 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                               size: 27,
                             ),
                           ],
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(
-                                50.0), // Adjust these values as needed
-                            bottomRight: Radius.circular(
-                                50.0), // Adjust these values as needed
-                          ),
-                          color: AppColor.appLightBlue,
                         ),
                       ),
                       Padding(
@@ -1235,7 +1263,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                           children: [
                             Container(
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.only(
+                                borderRadius: const BorderRadius.only(
                                   topRight: Radius.circular(
                                       0.0), // Adjust these values as needed
                                   bottomRight: Radius.circular(
@@ -1243,7 +1271,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                 ),
                                 color: Colors.grey.shade200,
                               ),
-                              margin: EdgeInsets.all(10),
+                              margin: const EdgeInsets.all(10),
                               child: ListTile(
                                 title: Padding(
                                   padding: const EdgeInsets.all(5.0),
@@ -1262,10 +1290,14 @@ class _OpenSubTaskState extends State<OpenSubTask> {
 
                                 trailing: IconButton(
                                   onPressed: () {
-                                    showDeleteCommentConfirmation(context, commentsList[index].commentId, commentsList[index].commentCreateBy, '${firstName} ${lastName}');
+                                    showDeleteCommentConfirmation(
+                                        context,
+                                        commentsList[index].commentId,
+                                        commentsList[index].commentCreateBy,
+                                        '${firstName} ${lastName}');
                                     print('Delete Comment');
                                   },
-                                  icon: Icon(
+                                  icon: const Icon(
                                     Icons.delete_outline_rounded,
                                     color: Colors.redAccent,
                                   ),
@@ -1287,7 +1319,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                 ),
 
                 Container(
-                  padding: EdgeInsets.all(15),
+                  padding: const EdgeInsets.all(15),
                   height: 100,
                   color: Colors.grey.shade200,
                   child: Row(
@@ -1297,7 +1329,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                           keyboardType: TextInputType.none,
                           controller: commentTextController,
                           maxLines: 2, // Set the maximum lines to 2
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: 'Enter your comment...',
                           ),
                         ),
@@ -1316,7 +1348,9 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                               firstName: firstName,
                               lastName: lastName,
                               logType: 'to Sub Task',
-                              logSummary: 'Commented', logDetails: "Comment: ${commentTextController.text}",
+                              logSummary: 'Commented',
+                              logDetails:
+                                  "Comment: ${commentTextController.text}",
                             );
                           },
                           icon: Icon(

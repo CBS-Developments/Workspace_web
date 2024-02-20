@@ -828,7 +828,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Main Task >',
               style: TextStyle(
                 color: Colors.grey,
@@ -836,7 +836,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
               ),
             ),
             SelectableText(
-              '${widget.taskDetails.taskTitle}',
+              widget.taskDetails.taskTitle,
               style: TextStyle(
                 color: AppColor.appDarkBlue,
                 fontSize: 20,
@@ -851,7 +851,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
               '/Task',
             );
           },
-          icon: Icon(Icons.arrow_back_rounded),
+          icon: const Icon(Icons.arrow_back_rounded),
         ),
         actions: [
           Container(
@@ -859,7 +859,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(15),
                   border: Border.all(width: 1, color: AppColor.appDarkBlue)),
-              margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
+              margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 6),
               child: IconButton(
                   tooltip: 'Edit Main Task',
                   onPressed: () {
@@ -872,7 +872,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                           ),
                     );
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.edit_note_rounded,
                     color: Colors.black87,
                   ))),
@@ -881,18 +881,18 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(15),
                 border: Border.all(width: 1, color: AppColor.appDarkBlue)),
-            margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
+            margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 6),
             child: IconButton(
                 tooltip: 'Delete Main Task',
                 onPressed: () {
                   showDeleteConfirmationDialog(context, userRole, widget.taskDetails.taskId);
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.delete_sweep_outlined,
                   color: Colors.redAccent,
                 )),
           ),
-          SizedBox(
+          const SizedBox(
             width: 10,
           )
         ],
@@ -911,7 +911,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                       itemBuilder: (context, index) {
                         if (index < taskDetailsList.length) {
                           return Container(
-                            padding: EdgeInsets.only(bottom: 15),
+                            padding: const EdgeInsets.only(bottom: 15),
                             color: Colors.white,
                             child: ListTile(
                               title: Padding(
@@ -925,14 +925,14 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                 child: SelectableText(
                                     taskDetailsList[index].taskDescription),
                               ),
-                              titleTextStyle: TextStyle(fontSize: 15),
+                              titleTextStyle: const TextStyle(fontSize: 15),
                               subtitleTextStyle:
-                                  TextStyle(fontSize: 16, color: Colors.black),
+                                  const TextStyle(fontSize: 16, color: Colors.black),
                               // Your list item code here...
                             ),
                           );
                         } else {
-                          return SizedBox(); // Or another fallback widget if needed
+                          return const SizedBox(); // Or another fallback widget if needed
                         }
                       },
                     )),
@@ -945,7 +945,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                     children: [
                       Container(
                         // width: 480,
-                        margin: EdgeInsets.all(5),
+                        margin: const EdgeInsets.all(5),
                         height: 160,
                         color: Colors.white,
                         child: Row(
@@ -1188,7 +1188,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                     });
                                   },
                                   decoration: InputDecoration(
-                                    prefixIcon: Icon(Icons.search),
+                                    prefixIcon: const Icon(Icons.search),
                                     suffixIcon: IconButton(
                                       onPressed: () {
                                         searchSubTaskController.clear();
@@ -1235,7 +1235,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                     Colors.white, // Change the background color
                               ),
                               child: Padding(
-                                padding: EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(8.0),
                                 child: Text(
                                   'Add Sub Task',
                                   style: TextStyle(
@@ -1245,7 +1245,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                               ),
                             ),
 
-                            SizedBox(width: 10,),
+                            const SizedBox(width: 10,),
                             OutlinedButton(
                               onPressed: () {
                                 if (buttonController == '0') {
@@ -1309,7 +1309,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                   borderRadius: BorderRadius.circular(5.0), // Rounded borders for the container
                                   color: Colors.grey.shade200,
                                 ),
-                                margin: EdgeInsets.all(10),
+                                margin: const EdgeInsets.all(10),
                                 child: ListTile(
                                   title: Padding(
                                     padding: const EdgeInsets.all(5.0),
@@ -1327,7 +1327,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                       Row(
                                         children: [
                                           Text('ID: ${subTask.taskId}'), // Subtask ID
-                                          SizedBox(width: 10),
+                                          const SizedBox(width: 10),
                                           Icon(
                                             Icons.double_arrow_rounded,
                                             color: _getColorForTaskTypeName(subTask.taskTypeName), // Color based on task type
@@ -1339,7 +1339,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                       ),
                                       Row(
                                         children: [
-                                          Icon(Icons.person_pin_circle_rounded),
+                                          const Icon(Icons.person_pin_circle_rounded),
                                           Expanded(
                                             child: Text(' ${subTask.assignTo}'), // Assigned to
                                           ),
@@ -1348,8 +1348,8 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                       Row(
                                         children: [
                                           Text('Created Date: ${subTask.taskCreateDate}'), // Creation date
-                                          SizedBox(width: 5),
-                                          Icon(Icons.arrow_forward, size: 15),
+                                          const SizedBox(width: 5),
+                                          const Icon(Icons.arrow_forward, size: 15),
                                           Text('Due Date: ${subTask.dueDate}'), // Due date
                                         ],
                                       ),
@@ -1368,7 +1368,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                         ),
                                       );
                                     },
-                                    icon: Icon(Icons.open_in_new_rounded),
+                                    icon: const Icon(Icons.open_in_new_rounded),
                                     tooltip: 'Open Sub Task',
                                   ),
                                 ),
@@ -1384,14 +1384,14 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
               ],
             ),
           ),
-          Divider(),
+          const Divider(),
           Expanded(
             flex: 1,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 8),
+                  margin: const EdgeInsets.symmetric(vertical: 8),
                   color: Colors.white,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1399,7 +1399,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                       Container(
                         width: 150,
                         height: 40,
-                        child: Row(
+                        child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
@@ -1415,7 +1415,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                           ],
                         ),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
+                          borderRadius: const BorderRadius.only(
                             topRight: Radius.circular(
                                 50.0), // Adjust these values as needed
                             bottomRight: Radius.circular(
@@ -1448,7 +1448,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                           children: [
                             Container(
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.only(
+                                borderRadius: const BorderRadius.only(
                                   topRight: Radius.circular(
                                       0.0), // Adjust these values as needed
                                   bottomRight: Radius.circular(
@@ -1456,7 +1456,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                 ),
                                 color: Colors.grey.shade200,
                               ),
-                              margin: EdgeInsets.all(10),
+                              margin: const EdgeInsets.all(10),
                               child: ListTile(
                                 title: Padding(
                                   padding: const EdgeInsets.all(5.0),
@@ -1478,7 +1478,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                     showDeleteCommentConfirmation(context, commentsList[index].commentId, commentsList[index].commentCreateBy, '${firstName} ${lastName}');
                                     print('Delete Comment');
                                   },
-                                  icon: Icon(
+                                  icon: const Icon(
                                     Icons.delete_outline_rounded,
                                     color: Colors.redAccent,
                                   ),
@@ -1500,7 +1500,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                 ),
 
                 Container(
-                  padding: EdgeInsets.all(15),
+                  padding: const EdgeInsets.all(15),
                   height: 100,
                   color: Colors.grey.shade200,
                   child: Row(
@@ -1510,7 +1510,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                           keyboardType: TextInputType.none,
                           controller: commentTextController,
                           maxLines: 2, // Set the maximum lines to 2
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: 'Enter your comment...',
                           ),
                         ),

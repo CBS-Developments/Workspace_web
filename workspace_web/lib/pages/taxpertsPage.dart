@@ -305,8 +305,8 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
             padding: const EdgeInsets.symmetric(vertical: 14.0),
             child: Row(
               children: [
-                Text('Unread Submissions:  ',style: TextStyle(fontSize: 20,color: Colors.green),),
-                Text('$unreadCount ',style: TextStyle(fontSize: 20,color: Colors.green,fontWeight: FontWeight.bold),),
+                const Text('Unread Submissions:  ',style: TextStyle(fontSize: 20,color: Colors.green),),
+                Text('$unreadCount ',style: const TextStyle(fontSize: 20,color: Colors.green,fontWeight: FontWeight.bold),),
               ],
             ),
           ),
@@ -317,17 +317,17 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
                   getSubmissionsList();
                 },
                 tooltip: 'Refresh',
-                icon: Icon(Icons.refresh_rounded,color: Colors.green,)),
+                icon: const Icon(Icons.refresh_rounded,color: Colors.green,)),
           )
         ],
       ),
-      drawer: MyDrawer(), // Your custom Drawer
+      drawer: const MyDrawer(), // Your custom Drawer
       body: Row(
         children: [
           Expanded(
             flex: 2,
             child: submissionsList.isEmpty
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
               itemCount: submissionsList.length,
               itemBuilder: (context, index) {
@@ -357,14 +357,14 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
                           onPressed: () {
                             showRemoveConfirmationDialog(context, submission.email);
                           },
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.remove_circle_outline,
                             color: Colors.redAccent,
                           ),
                         ),
                         title: Text(
                           submission.name,
-                          style: TextStyle(fontSize: 18),
+                          style: const TextStyle(fontSize: 18),
                         ),
                         subtitle: Text("From: ${submission.from}"),
                         onTap: () {
@@ -374,7 +374,7 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
                         },
                       ),
                     ),
-                    Divider(color: Colors.green),
+                    const Divider(color: Colors.green),
                   ],
                 );
               },
@@ -383,7 +383,7 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
           Expanded(
             flex: 3,
             child: selectedSubmission == null
-                ? Center(child: Text('Select a submission'))
+                ? const Center(child: Text('Select a submission'))
                 : submissionDetails(selectedSubmission!),
           ),
         ],
@@ -393,8 +393,8 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
 
   Widget submissionDetails(Submission submission) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 40),
-      margin: EdgeInsets.symmetric(horizontal: 40),
+      padding: const EdgeInsets.symmetric(horizontal: 40),
+      margin: const EdgeInsets.symmetric(horizontal: 40),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         color: Colors.white,
@@ -407,7 +407,7 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
             color: Colors.grey.withOpacity(0.5),
             spreadRadius: 1,
             blurRadius: 5,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -416,8 +416,8 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
-            Center(
+            const SizedBox(height: 20),
+            const Center(
               child: Text(
                 'Submission Details',
                 style: TextStyle(
@@ -427,7 +427,7 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             detailText('Name: ', submission.name, Icons.person),
             detailText('Tax Type: ', submission.taxType, Icons.business_center),
             detailText('Email: ', submission.email, Icons.email,),
@@ -437,19 +437,19 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
             detailText('From: ', submission.from, Icons.map),
             detailText('Device: ', submission.device, Icons.devices),
             detailText('Action: ', localAction, Icons.check_circle_outline),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: actionController,
                     maxLines: 1,
-                    style: TextStyle(fontSize: 16),
-                    decoration: InputDecoration(
-                      enabledBorder: const OutlineInputBorder(
+                    style: const TextStyle(fontSize: 16),
+                    decoration: const InputDecoration(
+                      enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.grey),
                       ),
-                      focusedBorder: const OutlineInputBorder(
+                      focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.blue),
                       ),
                       fillColor: Colors.white,
@@ -485,7 +485,7 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
                     },
 
                     // Icon for the button
-                    child: Text('Save'),
+                    child: const Text('Save'),
                     style: ElevatedButton.styleFrom(
                       primary: Colors.green, // Background color
                     ),
@@ -493,7 +493,7 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
                 )
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -506,12 +506,12 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
       child: Row(
         children: [
           Icon(icon, color: Colors.green.shade700), // Icon for each detail
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           Expanded(
             child: SelectableText.rich(
               TextSpan(
                 text: "$label ", // Label text
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   color: Colors.black87,
                   fontWeight: FontWeight.bold, // Make label bold
@@ -519,20 +519,20 @@ class _TaxpertsPageState extends State<TaxpertsPage> {
                 children: <TextSpan>[
                   TextSpan(
                     text: value, // Value text
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.normal, // Regular weight for value
                     ),
                   ),
                 ],
               ),
               // Additional styling and behavior options
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16, // Base font size
                 color: Colors.black, // Base text color
               ),
               cursorColor: Colors.blue, // Cursor color when text is selected
               showCursor: true, // Show cursor when text field is focused
-              toolbarOptions: ToolbarOptions( // Toolbar options for copy, cut, paste, select all
+              toolbarOptions: const ToolbarOptions( // Toolbar options for copy, cut, paste, select all
                 copy: true,
                 selectAll: true,
                 cut: false,

@@ -442,7 +442,7 @@ class _TaskPageState extends State<TaskPage> {
                                     .appLightBlue // Change this to the desired color when tapped
                                 : Colors.grey.shade200,
                           ),
-                          margin: EdgeInsets.all(10),
+                          margin: const EdgeInsets.all(10),
                           child: ListTile(
                             title: Padding(
                               padding: const EdgeInsets.all(5.0),
@@ -462,12 +462,12 @@ class _TaskPageState extends State<TaskPage> {
                                     children: [
                                       SelectableText(
                                           'ID: ${filteredTasks[index].taskId}'),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 20,
                                       ),
-                                      Icon(Icons.person_pin_circle_rounded),
+                                      const Icon(Icons.person_pin_circle_rounded),
                                       Text('${filteredTasks[index].assignTo} '),
-                                      Icon(
+                                      const Icon(
                                         Icons.double_arrow_rounded,
                                       ),
                                       Text(
@@ -482,14 +482,14 @@ class _TaskPageState extends State<TaskPage> {
                                     children: [
                                       Row(
                                         children: [
-                                          Text(
+                                          const Text(
                                             'Beneficiary: ',
                                             style: TextStyle(
                                                 color: Colors.black87),
                                           ),
                                           SelectableText(
                                             '${filteredTasks[index].company}',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 color: Colors.black87,
                                                 fontWeight: FontWeight.bold),
                                           ),
@@ -505,15 +505,15 @@ class _TaskPageState extends State<TaskPage> {
                                     children: [
                                       Text(
                                           'Create Date: ${filteredTasks[index].taskCreateDate}'),
-                                      Icon(
+                                      const Icon(
                                         Icons.arrow_right,
                                         color: Colors.black87,
                                       ),
                                       SelectableText(
                                         'Due Date: ${filteredTasks[index].dueDate}',
-                                        style: TextStyle(color: Colors.black87),
+                                        style: const TextStyle(color: Colors.black87),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 20,
                                       ),
                                       TextButton(
@@ -588,7 +588,7 @@ class _TaskPageState extends State<TaskPage> {
 
                                 print('open task');
                               },
-                              icon: Icon(Icons.open_in_new_rounded),
+                              icon: const Icon(Icons.open_in_new_rounded),
                               tooltip: 'Open Main Task',
                               focusColor: AppColor.appBlue,
                             ),
@@ -633,7 +633,7 @@ class _TaskPageState extends State<TaskPage> {
                       itemBuilder: (context, index) {
                         return Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
+                            borderRadius: const BorderRadius.only(
                               topRight: Radius.circular(
                                   50.0), // Adjust these values as needed
                               bottomRight: Radius.circular(
@@ -641,7 +641,7 @@ class _TaskPageState extends State<TaskPage> {
                             ),
                             color: Colors.grey.shade200,
                           ),
-                          margin: EdgeInsets.all(10),
+                          margin: const EdgeInsets.all(10),
                           child: ListTile(
                             title: Padding(
                               padding: const EdgeInsets.all(5.0),
@@ -661,10 +661,10 @@ class _TaskPageState extends State<TaskPage> {
                                     children: [
                                       SelectableText(
                                           'ID: ${subTaskList[index].taskId}'),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 10,
                                       ),
-                                      Icon(Icons.person_pin_circle_rounded),
+                                      const Icon(Icons.person_pin_circle_rounded),
                                       Text('${subTaskList[index].assignTo} '),
                                       Icon(
                                         Icons.double_arrow_rounded,
@@ -681,15 +681,15 @@ class _TaskPageState extends State<TaskPage> {
                                       vertical: 2.0, horizontal: 0),
                                   child: Row(
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.arrow_right,
                                         color: Colors.black87,
                                       ),
                                       SelectableText(
                                         'Due Date: ${subTaskList[index].dueDate}',
-                                        style: TextStyle(color: Colors.black87),
+                                        style: const TextStyle(color: Colors.black87),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 20,
                                       ),
                                       // TextButton(
@@ -751,8 +751,8 @@ class _TaskPageState extends State<TaskPage> {
       );
     } else {
       return Container(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
+        child: const Padding(
+          padding: EdgeInsets.all(8.0),
           child: Text(
             "No matches found!!",
             style: TextStyle(color: Colors.redAccent, fontSize: 16),
@@ -835,7 +835,7 @@ class _TaskPageState extends State<TaskPage> {
                                         .appLightBlue // Change this to the desired color when tapped
                                     : Colors.grey.shade200,
                               ),
-                              margin: EdgeInsets.all(10),
+                              margin: const EdgeInsets.all(10),
                               child: ListTile(
                                 title: Padding(
                                   padding: const EdgeInsets.all(5.0),
@@ -855,13 +855,13 @@ class _TaskPageState extends State<TaskPage> {
                                         children: [
                                           SelectableText(
                                               'ID: ${filteredTasks[index].taskId}'),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 20,
                                           ),
-                                          Icon(Icons.person_pin_circle_rounded),
+                                          const Icon(Icons.person_pin_circle_rounded),
                                           Text(
                                               '${filteredTasks[index].assignTo} '),
-                                          Icon(
+                                          const Icon(
                                             Icons.double_arrow_rounded,
                                           ),
                                           Text(
@@ -876,10 +876,10 @@ class _TaskPageState extends State<TaskPage> {
                                         children: [
                                           Row(
                                             children: [
-                                              Text('Beneficiary: '),
+                                              const Text('Beneficiary: '),
                                               SelectableText(
                                                 '${filteredTasks[index].company}',
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     color: Colors.black87,
                                                     fontWeight:
                                                         FontWeight.bold),
@@ -896,16 +896,16 @@ class _TaskPageState extends State<TaskPage> {
                                         children: [
                                           Text(
                                               'Create Date: ${filteredTasks[index].taskCreateDate}'),
-                                          Icon(
+                                          const Icon(
                                             Icons.arrow_right,
                                             color: Colors.black87,
                                           ),
                                           SelectableText(
                                             'Due Date: ${filteredTasks[index].dueDate}',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 color: Colors.black87),
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 20,
                                           ),
                                           TextButton(
@@ -986,7 +986,7 @@ class _TaskPageState extends State<TaskPage> {
                                     );
                                     print('open task');
                                   },
-                                  icon: Icon(Icons.open_in_new_rounded),
+                                  icon: const Icon(Icons.open_in_new_rounded),
                                   tooltip: 'Open Main Task',
                                   focusColor: AppColor.appBlue,
                                 ),
@@ -1004,7 +1004,7 @@ class _TaskPageState extends State<TaskPage> {
                   ),
                 ),
               ),
-              VerticalDivider(),
+              const VerticalDivider(),
               Expanded(
                 flex: 7,
                 child: Column(
@@ -1032,7 +1032,7 @@ class _TaskPageState extends State<TaskPage> {
                           itemBuilder: (context, index) {
                             return Container(
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.only(
+                                borderRadius: const BorderRadius.only(
                                   topRight: Radius.circular(
                                       50.0), // Adjust these values as needed
                                   bottomRight: Radius.circular(
@@ -1040,7 +1040,7 @@ class _TaskPageState extends State<TaskPage> {
                                 ),
                                 color: Colors.grey.shade200,
                               ),
-                              margin: EdgeInsets.all(10),
+                              margin: const EdgeInsets.all(10),
                               child: ListTile(
                                 title: Padding(
                                   padding: const EdgeInsets.all(5.0),
@@ -1060,10 +1060,10 @@ class _TaskPageState extends State<TaskPage> {
                                         children: [
                                           SelectableText(
                                               'ID: ${subTaskList[index].taskId}'),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 10,
                                           ),
-                                          Icon(Icons.person_pin_circle_rounded),
+                                          const Icon(Icons.person_pin_circle_rounded),
                                           Text(
                                               '${subTaskList[index].assignTo} '),
                                           Icon(
@@ -1082,16 +1082,16 @@ class _TaskPageState extends State<TaskPage> {
                                           vertical: 2.0, horizontal: 0),
                                       child: Row(
                                         children: [
-                                          Icon(
+                                          const Icon(
                                             Icons.arrow_right,
                                             color: Colors.black87,
                                           ),
                                           SelectableText(
                                             'Due Date: ${subTaskList[index].dueDate}',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 color: Colors.black87),
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 20,
                                           ),
                                           // TextButton(
@@ -1165,8 +1165,8 @@ class _TaskPageState extends State<TaskPage> {
             ],
           )
         : Container(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
               child: Text(
                 "No matches found!!",
                 style: TextStyle(color: Colors.redAccent, fontSize: 16),
@@ -1258,7 +1258,7 @@ class _TaskPageState extends State<TaskPage> {
           ],
           bottom: TabBar(
             indicator: BoxDecoration(
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   topLeft:
                       Radius.circular(20.0), // Adjust these values as needed
                   topRight:
@@ -1284,17 +1284,17 @@ class _TaskPageState extends State<TaskPage> {
               updateTaskCounts(assignee: selectedAssignee, category: selectedCategory);
             },
             tabs: [
-              Tab(text: 'All Tasks'),
-              Tab(text: 'Taxation - TAS'),
-              Tab(text: 'Talent Management - TMS'),
-              Tab(text: 'Finance & Accounting - AFSS'),
-              Tab(text: 'Audit & Assurance - ASS'),
-              Tab(text: 'Company Secretarial - CSS'),
-              Tab(text: 'Development - DEV'),
+              const Tab(text: 'All Tasks'),
+              const Tab(text: 'Taxation - TAS'),
+              const Tab(text: 'Talent Management - TMS'),
+              const Tab(text: 'Finance & Accounting - AFSS'),
+              const Tab(text: 'Audit & Assurance - ASS'),
+              const Tab(text: 'Company Secretarial - CSS'),
+              const Tab(text: 'Development - DEV'),
             ],
           ),
         ),
-        drawer: MyDrawer(),
+        drawer: const MyDrawer(),
         body: Column(
           children: [
             Row(
@@ -1316,7 +1316,7 @@ class _TaskPageState extends State<TaskPage> {
                         });
                       },
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.search),
+                        prefixIcon: const Icon(Icons.search),
                         suffixIcon: IconButton(
                           onPressed: () {
                             searchByNameController.clear();
@@ -1381,7 +1381,7 @@ class _TaskPageState extends State<TaskPage> {
                       onPressed: () {
                         Navigator.pushNamed(context, '/createMainTask');
                       },
-                      child: Text('Create Main Task'),
+                      child: const Text('Create Main Task'),
                       style: ElevatedButton.styleFrom(
                         primary: AppColor
                             .appDarkBlue, // Change this to the desired color
@@ -1417,7 +1417,7 @@ class _TaskPageState extends State<TaskPage> {
                           Container(
                             width: 40,
                             height: 40,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                                // Change this to your preferred color
                               shape: BoxShape.circle,
                             ),
@@ -1440,7 +1440,7 @@ class _TaskPageState extends State<TaskPage> {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => PendingTaskPage()),
+                                MaterialPageRoute(builder: (context) => const PendingTaskPage()),
                               );
                             },
                           ),
@@ -1462,7 +1462,7 @@ class _TaskPageState extends State<TaskPage> {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => InProgressTaskPage()),
+                                MaterialPageRoute(builder: (context) => const InProgressTaskPage()),
                               );
                             },
                           ),
@@ -1484,7 +1484,7 @@ class _TaskPageState extends State<TaskPage> {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => CompletedTaskPage()),
+                                MaterialPageRoute(builder: (context) => const CompletedTaskPage()),
                               );
                             },
                           ),
@@ -1496,7 +1496,7 @@ class _TaskPageState extends State<TaskPage> {
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => NotesPage()),
+                                MaterialPageRoute(builder: (context) => const NotesPage()),
                               );
                               print('user Role $userRole');
                             },
