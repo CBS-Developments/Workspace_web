@@ -59,6 +59,10 @@ class _LoginPageState extends State<LoginPage> {
                   ),),
                 ),
                 TextFormField(
+                  onEditingComplete: () {
+                    // Define what you want to do when editing is complete. For example:
+                    FocusScope.of(context).nextFocus(); // Move focus to the next field
+                  },
                   controller: emailController,
                   decoration: const InputDecoration(
                     //labelText: 'Email',
@@ -76,6 +80,9 @@ class _LoginPageState extends State<LoginPage> {
                 ),
 
                 TextFormField(
+                  onFieldSubmitted: (String value) {
+                    _login();
+                  },
                   controller: passwordController,
                   obscureText: !_showPassword,
                   decoration: InputDecoration(
