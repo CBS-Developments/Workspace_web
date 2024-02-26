@@ -43,7 +43,6 @@ class _TaskPageState extends State<TaskPage> {
   TextEditingController searchByNameController = TextEditingController();
   List<MainTask> searchedTasks = [];
 
-
   String? selectedAssignee;
 
   List<String> assigneeList = [
@@ -59,8 +58,6 @@ class _TaskPageState extends State<TaskPage> {
     'Samadhi',
     'Sanjana',
   ];
-
-
 
   String getCurrentDateTime() {
     final now = DateTime.now();
@@ -226,16 +223,84 @@ class _TaskPageState extends State<TaskPage> {
     }
   }
 
+  Future<bool> unDoComplete(
+    BuildContext context, {
+    required taskName,
+    required userName,
+    required firstName,
+    required taskID,
+    required logType,
+    required logSummary,
+    required logDetails,
+  }) async {
+    // Prepare the data to be sent to the PHP script.
+    var data = {
+      "task_id": taskID,
+      "task_status": '1',
+      "task_status_name": 'In Progress',
+      "action_taken_by_id": userName,
+      "action_taken_by": firstName,
+      "action_taken_date": getCurrentDateTime(),
+      "action_taken_timestamp": getCurrentDate(),
+    };
+
+    // URL of your PHP script.
+    const url = "http://dev.workspace.cbs.lk/deleteMainTask.php";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final responseBody = jsonDecode(res.body);
+
+        // Debugging: Print the response data.
+        print("Response from PHP script: $responseBody");
+
+        if (responseBody == "true") {
+          print('Successful');
+          getMainTaskList();
+          addLog(context,
+              taskId: taskID,
+              taskName: taskName,
+              createBy: firstName,
+              createByID: userName,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
+          showUndo(context);
+
+          return true; // PHP code was successful.
+        } else {
+          print('PHP code returned "false".');
+          return false; // PHP code returned "false."
+        }
+      } else {
+        print('HTTP request failed with status code: ${res.statusCode}');
+        return false; // HTTP request failed.
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false; // An error occurred.
+    }
+  }
+
   Future<bool> markCompleteMainTask(
-      BuildContext context, {
-        required taskName,
-        required userName,
-        required firstName,
-        required taskID,
-        required logType,
-        required logSummary,
-        required logDetails,
-      }) async {
+    BuildContext context, {
+    required taskName,
+    required userName,
+    required firstName,
+    required taskID,
+    required logType,
+    required logSummary,
+    required logDetails,
+  }) async {
     // Prepare the data to be sent to the PHP script.
     var data = {
       "task_id": taskID,
@@ -277,8 +342,15 @@ class _TaskPageState extends State<TaskPage> {
               logType: logType,
               logSummary: logSummary,
               logDetails: logDetails);
-          snackBar(
-              context, "Main task completed successfully!", Colors.green);
+
+          showSuccessSnackBar(context,
+              taskName: taskName,
+              userName: userName,
+              firstName: firstName,
+              taskID: taskID,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
 
           return true; // PHP code was successful.
         } else {
@@ -295,6 +367,81 @@ class _TaskPageState extends State<TaskPage> {
     }
   }
 
+  void showSuccessSnackBar(
+    BuildContext context, {
+    required String taskName,
+    required String userName,
+    required String firstName,
+    required String taskID,
+    required String logType,
+    required String logSummary,
+    required String logDetails,
+  }) {
+    final snackBar = SnackBar(
+      backgroundColor: Colors.green, // Custom background color
+      content: Row(
+        children: [
+          Icon(Icons.check_circle_outline, color: Colors.white), // Custom icon
+          SizedBox(width: 8), // Space between icon and text
+          Expanded(
+            child: Text(
+              'Main Task Marked as Completed successful!',
+              style: TextStyle(
+                  color: Colors.white, fontSize: 16), // Custom text style
+            ),
+          ),
+        ],
+      ),
+      action: SnackBarAction(
+        label: 'Undo',
+        textColor: Colors.white, // Custom text color for the action
+        onPressed: () {
+          unDoComplete(context,
+              taskName: taskName,
+              userName: userName,
+              firstName: firstName,
+              taskID: taskID,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
+          // Action to undo the submission
+        },
+      ),
+      duration: Duration(seconds: 10), // Custom duration
+      behavior: SnackBarBehavior.floating, // Make it floating
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20)), // Custom shape
+      margin: EdgeInsets.all(10), // Margin from the edges
+      padding:
+          EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Custom padding
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void showUndo(BuildContext context) {
+    final snackBar = SnackBar(
+      backgroundColor: Colors.blue, // Custom background color for emphasis
+      content: Row(
+        children: [
+          Icon(Icons.done, color: Colors.white), // Custom icon for warning
+          SizedBox(width: 8), // Space between icon and text
+          Text(
+            'Main task karked as In Progress again!', // The message
+            style: TextStyle(
+                color: Colors.white, fontSize: 16), // Custom text style
+          ),
+        ],
+      ),
+      duration: Duration(seconds: 5), // Custom duration
+      behavior: SnackBarBehavior.floating, // Make it floating
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20)), // Custom shape
+      margin: EdgeInsets.all(10), // Margin from the edges
+      padding:
+          EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Custom padding
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 
   Future<void> getMainTaskList() async {
     mainTaskList.clear();
@@ -320,7 +467,6 @@ class _TaskPageState extends State<TaskPage> {
             (a, b) => b.taskCreatedTimestamp.compareTo(a.taskCreatedTimestamp));
         updateTaskCounts();
       });
-
     } else {
       throw Exception('Failed to load jobs from API');
     }
@@ -332,9 +478,12 @@ class _TaskPageState extends State<TaskPage> {
     completedTaskCount = 0;
 
     for (var task in mainTaskList) {
-      bool assigneeMatch = assignee == null || assignee == '-- Select Assignee --' || assignee == 'All' ||
+      bool assigneeMatch = assignee == null ||
+          assignee == '-- Select Assignee --' ||
+          assignee == 'All' ||
           task.assignTo.toLowerCase().contains(assignee.toLowerCase());
-      bool categoryMatch = category == null || category == 'All Tasks' ||
+      bool categoryMatch = category == null ||
+          category == 'All Tasks' ||
           task.category_name == category;
 
       if (assigneeMatch && categoryMatch) {
@@ -375,29 +524,31 @@ class _TaskPageState extends State<TaskPage> {
         selectedAssignee == '-- Select Assignee --') {
       filteredTasks = mainTaskList
           .where((task) =>
-      task.category_name == category || category == 'All Tasks')
+              task.category_name == category || category == 'All Tasks')
           .toList();
     } else {
       filteredTasks = mainTaskList
           .where((task) =>
-      (task.category_name == category || category == 'All Tasks') &&
-          task.assignTo.toLowerCase().contains(selectedAssignee!.toLowerCase()))
+              (task.category_name == category || category == 'All Tasks') &&
+              task.assignTo
+                  .toLowerCase()
+                  .contains(selectedAssignee!.toLowerCase()))
           .toList();
     }
-
 
     if (searchController.text.isNotEmpty) {
       filteredTasks = filteredTasks
-          .where((task) =>
-          task.taskId.toLowerCase().contains(searchController.text.toLowerCase()))
+          .where((task) => task.taskId
+              .toLowerCase()
+              .contains(searchController.text.toLowerCase()))
           .toList();
     } else if (searchByNameController.text.isNotEmpty) {
       filteredTasks = filteredTasks
-          .where((task) =>
-          task.taskTitle.toLowerCase().contains(searchByNameController.text.toLowerCase()))
+          .where((task) => task.taskTitle
+              .toLowerCase()
+              .contains(searchByNameController.text.toLowerCase()))
           .toList();
     }
-
 
     if (filteredTasks.isNotEmpty) {
       return Row(
@@ -465,7 +616,8 @@ class _TaskPageState extends State<TaskPage> {
                                       const SizedBox(
                                         width: 20,
                                       ),
-                                      const Icon(Icons.person_pin_circle_rounded),
+                                      const Icon(
+                                          Icons.person_pin_circle_rounded),
                                       Text('${filteredTasks[index].assignTo} '),
                                       const Icon(
                                         Icons.double_arrow_rounded,
@@ -511,7 +663,8 @@ class _TaskPageState extends State<TaskPage> {
                                       ),
                                       SelectableText(
                                         'Due Date: ${filteredTasks[index].dueDate}',
-                                        style: const TextStyle(color: Colors.black87),
+                                        style: const TextStyle(
+                                            color: Colors.black87),
                                       ),
                                       const SizedBox(
                                         width: 20,
@@ -520,33 +673,37 @@ class _TaskPageState extends State<TaskPage> {
                                         onPressed: () {
                                           if (filteredTasks[index].taskStatus ==
                                               '0') {
-                                            markInProgressMainTask(context, taskName: filteredTasks[index]
-                                                .taskTitle,
-                                                userName: userName,
-                                                firstName: firstName,
-                                                taskID: filteredTasks[index]
-                                                    .taskId,
-                                                logType: 'Main Task',
-                                                logSummary:
-                                                'Marked In-Progress',
-                                                logDetails:
-                                                'Main Task Due Date: ${filteredTasks[index].dueDate}',);
+                                            markInProgressMainTask(
+                                              context,
+                                              taskName: filteredTasks[index]
+                                                  .taskTitle,
+                                              userName: userName,
+                                              firstName: firstName,
+                                              taskID:
+                                                  filteredTasks[index].taskId,
+                                              logType: 'Main Task',
+                                              logSummary: 'Marked In-Progress',
+                                              logDetails:
+                                                  'Main Task Due Date: ${filteredTasks[index].dueDate}',
+                                            );
                                             // markInProgressMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
                                             // Handle 'Mark In Progress' action
                                           } else if (filteredTasks[index]
                                                   .taskStatus ==
                                               '1') {
-                                            markCompleteMainTask(context, taskName: filteredTasks[index]
-                                                .taskTitle,
+                                            markCompleteMainTask(
+                                              context,
+                                              taskName: filteredTasks[index]
+                                                  .taskTitle,
                                               userName: userName,
                                               firstName: firstName,
-                                              taskID: filteredTasks[index]
-                                                  .taskId,
+                                              taskID:
+                                                  filteredTasks[index].taskId,
                                               logType: 'Main Task',
-                                              logSummary:
-                                              'Marked as Completed',
+                                              logSummary: 'Marked as Completed',
                                               logDetails:
-                                              'Main Task Due Date: ${filteredTasks[index].dueDate}',);
+                                                  'Main Task Due Date: ${filteredTasks[index].dueDate}',
+                                            );
                                             // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
                                             // Handle 'Mark As Complete' action
                                           }
@@ -664,7 +821,8 @@ class _TaskPageState extends State<TaskPage> {
                                       const SizedBox(
                                         width: 10,
                                       ),
-                                      const Icon(Icons.person_pin_circle_rounded),
+                                      const Icon(
+                                          Icons.person_pin_circle_rounded),
                                       Text('${subTaskList[index].assignTo} '),
                                       Icon(
                                         Icons.double_arrow_rounded,
@@ -687,7 +845,8 @@ class _TaskPageState extends State<TaskPage> {
                                       ),
                                       SelectableText(
                                         'Due Date: ${subTaskList[index].dueDate}',
-                                        style: const TextStyle(color: Colors.black87),
+                                        style: const TextStyle(
+                                            color: Colors.black87),
                                       ),
                                       const SizedBox(
                                         width: 20,
@@ -767,16 +926,19 @@ class _TaskPageState extends State<TaskPage> {
 
     if (searchController.text.isNotEmpty) {
       filteredTasks = mainTaskList
-          .where((task) =>
-          task.taskId.toLowerCase().contains(searchController.text.toLowerCase()))
+          .where((task) => task.taskId
+              .toLowerCase()
+              .contains(searchController.text.toLowerCase()))
           .toList();
     } else if (searchByNameController.text.isNotEmpty) {
       filteredTasks = mainTaskList
-          .where((task) =>
-          task.taskTitle.toLowerCase().contains(searchByNameController.text.toLowerCase()))
+          .where((task) => task.taskTitle
+              .toLowerCase()
+              .contains(searchByNameController.text.toLowerCase()))
           .toList();
     } else {
-      filteredTasks = List.from(mainTaskList); // Show all tasks when no search query
+      filteredTasks =
+          List.from(mainTaskList); // Show all tasks when no search query
     }
 
     if (selectedAssignee == null ||
@@ -785,11 +947,11 @@ class _TaskPageState extends State<TaskPage> {
       // No need to filter based on assignee if it's not specified
     } else {
       filteredTasks = filteredTasks
-          .where((task) =>
-          task.assignTo.toLowerCase().contains(selectedAssignee!.toLowerCase()))
+          .where((task) => task.assignTo
+              .toLowerCase()
+              .contains(selectedAssignee!.toLowerCase()))
           .toList();
     }
-
 
     return filteredTasks.isNotEmpty
         ? Row(
@@ -858,7 +1020,8 @@ class _TaskPageState extends State<TaskPage> {
                                           const SizedBox(
                                             width: 20,
                                           ),
-                                          const Icon(Icons.person_pin_circle_rounded),
+                                          const Icon(
+                                              Icons.person_pin_circle_rounded),
                                           Text(
                                               '${filteredTasks[index].assignTo} '),
                                           const Icon(
@@ -932,17 +1095,20 @@ class _TaskPageState extends State<TaskPage> {
                                               } else if (filteredTasks[index]
                                                       .taskStatus ==
                                                   '1') {
-                                                markCompleteMainTask(context, taskName: filteredTasks[index]
-                                                    .taskTitle,
+                                                markCompleteMainTask(
+                                                  context,
+                                                  taskName: filteredTasks[index]
+                                                      .taskTitle,
                                                   userName: userName,
                                                   firstName: firstName,
                                                   taskID: filteredTasks[index]
                                                       .taskId,
                                                   logType: 'Main Task',
                                                   logSummary:
-                                                  'Marked as Completed',
+                                                      'Marked as Completed',
                                                   logDetails:
-                                                  'Main Task Due Date: ${filteredTasks[index].dueDate}',);
+                                                      'Main Task Due Date: ${filteredTasks[index].dueDate}',
+                                                );
                                                 // markAsCompletedMainTask(widget.task.taskTitle,widget.userName,widget.firstName, widget.task.taskId);
                                                 // Handle 'Mark As Complete' action
                                               }
@@ -1063,7 +1229,8 @@ class _TaskPageState extends State<TaskPage> {
                                           const SizedBox(
                                             width: 10,
                                           ),
-                                          const Icon(Icons.person_pin_circle_rounded),
+                                          const Icon(
+                                              Icons.person_pin_circle_rounded),
                                           Text(
                                               '${subTaskList[index].assignTo} '),
                                           Icon(
@@ -1271,17 +1438,33 @@ class _TaskPageState extends State<TaskPage> {
               setState(() {
                 // Update selectedCategory based on the tab selected
                 switch (index) {
-                  case 0: selectedCategory = 'All Tasks'; break;
-                  case 1: selectedCategory = 'Taxation - TAS'; break;
-                  case 2: selectedCategory = 'Talent Management - TMS'; break;
-                  case 3: selectedCategory = 'Finance & Accounting - AFSS'; break;
-                  case 4: selectedCategory = 'Audit & Assurance - ASS'; break;
-                  case 5: selectedCategory = 'Company Secretarial - CSS'; break;
-                  case 6: selectedCategory = 'Development - DEV'; break;
-                  default: break;
+                  case 0:
+                    selectedCategory = 'All Tasks';
+                    break;
+                  case 1:
+                    selectedCategory = 'Taxation - TAS';
+                    break;
+                  case 2:
+                    selectedCategory = 'Talent Management - TMS';
+                    break;
+                  case 3:
+                    selectedCategory = 'Finance & Accounting - AFSS';
+                    break;
+                  case 4:
+                    selectedCategory = 'Audit & Assurance - ASS';
+                    break;
+                  case 5:
+                    selectedCategory = 'Company Secretarial - CSS';
+                    break;
+                  case 6:
+                    selectedCategory = 'Development - DEV';
+                    break;
+                  default:
+                    break;
                 }
               });
-              updateTaskCounts(assignee: selectedAssignee, category: selectedCategory);
+              updateTaskCounts(
+                  assignee: selectedAssignee, category: selectedCategory);
             },
             tabs: [
               const Tab(text: 'All Tasks'),
@@ -1389,7 +1572,6 @@ class _TaskPageState extends State<TaskPage> {
                     ),
                   ),
                 ),
-
                 Expanded(
                     flex: 10,
                     child: Row(
@@ -1402,11 +1584,14 @@ class _TaskPageState extends State<TaskPage> {
                               setState(() {
                                 selectedAssignee = newValue;
                               });
-                              updateTaskCounts(assignee: newValue, category: selectedCategory);
+                              updateTaskCounts(
+                                  assignee: newValue,
+                                  category: selectedCategory);
                               // Filter the task list based on the selected assignee
                               // Implement filtering logic here
                             },
-                            items: assigneeList.map<DropdownMenuItem<String>>((assignee) {
+                            items: assigneeList
+                                .map<DropdownMenuItem<String>>((assignee) {
                               return DropdownMenuItem<String>(
                                 value: assignee,
                                 child: Text(assignee),
@@ -1418,7 +1603,7 @@ class _TaskPageState extends State<TaskPage> {
                             width: 40,
                             height: 40,
                             decoration: const BoxDecoration(
-                               // Change this to your preferred color
+                              // Change this to your preferred color
                               shape: BoxShape.circle,
                             ),
                             // You can add any content inside this container
@@ -1429,62 +1614,74 @@ class _TaskPageState extends State<TaskPage> {
                           child: MaterialButton(
                             child: Row(
                               children: [
-                                Icon(Icons.pending_actions_rounded, color: Colors.orange.shade600),
-
+                                Icon(Icons.pending_actions_rounded,
+                                    color: Colors.orange.shade600),
                                 Padding(
                                   padding: const EdgeInsets.all(3.0),
-                                  child: Text(' |  $pendingTaskCount',style: TextStyle(color: Colors.orange.shade500),),
+                                  child: Text(
+                                    ' |  $pendingTaskCount',
+                                    style: TextStyle(
+                                        color: Colors.orange.shade500),
+                                  ),
                                 )
                               ],
                             ),
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const PendingTaskPage()),
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const PendingTaskPage()),
                               );
                             },
                           ),
                         ),
-
                         Tooltip(
                           message: 'In-Progress Tasks',
                           child: MaterialButton(
                             child: Row(
                               children: [
-                                Icon(Icons.insert_page_break_rounded, color: Colors.blueAccent.shade700),
-
+                                Icon(Icons.insert_page_break_rounded,
+                                    color: Colors.blueAccent.shade700),
                                 Padding(
                                   padding: const EdgeInsets.all(3.0),
-                                  child: Text(' |  $inProgressTaskCount',style: TextStyle(color: Colors.blueAccent.shade400),),
+                                  child: Text(
+                                    ' |  $inProgressTaskCount',
+                                    style: TextStyle(
+                                        color: Colors.blueAccent.shade400),
+                                  ),
                                 )
                               ],
                             ),
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const InProgressTaskPage()),
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const InProgressTaskPage()),
                               );
                             },
                           ),
                         ),
-
                         Tooltip(
                           message: 'Completed Tasks',
                           child: MaterialButton(
                             child: Row(
                               children: [
-                                Icon(Icons.task_rounded, color: Colors.green.shade600),
+                                Icon(Icons.task_rounded,
+                                    color: Colors.green.shade600),
                                 // Padding(
                                 //   padding: const EdgeInsets.all(3.0),
                                 //   child: Text(' |  $completedTaskCount',style: TextStyle(color: Colors.green.shade400),),
                                 // )
-
                               ],
                             ),
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const CompletedTaskPage()),
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const CompletedTaskPage()),
                               );
                             },
                           ),
@@ -1492,11 +1689,13 @@ class _TaskPageState extends State<TaskPage> {
                         Tooltip(
                           message: 'Add Note',
                           child: MaterialButton(
-                            child: Icon(Icons.note_add_rounded, color: Colors.red.shade600),
+                            child: Icon(Icons.note_add_rounded,
+                                color: Colors.red.shade600),
                             onPressed: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const NotesPage()),
+                                MaterialPageRoute(
+                                    builder: (context) => const NotesPage()),
                               );
                               print('user Role $userRole');
                             },
