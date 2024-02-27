@@ -463,6 +463,87 @@ class _OpenSubTaskState extends State<OpenSubTask> {
     }
   }
 
+
+  Future<bool> unDoCompleteSubTask(
+      String taskName,
+      String userName,
+      String firstName,
+      String taskID,
+      String dueDate,
+      ) async {
+    String logType = 'Sub Task';
+    String logSummary = 'Marked In-Progress';
+    String logDetails = 'Sub Task Due Date: $dueDate';
+    // Prepare the data to be sent to the PHP script.
+    var data = {
+      "task_id": taskID,
+      "task_status": '1',
+      "task_status_name": 'In Progress',
+      "action_taken_by_id": userName,
+      "action_taken_by": firstName,
+      "action_taken_date": getCurrentDateTime(),
+      "action_taken_timestamp": getCurrentDate(),
+    };
+
+    // URL of your PHP script.
+    const url = "http://dev.workspace.cbs.lk/deleteSubTask.php";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final responseBody = jsonDecode(res.body);
+
+        // Debugging: Print the response data.
+        print("Response from PHP script: $responseBody");
+
+        if (responseBody == "true") {
+          print('Successful');
+          // snackBar(context, "Sub Task Marked as In Progress!", Colors.blueAccent);
+          addLog(context,
+              taskId: taskID,
+              taskName: taskName,
+              createBy: firstName,
+              createByID: userName,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
+          setState(() {
+            // Update taskStatus here
+            buttonController = '1';
+            taskStatusNameController =
+            'In Progress'; // Update buttonController based on taskStatus
+          });
+          showUndoSubTask(context);
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OpenMainTaskPage(
+                  taskDetails: widget.mainTaskDetails,
+                ),
+              ));
+          return true; // PHP code was successful.
+        } else {
+          print('PHP code returned "false".');
+          return false; // PHP code returned "false."
+        }
+      } else {
+        print('HTTP request failed with status code: ${res.statusCode}');
+        return false; // HTTP request failed.
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false; // An error occurred.
+    }
+  }
+
   Future<bool> markCompleteSubTask(
     String taskName,
     String userName,
@@ -506,6 +587,7 @@ class _OpenSubTaskState extends State<OpenSubTask> {
         if (responseBody == "true") {
           print('Successful');
           // snackBar(context, "Sub Task Marked as In Progress!", Colors.blueAccent);
+          showSuccessSnackBarSubTask(context, taskName: taskName, userName: userName, firstName: firstName, taskID: taskID, dueDate: dueDate);
           addLog(context,
               taskId: taskID,
               taskName: taskName,
@@ -542,6 +624,74 @@ class _OpenSubTaskState extends State<OpenSubTask> {
       return false; // An error occurred.
     }
   }
+
+  void showSuccessSnackBarSubTask(
+      BuildContext context, {
+        required String taskName,
+        required String userName,
+        required String firstName,
+        required String taskID,
+        required String dueDate,
+      }) {
+    final snackBar = SnackBar(
+      backgroundColor: Colors.green, // Custom background color
+      content: Row(
+        children: [
+          Icon(Icons.check_circle_outline, color: Colors.white), // Custom icon
+          SizedBox(width: 8), // Space between icon and text
+          Expanded(
+            child: Text(
+              'Sub Task Marked as Completed successful!',
+              style: TextStyle(
+                  color: Colors.white, fontSize: 16), // Custom text style
+            ),
+          ),
+        ],
+      ),
+      action: SnackBarAction(
+        label: 'Undo',
+        textColor: Colors.white, // Custom text color for the action
+        onPressed: () {
+          unDoCompleteSubTask(taskName, userName, firstName, taskID, dueDate);
+          // Action to undo the submission
+        },
+      ),
+      duration: Duration(seconds: 10), // Custom duration
+      behavior: SnackBarBehavior.floating, // Make it floating
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20)), // Custom shape
+      margin: EdgeInsets.all(10), // Margin from the edges
+      padding:
+      EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Custom padding
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void showUndoSubTask(BuildContext context) {
+    final snackBar = SnackBar(
+      backgroundColor: Colors.blue, // Custom background color for emphasis
+      content: Row(
+        children: [
+          Icon(Icons.done, color: Colors.white), // Custom icon for warning
+          SizedBox(width: 8), // Space between icon and text
+          Text(
+            'Sub task Marked as In Progress again!', // The message
+            style: TextStyle(
+                color: Colors.white, fontSize: 16), // Custom text style
+          ),
+        ],
+      ),
+      duration: Duration(seconds: 5), // Custom duration
+      behavior: SnackBarBehavior.floating, // Make it floating
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20)), // Custom shape
+      margin: EdgeInsets.all(10), // Margin from the edges
+      padding:
+      EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Custom padding
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
 
   Future<bool> addComment(
     BuildContext context, {

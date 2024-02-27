@@ -34,7 +34,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
   String taskStatusNameController = "";
   String taskStatus = "";
   String buttonController = "";
-  String nameNowUser='';
+  String nameNowUser = '';
 
   Color _getColorForTaskTypeName(String taskTypeName) {
     Map<String, Color> colorMap = {
@@ -68,7 +68,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
   @override
   void initState() {
     super.initState();
-    getSubTaskListByMainTaskId(widget.taskDetails.taskId ,2);
+    getSubTaskListByMainTaskId(widget.taskDetails.taskId, 2);
     getCommentList(widget.taskDetails.taskId);
     loadData();
 
@@ -82,8 +82,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
 
       taskStatusName = widget.taskDetails.taskStatusName;
       taskStatusNameController = taskStatusName;
-      nameNowUser= '${firstName} ${lastName}';
-
+      nameNowUser = '${firstName} ${lastName}';
     });
     // setState(() {
     //   searchedSubTasks = List.from(subTaskList);
@@ -104,11 +103,11 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
   }
 
   void showDeleteCommentConfirmation(
-      BuildContext context,
-      String commentID,
-      String createBy,
-      String nameNowUser,
-      ) {
+    BuildContext context,
+    String commentID,
+    String createBy,
+    String nameNowUser,
+  ) {
     print('Now user: $nameNowUser');
     print('Crate By: $createBy');
     if (createBy == nameNowUser) {
@@ -118,7 +117,8 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text('Confirm Delete'),
-            content: const Text('Are you sure you want to delete this Comment?'),
+            content:
+                const Text('Are you sure you want to delete this Comment?'),
             actions: <Widget>[
               TextButton(
                 child: const Text('Cancel'),
@@ -162,8 +162,8 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
   }
 
   Future<bool> deleteComment(
-      String commentId,
-      ) async {
+    String commentId,
+  ) async {
     String logType = 'Comment';
     String logSummary = 'Deleted';
     String logDetails = '';
@@ -199,7 +199,14 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
         if (responseBody == "true") {
           print('Successful');
           // snackBar(context, "Comment Deleted successful!", Colors.redAccent);
-          addLog(context, taskId: widget.taskDetails.taskId, taskName: widget.taskDetails.taskTitle, createBy: firstName, createByID: userName, logType: logType, logSummary: logSummary, logDetails: logDetails);
+          addLog(context,
+              taskId: widget.taskDetails.taskId,
+              taskName: widget.taskDetails.taskTitle,
+              createBy: firstName,
+              createByID: userName,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
           getCommentList(widget.taskDetails.taskId);
           return true; // PHP code was successful.
         } else {
@@ -392,27 +399,23 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
           subTaskList.add(Task.fromJson(details));
         }
 
-        switch(index){
+        switch (index) {
           case 1:
             subTaskList.sort((a, b) => b.dueDate.compareTo(a.dueDate));
             break;
 
           case 2:
-            subTaskList.sort((a, b) => b.taskCreatedTimestamp.compareTo(a.taskCreatedTimestamp));
+            subTaskList.sort((a, b) =>
+                b.taskCreatedTimestamp.compareTo(a.taskCreatedTimestamp));
             break;
 
           case 3:
-
             break;
-
-
-
         }
         setState(() {
-          searchedSubTasks = List.from(subTaskList); // Initialize with the full list
+          searchedSubTasks =
+              List.from(subTaskList); // Initialize with the full list
         });
-
-
       });
     } else {
       throw Exception('Failed to load subtasks from API');
@@ -491,6 +494,81 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
     }
   }
 
+  Future<bool> unDoComplete(
+    BuildContext context, {
+    required taskName,
+    required userName,
+    required firstName,
+    required taskID,
+    required logType,
+    required logSummary,
+    required logDetails,
+  }) async {
+    // Prepare the data to be sent to the PHP script.
+    var data = {
+      "task_id": taskID,
+      "task_status": '1',
+      "task_status_name": 'In Progress',
+      "action_taken_by_id": userName,
+      "action_taken_by": firstName,
+      "action_taken_date": getCurrentDateTime(),
+      "action_taken_timestamp": getCurrentDate(),
+    };
+
+    // URL of your PHP script.
+    const url = "http://dev.workspace.cbs.lk/deleteMainTask.php";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final responseBody = jsonDecode(res.body);
+
+        // Debugging: Print the response data.
+        print("Response from PHP script: $responseBody");
+
+        if (responseBody == "true") {
+          print('Successful');
+          addLog(context,
+              taskId: taskID,
+              taskName: taskName,
+              createBy: firstName,
+              createByID: userName,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
+
+          setState(() {
+            // Update taskStatus here
+            buttonController = '1';
+            taskStatusNameController =
+                'In Progress'; // Update buttonController based on taskStatus
+          });
+          showUndo(context);
+          Navigator.pushNamed(context, '/Task');
+
+          return true; // PHP code was successful.
+        } else {
+          print('PHP code returned "false".');
+          return false; // PHP code returned "false."
+        }
+      } else {
+        print('HTTP request failed with status code: ${res.statusCode}');
+        return false; // HTTP request failed.
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false; // An error occurred.
+    }
+  }
+
   Future<bool> markCompleteMainTask(
     BuildContext context, {
     required taskName,
@@ -541,6 +619,15 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
               logType: logType,
               logSummary: logSummary,
               logDetails: logDetails);
+          showSuccessSnackBar(context,
+              taskName: taskName,
+              userName: userName,
+              firstName: firstName,
+              taskID: taskID,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
+
           Navigator.pushNamed(context, '/Task');
 
           return true; // PHP code was successful.
@@ -556,6 +643,82 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
       print('Error occurred: $e');
       return false; // An error occurred.
     }
+  }
+
+  void showSuccessSnackBar(
+    BuildContext context, {
+    required String taskName,
+    required String userName,
+    required String firstName,
+    required String taskID,
+    required String logType,
+    required String logSummary,
+    required String logDetails,
+  }) {
+    final snackBar = SnackBar(
+      backgroundColor: Colors.green, // Custom background color
+      content: Row(
+        children: [
+          Icon(Icons.check_circle_outline, color: Colors.white), // Custom icon
+          SizedBox(width: 8), // Space between icon and text
+          Expanded(
+            child: Text(
+              'Main Task Marked as Completed successful!',
+              style: TextStyle(
+                  color: Colors.white, fontSize: 16), // Custom text style
+            ),
+          ),
+        ],
+      ),
+      action: SnackBarAction(
+        label: 'Undo',
+        textColor: Colors.white, // Custom text color for the action
+        onPressed: () {
+          unDoComplete(context,
+              taskName: taskName,
+              userName: userName,
+              firstName: firstName,
+              taskID: taskID,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
+          // Action to undo the submission
+        },
+      ),
+      duration: Duration(seconds: 10), // Custom duration
+      behavior: SnackBarBehavior.floating, // Make it floating
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20)), // Custom shape
+      margin: EdgeInsets.all(10), // Margin from the edges
+      padding:
+          EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Custom padding
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void showUndo(BuildContext context) {
+    final snackBar = SnackBar(
+      backgroundColor: Colors.blue, // Custom background color for emphasis
+      content: Row(
+        children: [
+          Icon(Icons.done, color: Colors.white), // Custom icon for warning
+          SizedBox(width: 8), // Space between icon and text
+          Text(
+            'Main task karked as In Progress again!', // The message
+            style: TextStyle(
+                color: Colors.white, fontSize: 16), // Custom text style
+          ),
+        ],
+      ),
+      duration: Duration(seconds: 5), // Custom duration
+      behavior: SnackBarBehavior.floating, // Make it floating
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20)), // Custom shape
+      margin: EdgeInsets.all(10), // Margin from the edges
+      padding:
+          EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Custom padding
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   Future<bool> markInProgressSubTask(
@@ -609,7 +772,74 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
               logType: logType,
               logSummary: logSummary,
               logDetails: logDetails);
-          getSubTaskListByMainTaskId(widget.taskDetails.taskId,2);
+          getSubTaskListByMainTaskId(widget.taskDetails.taskId, 2);
+          return true; // PHP code was successful.
+        } else {
+          print('PHP code returned "false".');
+          return false; // PHP code returned "false."
+        }
+      } else {
+        print('HTTP request failed with status code: ${res.statusCode}');
+        return false; // HTTP request failed.
+      }
+    } catch (e) {
+      print('Error occurred: $e');
+      return false; // An error occurred.
+    }
+  }
+
+  Future<bool> unDoCompleteSubTask(
+      String taskName,
+      String userName,
+      String firstName,
+      String taskID,
+      String dueDate,
+      ) async {
+    String logType = 'Sub Task';
+    String logSummary = 'Marked In-Progress';
+    String logDetails = 'Sub Task Due Date: $dueDate';
+    // Prepare the data to be sent to the PHP script.
+    var data = {
+      "task_id": taskID,
+      "task_status": '1',
+      "task_status_name": 'In Progress',
+      "action_taken_by_id": userName,
+      "action_taken_by": firstName,
+      "action_taken_date": getCurrentDateTime(),
+      "action_taken_timestamp": getCurrentDate(),
+    };
+
+    // URL of your PHP script.
+    const url = "http://dev.workspace.cbs.lk/deleteSubTask.php";
+
+    try {
+      final res = await http.post(
+        Uri.parse(url),
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (res.statusCode == 200) {
+        final responseBody = jsonDecode(res.body);
+
+        // Debugging: Print the response data.
+        print("Response from PHP script: $responseBody");
+
+        if (responseBody == "true") {
+          print('Successful');
+          // snackBar(context, "Sub Task Marked as In Progress!", Colors.blueAccent);
+          addLog(context,
+              taskId: taskID,
+              taskName: taskName,
+              createBy: firstName,
+              createByID: userName,
+              logType: logType,
+              logSummary: logSummary,
+              logDetails: logDetails);
+          getSubTaskListByMainTaskId(widget.taskDetails.taskId, 2);
           return true; // PHP code was successful.
         } else {
           print('PHP code returned "false".');
@@ -668,6 +898,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
         if (responseBody == "true") {
           print('Successful');
           // snackBar(context, "Sub Task Marked as In Progress!", Colors.blueAccent);
+          showSuccessSnackBarSubTask(context, taskName: taskName, userName: userName, firstName: firstName, taskID: taskID, dueDate: dueDate);
           addLog(context,
               taskId: taskID,
               taskName: taskName,
@@ -676,7 +907,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
               logType: logType,
               logSummary: logSummary,
               logDetails: logDetails);
-          getSubTaskListByMainTaskId(widget.taskDetails.taskId,2);
+          getSubTaskListByMainTaskId(widget.taskDetails.taskId, 2);
           return true; // PHP code was successful.
         } else {
           print('PHP code returned "false".');
@@ -690,6 +921,73 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
       print('Error occurred: $e');
       return false; // An error occurred.
     }
+  }
+
+  void showSuccessSnackBarSubTask(
+      BuildContext context, {
+        required String taskName,
+        required String userName,
+        required String firstName,
+        required String taskID,
+        required String dueDate,
+      }) {
+    final snackBar = SnackBar(
+      backgroundColor: Colors.green, // Custom background color
+      content: Row(
+        children: [
+          Icon(Icons.check_circle_outline, color: Colors.white), // Custom icon
+          SizedBox(width: 8), // Space between icon and text
+          Expanded(
+            child: Text(
+              'Sub Task Marked as Completed successful!',
+              style: TextStyle(
+                  color: Colors.white, fontSize: 16), // Custom text style
+            ),
+          ),
+        ],
+      ),
+      action: SnackBarAction(
+        label: 'Undo',
+        textColor: Colors.white, // Custom text color for the action
+        onPressed: () {
+         unDoCompleteSubTask(taskName, userName, firstName, taskID, dueDate);
+          // Action to undo the submission
+        },
+      ),
+      duration: Duration(seconds: 10), // Custom duration
+      behavior: SnackBarBehavior.floating, // Make it floating
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20)), // Custom shape
+      margin: EdgeInsets.all(10), // Margin from the edges
+      padding:
+      EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Custom padding
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void showUndoSubTask(BuildContext context) {
+    final snackBar = SnackBar(
+      backgroundColor: Colors.blue, // Custom background color for emphasis
+      content: Row(
+        children: [
+          Icon(Icons.done, color: Colors.white), // Custom icon for warning
+          SizedBox(width: 8), // Space between icon and text
+          Text(
+            'Sub task karked as In Progress again!', // The message
+            style: TextStyle(
+                color: Colors.white, fontSize: 16), // Custom text style
+          ),
+        ],
+      ),
+      duration: Duration(seconds: 5), // Custom duration
+      behavior: SnackBarBehavior.floating, // Make it floating
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20)), // Custom shape
+      margin: EdgeInsets.all(10), // Margin from the edges
+      padding:
+      EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Custom padding
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   Future<void> addLog(
@@ -885,7 +1183,8 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
             child: IconButton(
                 tooltip: 'Delete Main Task',
                 onPressed: () {
-                  showDeleteConfirmationDialog(context, userRole, widget.taskDetails.taskId);
+                  showDeleteConfirmationDialog(
+                      context, userRole, widget.taskDetails.taskId);
                 },
                 icon: const Icon(
                   Icons.delete_sweep_outlined,
@@ -926,8 +1225,8 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                     taskDetailsList[index].taskDescription),
                               ),
                               titleTextStyle: const TextStyle(fontSize: 15),
-                              subtitleTextStyle:
-                                  const TextStyle(fontSize: 16, color: Colors.black),
+                              subtitleTextStyle: const TextStyle(
+                                  fontSize: 16, color: Colors.black),
                               // Your list item code here...
                             ),
                           );
@@ -1166,24 +1465,31 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-
-
                             Expanded(
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0),
                                 child: TextField(
                                   controller: searchSubTaskController,
                                   onChanged: (String value) {
                                     setState(() {
                                       if (value.isEmpty) {
                                         // If search field is empty, show all subtasks
-                                        searchedSubTasks = List.from(subTaskList);
+                                        searchedSubTasks =
+                                            List.from(subTaskList);
                                       } else {
                                         // If search field has text, filter subtasks
-                                        searchedSubTasks = subTaskList.where((task) =>
-                                        task.taskTitle.toLowerCase().contains(value.toLowerCase()) ||
-                                            task.taskId.toLowerCase().contains(value.toLowerCase())
-                                        ).toList();
+                                        searchedSubTasks = subTaskList
+                                            .where((task) =>
+                                                task.taskTitle
+                                                    .toLowerCase()
+                                                    .contains(
+                                                        value.toLowerCase()) ||
+                                                task.taskId
+                                                    .toLowerCase()
+                                                    .contains(
+                                                        value.toLowerCase()))
+                                            .toList();
                                       }
                                     });
                                   },
@@ -1202,8 +1508,9 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                     hintText: 'Search Sub Task',
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
-                                      borderSide:
-                                      BorderSide(color: AppColor.appDarkBlue, width: 3),
+                                      borderSide: BorderSide(
+                                          color: AppColor.appDarkBlue,
+                                          width: 3),
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
@@ -1244,8 +1551,9 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                 ),
                               ),
                             ),
-
-                            const SizedBox(width: 10,),
+                            const SizedBox(
+                              width: 10,
+                            ),
                             OutlinedButton(
                               onPressed: () {
                                 if (buttonController == '0') {
@@ -1258,7 +1566,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                     logType: 'Main Task',
                                     logSummary: 'Marked In-Progress',
                                     logDetails:
-                                    'Main Task Due Date: ${widget.taskDetails.dueDate}',
+                                        'Main Task Due Date: ${widget.taskDetails.dueDate}',
                                   );
                                   // Handle 'Mark In Progress' action
                                 } else if (buttonController == '1') {
@@ -1271,7 +1579,7 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                     logType: 'Main Task',
                                     logSummary: 'Marked as Completed',
                                     logDetails:
-                                    'Main Task Due Date: ${widget.taskDetails.dueDate}',
+                                        'Main Task Due Date: ${widget.taskDetails.dueDate}',
                                   );
                                   // Handle 'Mark As Complete' action
                                 }
@@ -1301,13 +1609,16 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                           padding: const EdgeInsets.all(8.0),
                           color: Colors.white,
                           child: ListView.builder(
-                            itemCount: searchedSubTasks.length, // Use the length of the filtered subtasks list
+                            itemCount: searchedSubTasks
+                                .length, // Use the length of the filtered subtasks list
                             itemBuilder: (context, index) {
-                              var subTask = searchedSubTasks[index]; // Current subtask item
+                              var subTask = searchedSubTasks[
+                                  index]; // Current subtask item
                               return Container(
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5.0), // Rounded borders for the container
-                                  color: Colors.grey.shade200,
+                                  borderRadius: BorderRadius.circular(
+                                      5.0), // Rounded borders for the container
+                                  color: subTask.taskStatus == "2" ? Colors.green.shade200 : Colors.grey.shade200,
                                 ),
                                 margin: const EdgeInsets.all(10),
                                 child: ListTile(
@@ -1322,35 +1633,44 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                     ),
                                   ),
                                   subtitle: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
-                                          Text('ID: ${subTask.taskId}'), // Subtask ID
+                                          Text(
+                                              'ID: ${subTask.taskId}'), // Subtask ID
                                           const SizedBox(width: 10),
                                           Icon(
                                             Icons.double_arrow_rounded,
-                                            color: _getColorForTaskTypeName(subTask.taskTypeName), // Color based on task type
+                                            color: _getColorForTaskTypeName(subTask
+                                                .taskTypeName), // Color based on task type
                                           ),
                                           Expanded(
-                                            child: Text(' ${subTask.taskStatusName}'), // Subtask status
+                                            child: Text(
+                                                ' ${subTask.taskStatusName}'), // Subtask status
                                           ),
                                         ],
                                       ),
                                       Row(
                                         children: [
-                                          const Icon(Icons.person_pin_circle_rounded),
+                                          const Icon(
+                                              Icons.person_pin_circle_rounded),
                                           Expanded(
-                                            child: Text(' ${subTask.assignTo}'), // Assigned to
+                                            child: Text(
+                                                ' ${subTask.assignTo}'), // Assigned to
                                           ),
                                         ],
                                       ),
                                       Row(
                                         children: [
-                                          Text('Created Date: ${subTask.taskCreateDate}'), // Creation date
+                                          Text(
+                                              'Created Date: ${subTask.taskCreateDate}'), // Creation date
                                           const SizedBox(width: 5),
-                                          const Icon(Icons.arrow_forward, size: 15),
-                                          Text('Due Date: ${subTask.dueDate}'), // Due date
+                                          const Icon(Icons.arrow_forward,
+                                              size: 15),
+                                          Text(
+                                              'Due Date: ${subTask.dueDate}'), // Due date
                                         ],
                                       ),
                                       // Add more rows for additional information if needed
@@ -1363,7 +1683,8 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                         MaterialPageRoute(
                                           builder: (context) => OpenSubTask(
                                             mainTaskDetails: widget.taskDetails,
-                                            subTaskDetails: subTask, // Passing the current subtask
+                                            subTaskDetails:
+                                                subTask, // Passing the current subtask
                                           ),
                                         ),
                                       );
@@ -1377,7 +1698,6 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                           ),
                         ),
                       ),
-
                     ],
                   ),
                 ),
@@ -1475,7 +1795,11 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
 
                                 trailing: IconButton(
                                   onPressed: () {
-                                    showDeleteCommentConfirmation(context, commentsList[index].commentId, commentsList[index].commentCreateBy, '${firstName} ${lastName}');
+                                    showDeleteCommentConfirmation(
+                                        context,
+                                        commentsList[index].commentId,
+                                        commentsList[index].commentCreateBy,
+                                        '${firstName} ${lastName}');
                                     print('Delete Comment');
                                   },
                                   icon: const Icon(
