@@ -1618,7 +1618,10 @@ class _OpenMainTaskPageState extends State<OpenMainTaskPage> {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(
                                       5.0), // Rounded borders for the container
-                                  color: subTask.taskStatus == "2" ? Colors.green.shade200 : Colors.grey.shade200,
+                                  color: subTask.taskStatus == "2" ? Colors.green.shade100 :
+                                  subTask.taskStatus == "1" ? Colors.blue.shade100 :
+                                  subTask.taskStatus == "0" ? Colors.red.shade100 : Colors.grey.shade200,
+
                                 ),
                                 margin: const EdgeInsets.all(10),
                                 child: ListTile(

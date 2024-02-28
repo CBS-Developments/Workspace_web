@@ -796,7 +796,9 @@ class _TaskPageState extends State<TaskPage> {
                               bottomRight: Radius.circular(
                                   50.0), // Adjust these values as needed
                             ),
-                            color: Colors.grey.shade200,
+                            color: subTaskList[index].taskStatus == "2" ? Colors.green.shade100 :
+                            subTaskList[index].taskStatus == "1" ? Colors.blue.shade100 :
+                            subTaskList[index].taskStatus == "0" ? Colors.red.shade100 : Colors.grey.shade200,
                           ),
                           margin: const EdgeInsets.all(10),
                           child: ListTile(
@@ -1204,7 +1206,9 @@ class _TaskPageState extends State<TaskPage> {
                                   bottomRight: Radius.circular(
                                       50.0), // Adjust these values as needed
                                 ),
-                                color: Colors.grey.shade200,
+                                color: subTaskList[index].taskStatus == "2" ? Colors.green.shade100 :
+                                subTaskList[index].taskStatus == "1" ? Colors.blue.shade100 :
+                                subTaskList[index].taskStatus == "0" ? Colors.red.shade100 : Colors.grey.shade200,
                               ),
                               margin: const EdgeInsets.all(10),
                               child: ListTile(

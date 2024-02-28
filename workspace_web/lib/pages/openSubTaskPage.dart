@@ -1275,7 +1275,9 @@ class _OpenSubTaskState extends State<OpenSubTask> {
                                     bottomRight: Radius.circular(
                                         0.0), // Adjust these values as needed
                                   ),
-                                  color: Colors.grey.shade200,
+                                  color: filteredSubTaskList[index].taskStatus == "2" ? Colors.green.shade100 :
+                                  filteredSubTaskList[index].taskStatus == "1" ? Colors.blue.shade100 :
+                                  filteredSubTaskList[index].taskStatus == "0" ? Colors.red.shade100 : Colors.grey.shade200,
                                 ),
                                 margin: const EdgeInsets.all(10),
                                 child: ListTile(
