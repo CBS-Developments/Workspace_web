@@ -462,6 +462,10 @@ class _EditMainTaskPageState extends State<EditMainTaskPage> {
                                         "value": "Dinethri",
                                       },
                                       {
+                                        "display": "Kalpani",
+                                        "value": "Kalpani",
+                                      },
+                                      {
                                         "display": "Sulakshana",
                                         "value": "Sulakshana",
                                       },

@@ -524,6 +524,10 @@ class _EditSubTaskPageState extends State<EditSubTaskPage> {
                                         "value": "Dinethri",
                                       },
                                       {
+                                        "display": "Kalpani",
+                                        "value": "Kalpani",
+                                      },
+                                      {
                                         "display": "Sulakshana",
                                         "value": "Sulakshana",
                                       },

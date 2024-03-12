@@ -43,6 +43,7 @@ class _PendingTaskPageState extends State<PendingTaskPage> {
     'Shahiru',
     'Dinethri',
     'Damith',
+    'Kalpani',
     'Sulakshana',
     'Samadhi',
     'Sanjana',

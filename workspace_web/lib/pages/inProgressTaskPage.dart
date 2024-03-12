@@ -42,6 +42,7 @@ class _InProgressTaskPageState extends State<InProgressTaskPage> {
     'Shahiru',
     'Dinethri',
     'Damith',
+    'Kalpani',
     'Sulakshana',
     'Samadhi',
     'Sanjana',

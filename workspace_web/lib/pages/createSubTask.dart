@@ -520,6 +520,10 @@ class _CreateSubTaskPageState extends State<CreateSubTaskPage> {
                                         "value": "Dinethri",
                                       },
                                       {
+                                        "display": "Kalpani",
+                                        "value": "Kalpani",
+                                      },
+                                      {
                                         "display": "Sulakshana",
                                         "value": "Sulakshana",
                                       },
